@@ -1,0 +1,180 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Raise a Query - Circuit Breakers</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Poppins', sans-serif;
+        }
+        .policy-section {
+            transition: all 0.5s ease-in-out;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 text-gray-200">
+
+    <header class="bg-slate-900/80 backdrop-blur-sm sticky top-0 left-0 right-0 z-50">
+        <div class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="/" class="text-2xl font-bold text-white">
+                <span class="text-green-400">Circuit</span>Breakers
+            </a>
+            <nav class="hidden md:flex space-x-8">
+                <a href="/#ecosystem" class="hover:text-green-400 transition-colors">Our Ecosystem</a>
+                <a href="/#mission" class="hover:text-green-400 transition-colors">Our Mission</a>
+                <a href="/#contact" class="hover:text-green-400 transition-colors">Contact</a>
+            </nav>
+        </div>
+    </header>
+
+    <main>
+        <section id="query-form" class="py-20 flex items-center min-h-screen">
+            <div class="container mx-auto px-6">
+                 <div class="max-w-2xl mx-auto bg-slate-800 p-8 md:p-12 rounded-xl shadow-lg">
+                    <h2 class="text-3xl font-bold text-white mb-4 text-center">Register Your Interest</h2>
+                    <p class="text-gray-400 mb-8 text-center">
+                        We're glad you're interested! Currently, we do not have an online payment system enabled for subscriptions or purchases. To ensure you can still access our offerings without delay, our dedicated team is <strong>tirelessly managing all services offline</strong> at our physical branches. We are working diligently to activate our online payment gateway, as this is the final step to providing you with the seamless digital experience you expect.<br><br>
+                        Please fill out the simple form below. Our team will contact you within 48 hours to guide you through the next steps.
+                    </p>
+                    
+                    <form action="/submit_query" method="POST" class="space-y-6">
+                        <input type="hidden" id="interest_section" name="interest_section" value="General Inquiry">
+                        
+                        <div>
+                            <label for="full_name" class="block text-sm font-medium text-gray-300 mb-2">Full Name</label>
+                            <input type="text" name="full_name" id="full_name" required class="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-4 text-white focus:outline-none focus:ring-2 focus:ring-green-400">
+                        </div>
+                        <div>
+                            <label for="phone" class="block text-sm font-medium text-gray-300 mb-2">Phone Number</label>
+                            <input type="tel" name="phone" id="phone" required class="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-4 text-white focus:outline-none focus:ring-2 focus:ring-green-400">
+                        </div>
+                        <div>
+                            <label for="address" class="block text-sm font-medium text-gray-300 mb-2">Address</label>
+                            <textarea name="address" id="address" rows="3" required class="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-4 text-white focus:outline-none focus:ring-2 focus:ring-green-400"></textarea>
+                        </div>
+                        <div>
+                            <label for="email" class="block text-sm font-medium text-gray-300 mb-2">Email Address</label>
+                            <input type="email" name="email" id="email" required class="w-full bg-slate-700 border border-slate-600 rounded-lg py-2 px-4 text-white focus:outline-none focus:ring-2 focus:ring-green-400">
+                        </div>
+                        <div class="text-center">
+                            <button type="submit" class="bg-green-500 text-slate-900 hover:bg-green-400 font-bold py-3 px-8 rounded-lg text-lg transition-colors duration-300">
+                                Raise an Interest
+                            </button>
+                        </div>
+                    </form>
+
+                </div>
+            </div>
+        </section>
+
+        <section id="privacy" class="py-20 policy-section hidden">
+             <div class="container mx-auto px-6">
+                 <div class="max-w-4xl mx-auto">
+                    <h2 class="text-3xl font-bold text-white mb-6">Privacy Policy</h2>
+                    <div class="space-y-4 text-gray-400">
+                        <p><strong>Last Updated: September 11, 2025</strong></p>
+                        <p>Circuit Breakers ("we," "our," or "us") is committed to protecting your privacy. This Privacy Policy explains how we collect, use, and share information about you when you use our website and services.</p>
+                        
+                        <h3 class="text-xl font-semibold text-white pt-4">1. Information We Collect</h3>
+                        <p>We collect information you provide directly to us, such as your name, email address, and phone number when you sign up for our services or contact us. When you make a payment, we use a third-party payment processor (Razorpay) and do not store your sensitive financial details like credit card numbers.</p>
+
+                        <h3 class="text-xl font-semibold text-white pt-4">2. How We Use Your Information</h3>
+                        <p>We use the information we collect to provide, maintain, and improve our services, process transactions, send you transactional information including confirmations and invoices, and communicate with you about our platform.</p>
+
+                        <h3 class="text-xl font-semibold text-white pt-4">3. Information Sharing</h3>
+                        <p>We do not sell your personal information. We may share information with third-party vendors and service providers that perform services for us, such as payment processing. We only share the information necessary for them to perform their functions.</p>
+
+                        <h3 class="text-xl font-semibold text-white pt-4">4. Contact Us</h3>
+                        <p>If you have any questions about this Privacy Policy, please contact us at <a href="mailto:devteam.circuitbreakers@gmail.com" class="text-green-400 hover:underline">devteam.circuitbreakers@gmail.com</a>.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
+        <section id="terms" class="py-20 bg-slate-800 policy-section hidden">
+            <div class="container mx-auto px-6">
+                <div class="max-w-4xl mx-auto">
+                    <h2 class="text-3xl font-bold text-white mb-6">Terms of Service</h2>
+                    <div class="space-y-4 text-gray-400">
+                        <p><strong>Last Updated: September 11, 2025</strong></p>
+                        <p>By accessing or using the services of Circuit Breakers, you agree to be bound by these Terms of Service.</p>
+                        
+                        <h3 class="text-xl font-semibold text-white pt-4">1. Description of Services</h3>
+                        <p>Circuit Breakers provides an educational and e-commerce platform focused on electronics and IoT. Our services include monthly subscriptions to our Student Section and Tech Library, as well as products for sale in our Main Store.</p>
+
+                        <h3 class="text-xl font-semibold text-white pt-4">2. Payments and Subscriptions</h3>
+                        <p>Fees for our subscription services (Student Section, Tech Library) are billed on a monthly basis. All payments are processed through our third-party payment gateway, Razorpay. Currently, all new subscriptions and payments are handled offline at our physical branches.</p>
+                        
+                        <h3 class="text-xl font-semibold text-white pt-4">3. Refund and Cancellation Policy</h3>
+                        <p>All payments for services, including monthly subscriptions to the Student Section and Tech Library, are final and <strong>non-refundable</strong>. You may cancel your subscription at any time, but no refunds will be provided for partial months.</p>
+
+                        <h3 class="text-xl font-semibold text-white pt-4">4. Product Sales and Shipping</h3>
+                        <p>Our Main Store features products for sale. At this time, the sale and shipping of physical products are managed through our physical locations. Policies regarding returns and refunds will be provided at the point of sale.</p>
+
+                        <h3 class="text-xl font-semibold text-white pt-4">5. Governing Law</h3>
+                        <p>These Terms shall be governed by the laws of India, without regard to its conflict of law provisions.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+
+    <footer class="bg-slate-900 border-t border-slate-700">
+        <div class="container mx-auto px-6 py-8 text-center text-gray-400">
+            <p>&copy; 2025 Circuit Breakers. All Rights Reserved.</p>
+            <p class="text-sm mt-2">
+                <a href="#privacy" class="policy-link hover:text-green-400">Privacy Policy</a> | 
+                <a href="#terms" class="policy-link hover:text-green-400">Terms of Service</a>
+            </p>
+        </div>
+    </footer>
+    
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Get the URL parameter 'interest' and populate the hidden form field
+            const urlParams = new URLSearchParams(window.location.search);
+            const interest = urlParams.get('interest');
+            if (interest) {
+                document.getElementById('interest_section').value = interest;
+            }
+
+            // ADDED: Logic for handling policy link clicks on this page
+            document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+                anchor.addEventListener('click', function (e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+
+                    if (targetElement) {
+                        // Logic to show/hide the correct policy section
+                        if (targetElement.classList.contains('policy-section')) {
+                            const isHidden = targetElement.classList.contains('hidden');
+                            
+                            // Hide all policy sections first
+                            document.querySelectorAll('.policy-section').forEach(p => {
+                                p.classList.add('hidden');
+                            });
+
+                            // If the clicked one was hidden, show it
+                            if (isHidden) {
+                                targetElement.classList.remove('hidden');
+                            }
+                        }
+                        
+                        // Scroll to the element
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth'
+                        });
+                    }
+                });
+            });
+        });
+    </script>
+</body>
+</html>
