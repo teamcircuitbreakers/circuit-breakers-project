@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Circuit Breakers - Simplifying Electronics for India's Next Innovators</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #111827; /* Dark Blue-Gray */
+            color: #E5E7EB; /* Light Gray */
+        }
+        .accent-color { color: #38BDF8; } /* Electric Blue */
+        .accent-bg { background-color: #38BDF8; }
+        .accent-border { border-color: #38BDF8; }
+        .section {
+            padding: 8rem 1rem;
+            border-bottom: 1px solid #1F2937;
+        }
+        @media (min-width: 768px) {
+            .section { padding: 8rem 2rem; }
+        }
+        .glassmorphism {
+            background: rgba(31, 41, 55, 0.4);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        /* -- HEADER SCROLL EFFECT -- */
+        #header.scrolled {
+            background: rgba(17, 24, 39, 0.6); /* bg-gray-900 with opacity */
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            top: 12px;
+            left: -21px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background-color: #38BDF8;
+            border: 2px solid #111827;
+        }
+        .glow {
+            box-shadow: 0 0 5px #38BDF8, 0 0 10px #38BDF8, 0 0 15px #38BDF8;
+        }
+        .scroll-reveal {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+        .scroll-reveal.visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        /* -- NAVIGATION & HEADER STYLES -- */
+        .nav-link { 
+            position: relative; 
+            padding-bottom: 4px;
+        }
+        .nav-link::after {
+            content: '';
+            position: absolute;
+            width: 100%;
+            transform: scaleX(0);
+            height: 2px;
+            bottom: 0;
+            left: 0;
+            background-color: #38BDF8;
+            transform-origin: bottom right;
+            transition: transform 0.3s ease-out;
+        }
+        .nav-link:hover::after {
+            transform: scaleX(1);
+            transform-origin: bottom left;
+        }
+
+        .animated-gradient-text {
+            background: linear-gradient(90deg, #38BDF8, #A78BFA, #F472B6, #38BDF8);
+            background-size: 200% auto;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            animation: gradient-animation 4s linear infinite;
+        }
+        
+        .animated-gradient-fill {
+            fill: url(#logoGradient);
+            animation: gradient-animation 4s linear infinite;
+        }
+
+        @keyframes gradient-animation {
+            to {
+                background-position: 200% center;
+            }
+        }
+        /* -- VISION SECTION ZIGZAG STYLES (MOBILE FIRST) -- */
+        .vision-container {
+            position: relative;
+            padding-left: 2rem; /* space for the timeline */
+        }
+        .vision-container::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 19px; /* position line on the left for mobile, centered with dot */
+            width: 2px;
+            height: 100%;
+            background-color: #374151; /* gray-700 */
+        }
+        .vision-item {
+            position: relative;
+            width: 100%;
+            margin-bottom: 3rem;
+        }
+        .vision-item::after {
+            content: '';
+            position: absolute;
+            top: 2rem;
+            left: -22px; /* align dot with the line */
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background-color: #111827;
+            border: 4px solid #38BDF8;
+        }
+        
+        /* DESKTOP ZIGZAG OVERRIDES */
+        @media (min-width: 768px) {
+            .vision-container {
+                padding-left: 0; /* reset padding */
+            }
+            .vision-container::before {
+                left: 50%; /* center line on desktop */
+                transform: translateX(-50%);
+            }
+            .vision-item {
+                width: 50%;
+            }
+            .vision-item:nth-child(odd) {
+                padding-right: 2rem;
+                align-self: flex-start;
+            }
+            .vision-item:nth-child(odd)::after {
+                left: auto; /* reset mobile position */
+                right: -10px;
+            }
+            .vision-item:nth-child(even) {
+                padding-left: 2rem;
+                align-self: flex-end;
+            }
+            .vision-item:nth-child(even)::after {
+                left: -10px; /* reset mobile position */
+            }
+        }
+        /* -- MODAL STYLES -- */
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.7);
+            z-index: 100;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            opacity: 0;
+            visibility: hidden;
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+        .modal-overlay.visible {
+            opacity: 1;
+            visibility: visible;
+        }
+        .modal-content {
+            background-color: #1F2937;
+            padding: 2rem;
+            border-radius: 0.75rem;
+            max-width: 90%;
+            width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+            position: relative;
+            transform: scale(0.95);
+            transition: transform 0.3s ease;
+        }
+        .modal-overlay.visible .modal-content {
+            transform: scale(1);
+        }
+    </style>
+</head>
+<body class="antialiased">
+    <!-- SVG Definition for Gradient Fill -->
+    <svg width="0" height="0" style="position:absolute">
+        <defs>
+            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="200%" y2="0%">
+                <stop offset="0%" style="stop-color:#38BDF8;" />
+                <stop offset="25%" style="stop-color:#A78BFA;" />
+                <stop offset="50%" style="stop-color:#F472B6;" />
+                <stop offset="75%" style="stop-color:#A78BFA;" />
+                <stop offset="100%" style="stop-color:#38BDF8;" />
+            </linearGradient>
+        </defs>
+    </svg>
+    
+    <!-- Animated background canvas -->
+    <canvas id="particle-canvas" class="fixed top-0 left-0 w-full h-full -z-10"></canvas>
+
+    <!-- Header -->
+    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="header">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="#" class="flex items-center">
+                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="270.4 256.8 291.2 358.4" class="w-8 h-8 mr-3 animated-gradient-fill">
+                <path d="M306.059814,335.034607 C340.353760,315.260315 374.340057,295.687073 408.313049,276.090851 C412.636780,273.596863 416.859650,270.927856 421.186188,268.438965 C425.866150,265.746735 428.265289,266.937836 428.288788,272.146729 C428.375854,291.464661 428.210022,310.783417 428.912750,330.096313 C429.034119,333.432617 427.610870,335.869385 424.385315,337.724762 C399.432892,352.078033 374.615967,366.666687 349.701447,381.086395 C347.070740,382.608978 345.965607,384.451599 345.972656,387.482178 C346.036896,414.977661 346.036987,442.473541 345.938568,469.968842 C345.926392,473.373535 347.152557,475.611877 350.058136,477.275513 C374.532990,491.288818 398.987610,505.337524 423.421661,519.421814 C426.164276,521.002747 428.548523,520.958557 431.342285,519.328552 C455.584045,505.184448 479.872253,491.119507 504.201660,477.126648 C507.383118,475.296906 509.096680,473.226654 508.949310,469.257385 C508.643280,461.013092 508.856873,452.749512 508.856873,443.826691 C499.369781,447.960236 491.769745,453.638245 483.572052,458.230743 C466.598724,467.739594 449.816803,477.589722 432.936340,487.264893 C428.150787,490.007782 426.040619,489.025391 426.002411,483.564087 C425.863586,463.735352 425.958496,443.904907 425.973846,424.075134 C425.976898,420.138306 428.738007,418.245880 431.682007,416.535614 C452.236481,404.594788 472.803497,392.675537 493.342834,380.708832 C494.718506,379.907349 496.609711,379.220276 496.427063,377.191711 C496.270599,375.454651 494.492676,375.145996 493.212494,374.400879 C482.003693,367.877228 470.785492,361.368073 459.658539,354.706787 C456.830261,353.013641 455.081024,350.299316 455.100891,346.844116 C455.210968,327.688416 455.296936,308.531921 455.564240,289.378174 C455.631409,284.563141 458.840637,283.166992 463.082458,285.600067 C484.266052,297.750763 505.494751,309.822876 526.664673,321.997253 C539.894043,329.605194 553.062744,337.319214 566.222229,345.047607 C568.970459,346.661591 570.359436,349.035370 570.402100,352.452728 C570.606079,368.776703 569.821411,385.109467 570.821472,401.425842 C571.114380,406.204590 568.526367,409.094757 564.569824,411.285950 C555.422668,416.351685 546.335815,421.527618 537.275391,426.747131 C536.047668,427.454346 534.524658,428.019470 533.824341,430.125000 C538.696106,434.726105 545.083862,437.252625 550.804810,440.760834 C556.182251,444.058472 561.728455,447.080200 567.184082,450.251282 C569.392090,451.534637 570.386536,453.489929 570.383179,456.060669 C570.361267,472.890930 570.328125,489.721558 570.415833,506.551453 C570.434937,510.220337 568.047302,511.875549 565.431641,513.384338 C538.664917,528.823792 511.855835,544.189880 485.099823,559.647888 C467.979248,569.539124 450.848572,579.417847 433.895874,589.591187 C429.070770,592.486755 425.054169,592.069641 420.454712,589.394592 C395.044800,574.615906 369.531464,560.015076 344.098389,545.276062 C325.715790,534.622864 307.411865,523.833923 289.051270,513.142639 C285.563995,511.112030 283.905396,508.304474 283.909576,504.171753 C283.960144,453.845520 283.950775,403.519196 283.874298,353.192993 C283.867889,348.988373 285.620667,346.431183 289.289307,344.528809 C294.879791,341.629761 300.271759,338.347870 306.059814,335.034607 z"/>
+                </svg>
+                <span class="text-2xl font-bold tracking-wider animated-gradient-text">Circuit Breakers</span>
+            </a>
+            <div class="hidden md:flex space-x-8 items-center">
+                <a href="#vision" class="nav-link hover:accent-color transition-colors duration-300">Our Vision</a>
+                <a href="#roadmap" class="nav-link hover:accent-color transition-colors duration-300">Roadmap</a>
+                <a href="#team" class="nav-link hover:accent-color transition-colors duration-300">Team</a>
+                <a href="#donate" class="nav-link hover:accent-color transition-colors duration-300">Support Us</a>
+                <a href="#join" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold px-4 py-2 rounded-lg transition-transform duration-300 hover:scale-105">Join Us</a>
+            </div>
+            <div class="md:hidden">
+                <button id="menu-btn" class="text-white focus:outline-none">
+                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
+                </button>
+            </div>
+        </nav>
+        <!-- Mobile Menu -->
+        <div id="mobile-menu" class="hidden md:hidden bg-gray-900/80 backdrop-blur-sm">
+            <a href="#vision" class="block py-2 px-6 text-sm hover:bg-gray-700">Our Vision</a>
+            <a href="#roadmap" class="block py-2 px-6 text-sm hover:bg-gray-700">Roadmap</a>
+            <a href="#team" class="block py-2 px-6 text-sm hover:bg-gray-700">Team</a>
+            <a href="#donate" class="block py-2 px-6 text-sm hover:bg-gray-700">Support Us</a>
+            <a href="#join" class="block py-2 px-6 text-sm hover:bg-gray-700">Join Us</a>
+        </div>
+    </header>
+
+    <main>
+        <!-- Section 1: Hero -->
+        <section id="hero" class="h-screen flex items-center justify-center text-center relative overflow-hidden">
+            <div class="z-10 container mx-auto px-4">
+                <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight scroll-reveal">
+                    Simplifying Electronics for India's <span class="accent-color">Next Innovators.</span>
+                </h1>
+                <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8 scroll-reveal" style="transition-delay: 200ms;">
+                    We are Circuit Breakers, a student-led initiative building a complete ecosystem for learning, building, and launching smart devices.
+                </p>
+                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 scroll-reveal" style="transition-delay: 400ms;">
+                    <a href="#vision" class="w-full md:w-auto bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform duration-300 hover:scale-105 inline-block">Explore Our Vision</a>
+                    <!-- <a href="https://discord.com" target="_blank" class="w-full md:w-auto border-2 accent-border text-white font-bold py-3 px-8 rounded-lg text-lg transition-all duration-300 hover:bg-sky-500/20 hover:scale-105 inline-block">Join our Community</a> -->
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: The Problem -->
+        <section id="problem" class="section bg-transparent">
+            <div class="container mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 scroll-reveal">Electronics Can Be Hard. <span class="accent-color">We're Changing That.</span></h2>
+                <p class="text-gray-400 mb-12 max-w-2xl mx-auto scroll-reveal">We identified three key barriers for aspiring creators in India, and we're building a solution for each one.</p>
+                <div class="grid md:grid-cols-3 gap-8">
+                    <div class="p-8 rounded-xl glassmorphism scroll-reveal">
+                        <svg class="w-12 h-12 accent-color mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 00-4-4H3V9h2a4 4 0 004-4V3l7 4-7 4zM19 17v-2a4 4 0 00-4-4h-2V9h2a4 4 0 004-4V3l-7 4 7 4z"/></svg>
+                        <h3 class="text-xl font-semibold mb-2">Scattered Knowledge</h3>
+                        <p class="text-gray-400">Finding structured, practical learning paths for IoT is a challenge. We're creating a clear roadmap from beginner to expert.</p>
+                    </div>
+                    <div class="p-8 rounded-xl glassmorphism scroll-reveal" style="transition-delay: 200ms;">
+                        <svg class="w-12 h-12 accent-color mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 16v-1m0-1v.01M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
+                        <h3 class="text-xl font-semibold mb-2">Expensive Tools</h3>
+                        <p class="text-gray-400">High costs of sensors and gear shouldn't be a barrier. We're making resources affordable and accessible for everyone.</p>
+                    </div>
+                    <div class="p-8 rounded-xl glassmorphism scroll-reveal" style="transition-delay: 400ms;">
+                        <svg class="w-12 h-12 accent-color mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
+                        <h3 class="text-xl font-semibold mb-2">Idea-to-Market Gap</h3>
+                        <p class="text-gray-400">Brilliant projects often remain as prototypes. We're building a bridge to help creators turn their ideas into real-world products.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: The Vision -->
+        <section id="vision" class="section bg-transparent">
+            <div class="container mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-16 scroll-reveal">Our <span class="accent-color">Complete Ecosystem</span> for Innovation</h2>
+                <div class="flex flex-col items-start md:items-center vision-container">
+                    <!-- Vision Item 1: Dev -->
+                    <div class="vision-item flex justify-start">
+                        <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
+                            <h3 class="text-2xl font-bold accent-color mb-3">Dev Section</h3>
+                            <p class="text-gray-300">The innovation hub where our R&D team designs, tests, and develops new smart devices, tools, and solutions. This is where ideas become reality.</p>
+                        </div>
+                    </div>
+                    <!-- Vision Item 2: Teacher -->
+                    <div class="vision-item flex justify-end">
+                        <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
+                            <h3 class="text-2xl font-bold accent-color mb-3">Teacher Section</h3>
+                             <p class="text-gray-300">A dedicated space for experienced mentors specializing in coding, electronics, and IoT to share their expertise through structured lessons and hands-on training.</p>
+                        </div>
+                    </div>
+                    <!-- Vision Item 3: Student -->
+                    <div class="vision-item flex justify-start">
+                         <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
+                            <h3 class="text-2xl font-bold accent-color mb-3">Student Section</h3>
+                             <p class="text-gray-300">Tailored for enthusiasts to dive into IoT and electronics with affordable, structured learning paths, mentorship, and practical project exposure.</p>
+                        </div>
+                    </div>
+                    <!-- Vision Item 4: Library -->
+                    <div class="vision-item flex justify-end">
+                        <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
+                            <h3 class="text-2xl font-bold accent-color mb-3">Tech Library</h3>
+                             <p class="text-gray-300">A unique initiative to make resources accessible. For a minimal fee, access sensors, microcontrollers, books, and tools for hands-on learning.</p>
+                        </div>
+                    </div>
+                     <!-- Vision Item 5: Store -->
+                    <div class="vision-item flex justify-start">
+                         <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
+                            <h3 class="text-2xl font-bold accent-color mb-3">Main Store</h3>
+                             <p class="text-gray-300">The commercial arm where our R&D products will be available. We will also feature creations from our community, turning ideas into market-ready solutions.</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: Roadmap -->
+        <section id="roadmap" class="section bg-transparent">
+            <div class="container mx-auto">
+                <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 scroll-reveal">Charting Our <span class="accent-color">Course</span></h2>
+                <div class="relative max-w-2xl mx-auto border-l-2 border-gray-700">
+                    <!-- Timeline Item -->
+                    <div class="mb-12 ml-8 timeline-item scroll-reveal">
+                        <h3 class="text-xl font-semibold text-white">Phase 1: Our Current Focus</h3>
+                        <p class="text-gray-400">This is where we are right now: laying the essential groundwork for our community and platform.</p>
+                        <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
+                            <li>Establishing our core online community on Discord & Telegram.</li>
+                            <li>Creating high-value, practical tutorials on YouTube.</li>
+                            <li>Building this foundational website to share our vision with you.</li>
+                        </ul>
+                    </div>
+                     <!-- Timeline Item -->
+                    <div class="mb-12 ml-8 timeline-item scroll-reveal">
+                        <h3 class="text-xl font-semibold text-white">Phase 2: What's Next</h3>
+                        <p class="text-gray-400">Once our community is thriving, we will introduce the first pillars of our ecosystem to provide tangible value.</p>
+                         <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
+                            <li>Launching the Main Store with a curated list of essential components.</li>
+                            <li>Initiating a pilot program for the Tech Library in our local area.</li>
+                        </ul>
+                    </div>
+                     <!-- Timeline Item -->
+                    <div class="mb-12 ml-8 timeline-item scroll-reveal">
+                         <h3 class="text-xl font-semibold text-white">Phase 3: Expanding Horizons</h3>
+                        <p class="text-gray-400">With the foundation set, our focus will shift to structured learning and mentorship to accelerate growth.</p>
+                         <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
+                           <li>Onboarding the first mentors to our Teacher Section.</li>
+                           <li>Launching the Student Section with affordable, project-based courses.</li>
+                        </ul>
+                    </div>
+                    <!-- Timeline Item -->
+                    <div class="ml-8 timeline-item scroll-reveal">
+                        <h3 class="text-xl font-semibold text-white">Phase 4: The Ultimate Vision</h3>
+                        <p class="text-gray-400">The final stage is to complete the loop: moving from learning to creating unique, home-grown innovations.</p>
+                         <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
+                           <li>Establishing the formal R&D Dev Section for in-house projects.</li>
+                           <li>Launching the first official "Circuit Breakers" branded product.</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: The Team (PHOTO-LESS VERSION) -->
+        <section id="team" class="section bg-transparent">
+            <div class="container mx-auto text-center">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 scroll-reveal">Meet Our <span class="accent-color">Founding Team</span></h2>
+                <p class="text-gray-400 mb-12 max-w-3xl mx-auto text-lg leading-relaxed scroll-reveal">
+                    Circuit Breakers is built by a dedicated team of 12 co-founders. We are a collective of friends, classmates, and passionate tinkerers, each bringing a unique skill set to the table. From hardware design and software development to community management and content creation, every member plays a vital role in bringing this vision to life.
+                </p>
+                
+                <!-- Team Grid -->
+                <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 text-center scroll-reveal">
+                    <!-- Founder 1 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Pushkar Bose</h4>
+                        <p class="text-sky-400">Manager - Team Strategist</p>
+                    </div>
+                     <!-- Founder 2 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Subham Chakraborty</h4>
+                        <p class="text-sky-400">Manager - Team Strategist</p>
+                    </div>
+                     <!-- Founder 3 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Arijit Dey</h4>
+                        <p class="text-sky-400">Manager - Team Strategist</p>
+                    </div>
+                     <!-- Founder 4 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Soumili Dey</h4>
+                        <p class="text-sky-400">Project Strategist & Data Analyst<p>
+                    </div>
+                     <!-- Founder 5 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Apurba Hazra</h4>
+                        <p class="text-sky-400">Finance Department</p>
+                    </div>
+                     <!-- Founder 6 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Poulami Ghosh</h4>
+                        <p class="text-sky-400">Project Strategist & Data Analyst</p>
+                    </div>
+                     <!-- Founder 7 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Arnab Roy</h4>
+                        <p class="text-sky-400">Logistics - Procurement Lead</p>
+                    </div>
+                     <!-- Founder 8 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Ayan Bhattacharya</h4>
+                        <p class="text-sky-400">Designer & Creative Director</p>
+                    </div>
+                     <!-- Founder 9 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Trisha Guria</h4>
+                        <p class="text-sky-400">Social Media Manager & Data Analyst</p>
+                    </div>
+                     <!-- Founder 10 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Prithwijit Sutradhar</h4>
+                        <p class="text-sky-400">Logistics - Procurement Lead</p>
+                    </div>
+                     <!-- Founder 11 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Barsa Gorai</h4>
+                        <p class="text-sky-400">Finance Department</p>
+                    </div>
+                     <!-- Founder 12 -->
+                    <div>
+                        <h4 class="text-xl font-semibold text-white">Poulami Das</h4>
+                        <p class="text-sky-400">Social Media Manager</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 6: Donation -->
+        <section id="donate" class="section bg-transparent">
+            <div class="container mx-auto text-center max-w-3xl">
+                <h2 class="text-3xl md:text-4xl font-bold mb-4 scroll-reveal">Help Us Build the <span class="accent-color">Future</span>.</h2>
+                <p class="text-gray-400 mb-8 scroll-reveal">We're a bootstrapped, student-run initiative. Your contribution, no matter the size, directly fuels our mission and helps us get off the ground faster.</p>
+                <div class="p-8 rounded-xl glassmorphism scroll-reveal">
+                    <h3 class="text-xl font-semibold mb-4">Where does your donation go?</h3>
+                    <p class="text-gray-300 mb-8">Every rupee is reinvested into building our ecosystem. It helps us purchase components for new YouTube tutorials, cover website hosting costs, and kickstart the development of our Tech Library for students.</p>
+                    <div class="flex flex-wrap justify-center gap-4 mb-8">
+                        <button class="donation-amount-btn" data-amount="100">₹100</button>
+                        <button class="donation-amount-btn" data-amount="250">₹250</button>
+                        <button class="donation-amount-btn" data-amount="500">₹500</button>
+                    </div>
+                    <div class="flex items-center justify-center max-w-xs mx-auto mb-8">
+                        <span class="text-lg font-semibold mr-2">₹</span>
+                        <input type="number" id="custom-amount" class="bg-gray-700 text-white text-center w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Or enter a custom amount">
+                    </div>
+                     <button id="donate-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-12 rounded-lg text-lg transition-transform duration-300 hover:scale-105 w-full md:w-auto">Donate Now</button>
+                </div>
+                <div id="donation-message" class="mt-4 text-green-400"></div>
+            </div>
+        </section>
+        
+        <section id="join" class="section bg-transparent">
+    <div class="container mx-auto text-center max-w-3xl">
+        <h2 class="text-3xl md:text-4xl font-bold mb-4 scroll-reveal">Become a Part of Our <span class="accent-color">Story</span>.</h2>
+        <p class="text-gray-400 mb-8 scroll-reveal">Whether you're a student, a mentor, or just an enthusiast with a great idea, we would love to hear from you. The best way to reach our founding team directly is through email.</p>
+        <div class="scroll-reveal">
+            <a href="mailto:devteam.circuitbreakers@gmail.com" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-12 rounded-lg text-lg transition-transform duration-300 hover:scale-105 inline-block">
+                Email Us: devteam.circuitbreakers@gmail.com
+            </a>
+        </div>
+    </div>
+</section>
+    </main>
+
+    <!-- Footer -->
+<footer class="bg-transparent py-8">
+    <div class="container mx-auto text-center text-gray-400">
+        <div class="flex justify-center space-x-6 mb-6">
+            <a href="https://wa.me/918910652873?text=HI!%20I'm%20Interested%20on%20your%20startup%20-%20Circuit%20Breakers" target="_blank" class="hover:text-sky-400 transition-colors duration-300">
+                <span class="sr-only">WhatsApp</span>
+                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 30.667 30.667">
+                    <path d="M30.667,14.939c0,8.25-6.74,14.938-15.056,14.938c-2.639,0-5.118-0.675-7.276-1.857L0,30.667l2.717-8.017 c-1.37-2.25-2.159-4.892-2.159-7.712C0.559,6.688,7.297,0,15.613,0C23.928,0.002,30.667,6.689,30.667,14.939z M15.61,2.382 c-6.979,0-12.656,5.634-12.656,12.56c0,2.748,0.896,5.292,2.411,7.362l-1.58,4.663l4.862-1.545c2,1.312,4.393,2.076,6.963,2.076 c6.979,0,12.658-5.633,12.658-12.559C28.27,8.016,22.59,2.382,15.61,2.382z M23.214,18.38c-0.094-0.151-0.34-0.243-0.708-0.427 c-0.367-0.184-2.184-1.069-2.521-1.189c-0.34-0.123-0.586-0.185-0.832,0.182c-0.243,0.367-0.951,1.191-1.168,1.437 c-0.215,0.245-0.43,0.276-0.799,0.095c-0.369-0.186-1.559-0.57-2.969-1.817c-1.097-0.972-1.838-2.169-2.052-2.536 c-0.217-0.366-0.022-0.564,0.161-0.746c0.165-0.165,0.369-0.428,0.554-0.643c0.185-0.213,0.246-0.364,0.369-0.609 c0.121-0.245,0.06-0.458-0.031-0.643c-0.092-0.184-0.829-1.984-1.138-2.717c-0.307-0.732-0.614-0.611-0.83-0.611 c-0.215,0-0.461-0.03-0.707-0.03S9.897,8.215,9.56,8.582s-1.291,1.252-1.291,3.054c0,1.804,1.321,3.543,1.506,3.787 c0.186,0.243,2.554,4.062,6.305,5.528c3.753,1.465,3.753,0.976,4.429,0.914c0.678-0.062,2.184-0.885,2.49-1.739 C23.307,19.268,23.307,18.533,23.214,18.38z"/>
+                </svg>
+            </a>
+            <a href="https://www.facebook.com/people/Circuit-Breakers/61581766473273/" class="hover:text-sky-400 transition-colors duration-300">
+                <span class="sr-only">Facebook</span>
+                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 512 512">
+                    <path d="M480,257.35c0-123.7-100.3-224-224-224s-224,100.3-224,224c0,111.8,81.9,204.47,189,221.29V322.12H164.11V257.35H221V208c0-56.13,33.45-87.16,84.61-87.16,24.51,0,50.15,4.38,50.15,4.38v55.13H327.5c-27.81,0-36.51,17.26-36.51,35v42h62.12l-9.92,64.77H291V478.66C398.1,461.85,480,369.18,480,257.35Z" fill-rule="evenodd"/>
+                </svg>
+            </a>
+            <a href="https://www.instagram.com/circuitbreakers_official/?igsh=a2c3d3ZrcDJnMXBk#" class="hover:text-sky-400 transition-colors duration-300">
+                 <span class="sr-only">Instagram</span>
+                 <svg class="w-7 h-7" fill="currentColor" viewBox="2.4 2.4 27.2 27.2">
+                    <path d="M20,6h-8c-3.3,0-6,2.7-6,6v8c0,3.3,2.7,6,6,6h8c3.3,0,6-2.7,6-6v-8C26,8.7,23.3,6,20,6z M24.1,20 c0,2.3-1.9,4.1-4.1,4.1h-8c-2.3,0-4.1-1.9-4.1-4.1v-8c0-2.3,1.9-4.1,4.1-4.1h8c2.3,0,4.1,1.9,4.1,4.1V20z"/>
+                    <path d="M16,11.2c-2.7,0-4.9,2.2-4.9,4.9c0,2.7,2.2,4.9,4.9,4.9s4.9-2.2,4.9-4.9C21,13.4,18.8,11.2,16,11.2z M16,19.3 c-1.7,0-3.2-1.4-3.2-3.2c0-1.7,1.4-3.2,3.2-3.2c1.7,0,3.2,1.4,3.2,3.2C19.2,17.9,17.8,19.3,16,19.3z"/>
+                    <path d="M21.3,9.7c-0.6,0-1.2,0.5-1.2,1.2c0,0.7,0.5,1.2,1.2,1.2c0.7,0,1.2-0.5,1.2-1.2C22.4,10.2,21.9,9.7,21.3,9.7z"/>
+                </svg>
+            </a>
+            <a href="https://www.youtube.com/@CircuitBreakers-r6p3f" class="hover:text-sky-400 transition-colors duration-300">
+                <span class="sr-only">YouTube</span>
+                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 260 180">
+                    <path d="M220,2H40C19.01,2,2,19.01,2,40v100c0,20.99,17.01,38,38,38h180c20.99,0,38-17.01,38-38V40C258,19.01,240.99,2,220,2z M102,130V50l68,40L102,130z"/>
+                </svg>
+            </a>
+        </div>
+        <div class="flex justify-center space-x-4 mb-4 text-base">
+            <a href="#" id="privacy-policy-link" class="hover:accent-color transition-colors">Privacy Policy</a>
+            <span>|</span>
+            <a href="#" id="terms-service-link" class="hover:accent-color transition-colors">Terms of Service</a>
+        </div>
+        <p class="text-base">&copy; 2025 Circuit Breakers. All Rights Reserved.</p>
+        <p class="text-sm">Built with ❤️ by students, for the community.</p>
+    </div>
+</footer>
+
+
+    <!-- Modals -->
+    <div id="privacy-policy-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
+            <h2 class="text-2xl font-bold accent-color mb-4">Privacy Policy</h2>
+            <div class="space-y-4 text-gray-300">
+                <p><strong>Last updated: October 05, 2025</strong></p>
+                <p>Circuit Breakers ("us", "we", or "our") operates the circuitbreakers.in website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
+                <h3 class="font-semibold text-lg text-white">Information Collection and Use</h3>
+                <p>We collect several different types of information for various purposes to provide and improve our Service to you. The only personal information we collect is what you voluntarily provide to us through our contact form (such as your name and email address) or when making a donation.</p>
+                <h3 class="font-semibold text-lg text-white">Use of Data</h3>
+                <p>Circuit Breakers uses the collected data for various purposes: to provide and maintain the Service, to notify you about changes to our Service, to allow you to participate in interactive features of our Service when you choose to do so, to provide customer care and support, and to gather analysis or valuable information so that we can improve the Service.</p>
+                 <h3 class="font-semibold text-lg text-white">Security of Data</h3>
+                <p>The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="terms-service-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
+            <h2 class="text-2xl font-bold accent-color mb-4">Terms of Service</h2>
+             <div class="space-y-4 text-gray-300">
+                <p><strong>Last updated: October 05, 2025</strong></p>
+                <p>Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the circuitbreakers.in website (the "Service") operated by Circuit Breakers ("us", "we", or "our").</p>
+                <h3 class="font-semibold text-lg text-white">Agreement to Terms</h3>
+                <p>By accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of the terms then you may not access the Service. The content provided on this website is for informational purposes only. We are a student-led initiative sharing our journey and future plans.</p>
+                <h3 class="font-semibold text-lg text-white">Donations</h3>
+                <p>If you choose to make a donation to support our project, you acknowledge that this is a voluntary contribution. Donations are processed through a third-party payment processor (Razorpay) and are subject to their terms and conditions. Donations are non-refundable.</p>
+                 <h3 class="font-semibold text-lg text-white">Intellectual Property</h3>
+                <p>The Service and its original content, features and functionality are and will remain the exclusive property of Circuit Breakers. Our content is protected by copyright and other laws of India. Our trademarks may not be used in connection with any product or service without the prior written consent of Circuit Breakers.</p>
+            </div>
+        </div>
+    </div>
+
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // --- Particle Background Animation ---
+            const canvas = document.getElementById('particle-canvas');
+            const ctx = canvas.getContext('2d');
+            let particles = [];
+
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+
+            class Particle {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = Math.random() * canvas.height;
+                    this.size = Math.random() * 1.5 + 1;
+                    this.speedX = Math.random() * 1 - 0.5;
+                    this.speedY = Math.random() * 1 - 0.5;
+                    this.color = '#374151'; // gray-700
+                }
+                update() {
+                    if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
+                    if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
+                    this.x += this.speedX;
+                    this.y += this.speedY;
+                }
+                draw() {
+                    ctx.fillStyle = this.color;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            }
+
+            function initParticles() {
+                const particleCount = Math.floor(canvas.width * canvas.height / 20000);
+                particles = [];
+                for (let i = 0; i < particleCount; i++) {
+                    particles.push(new Particle());
+                }
+            }
+            initParticles();
+
+            function connectParticles() {
+                let opacityValue = 1;
+                for (let a = 0; a < particles.length; a++) {
+                    for (let b = a; b < particles.length; b++) {
+                        let distance = Math.sqrt(
+                            (particles[a].x - particles[b].x) * (particles[a].x - particles[b].x) +
+                            (particles[a].y - particles[b].y) * (particles[a].y - particles[b].y)
+                        );
+                        if (distance < 120) {
+                            opacityValue = 1 - (distance / 120);
+                            ctx.strokeStyle = `rgba(55, 65, 81, ${opacityValue})`; // gray-600
+                            ctx.lineWidth = 1;
+                            ctx.beginPath();
+                            ctx.moveTo(particles[a].x, particles[a].y);
+                            ctx.lineTo(particles[b].x, particles[b].y);
+                            ctx.stroke();
+                        }
+                    }
+                }
+            }
+
+            function animate() {
+                ctx.clearRect(0, 0, canvas.width, canvas.height);
+                for (let i = 0; i < particles.length; i++) {
+                    particles[i].update();
+                    particles[i].draw();
+                }
+                connectParticles();
+                requestAnimationFrame(animate);
+            }
+            animate();
+            
+            window.addEventListener('resize', () => {
+                resizeCanvas();
+                initParticles();
+            });
+
+
+            // --- General Website Logic ---
+            const menuBtn = document.getElementById('menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            menuBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+            
+            document.querySelectorAll('#mobile-menu a, .nav-link').forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            const header = document.getElementById('header');
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 50) {
+                    header.classList.add('scrolled');
+                } else {
+                    header.classList.remove('scrolled');
+                }
+            });
+
+            const revealElements = document.querySelectorAll('.scroll-reveal');
+            const observer = new IntersectionObserver((entries) => {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('visible');
+                    }
+                });
+            }, { threshold: 0.1 });
+            revealElements.forEach(el => observer.observe(el));
+            
+            // --- Modal Logic ---
+            const privacyLink = document.getElementById('privacy-policy-link');
+            const termsLink = document.getElementById('terms-service-link');
+            const privacyModal = document.getElementById('privacy-policy-modal');
+            const termsModal = document.getElementById('terms-service-modal');
+
+            function openModal(modal) {
+                modal.classList.add('visible');
+            }
+            function closeModal(modal) {
+                modal.classList.remove('visible');
+            }
+            
+            privacyLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(privacyModal);
+            });
+            termsLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(termsModal);
+            });
+
+            [privacyModal, termsModal].forEach(modal => {
+                modal.addEventListener('click', (e) => {
+                    // Close if the overlay is clicked
+                    if (e.target === modal) {
+                        closeModal(modal);
+                    }
+                    // Close if the close button is clicked
+                    if (e.target.tagName === 'BUTTON') {
+                        closeModal(modal);
+                    }
+                });
+            });
+
+            // --- Donation Logic ---
+            const donationAmountBtns = document.querySelectorAll('.donation-amount-btn');
+            const customAmountInput = document.getElementById('custom-amount');
+            const donateBtn = document.getElementById('donate-btn');
+            const donationMessage = document.getElementById('donation-message');
+            let selectedAmount = 0;
+
+            const style = document.createElement('style');
+            style.innerHTML = `
+                .donation-amount-btn {
+                    background-color: #374151; color: white; font-semibold: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 2px solid transparent; transition: all 0.3s;
+                }
+                .donation-amount-btn.selected, .donation-amount-btn:hover {
+                    background-color: #1F2937; border-color: #38BDF8;
+                }
+            `;
+            document.head.appendChild(style);
+
+            donationAmountBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    donationAmountBtns.forEach(b => b.classList.remove('selected'));
+                    btn.classList.add('selected');
+                    selectedAmount = parseInt(btn.dataset.amount, 10);
+                    customAmountInput.value = '';
+                });
+            });
+
+            customAmountInput.addEventListener('input', () => {
+                donationAmountBtns.forEach(b => b.classList.remove('selected'));
+                selectedAmount = parseInt(customAmountInput.value, 10);
+            });
+
+            donateBtn.addEventListener('click', async () => {
+                const amount = selectedAmount;
+                if (!amount || amount < 10) {
+                    alert('Please select or enter a valid amount (minimum ₹10).');
+                    return;
+                }
+
+                donateBtn.disabled = true;
+                donateBtn.textContent = 'Processing...';
+
+                try {
+                    const response = await fetch('http://127.0.0.1:5000/create_order', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ amount: amount * 100 })
+                    });
+
+                    if (!response.ok) throw new Error('Failed to create order.');
+                    
+                    const order = await response.json();
+
+                    const options = {
+                        key: order.key,
+                        amount: order.amount,
+                        currency: "INR",
+                        name: "Circuit Breakers",
+                        description: "Donation to support student innovation",
+                        image: "https://placehold.co/100x100/38BDF8/FFFFFF?text=CB",
+                        order_id: order.id,
+                        handler: function (response){
+                            donationMessage.textContent = 'Donation recieved! Thank you so much for your generous support!';
+                            console.log(response);
+                        },
+                        prefill: {
+                            name: "Valued Supporter",
+                            email: "supporter@example.com",
+                            contact: "9999999999"
+                        },
+                        notes: {
+                            address: "Donation from Website"
+                        },
+                        theme: {
+                            color: "#38BDF8"
+                        }
+                    };
+                    const rzp1 = new Razorpay(options);
+                    rzp1.on('payment.failed', function (response){
+                        alert("Payment Failed: " + response.error.description);
+                    });
+                    rzp1.open();
+                } catch (error) {
+                    console.error('Donation error:', error);
+                    alert('Could not initiate donation. Please try again later.');
+                } finally {
+                    donateBtn.disabled = false;
+                    donateBtn.textContent = 'Donate Now';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
+

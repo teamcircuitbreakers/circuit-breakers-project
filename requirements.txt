@@ -1,3 +1,4 @@
 Flask
-pytz
+flask_cors
+razorpay
 gunicorn
