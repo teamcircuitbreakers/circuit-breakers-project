@@ -776,10 +776,14 @@ donateBtn.addEventListener('click', async () => {
 
     try {
         const response = await fetch('/create_order', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ amount: amount * 100 })
-        });
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+        amount: amount * 100,
+        name: donorName,          //  Added
+        contact: donorContact     //  Added
+    })
+});
 
         if (!response.ok) throw new Error('Failed to create order.');
         
