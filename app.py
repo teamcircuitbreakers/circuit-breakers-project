@@ -5,7 +5,7 @@ import razorpay
 
 # When serving index.html from the same folder,
 # we tell Flask to look for templates in the current directory ('.')
-app = Flask(_name_, template_folder='.')
+app = Flask(__name__, template_folder='.')
 # Enable CORS to allow the frontend to communicate with this backend
 CORS(app)
 
@@ -76,5 +76,5 @@ def create_order():
         print(f"Error creating order: {e}")
         return jsonify({'error': str(e)}), 500
 
-# The if _name_ == '_main_': block is intentionally removed.
+# The if __name__ == '__main__': block is intentionally removed.
 # Render will use a Gunicorn command to run the app, not this block.
