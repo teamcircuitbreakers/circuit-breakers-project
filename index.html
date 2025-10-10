@@ -197,7 +197,6 @@
     </style>
 </head>
 <body class="antialiased">
-    <!-- SVG Definition for Gradient Fill -->
     <svg width="0" height="0" style="position:absolute">
         <defs>
             <linearGradient id="logoGradient" x1="0%" y1="0%" x2="200%" y2="0%">
@@ -210,10 +209,8 @@
         </defs>
     </svg>
     
-    <!-- Animated background canvas -->
     <canvas id="particle-canvas" class="fixed top-0 left-0 w-full h-full -z-10"></canvas>
 
-    <!-- Header -->
     <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="header">
         <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
             <a href="#" class="flex items-center">
@@ -235,7 +232,6 @@
                 </button>
             </div>
         </nav>
-        <!-- Mobile Menu -->
         <div id="mobile-menu" class="hidden md:hidden bg-gray-900/80 backdrop-blur-sm">
             <a href="#vision" class="block py-2 px-6 text-sm hover:bg-gray-700">Our Vision</a>
             <a href="#roadmap" class="block py-2 px-6 text-sm hover:bg-gray-700">Roadmap</a>
@@ -246,7 +242,6 @@
     </header>
 
     <main>
-        <!-- Section 1: Hero -->
         <section id="hero" class="h-screen flex items-center justify-center text-center relative overflow-hidden">
             <div class="z-10 container mx-auto px-4">
                 <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight scroll-reveal">
@@ -257,12 +252,10 @@
                 </p>
                 <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 scroll-reveal" style="transition-delay: 400ms;">
                     <a href="#vision" class="w-full md:w-auto bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform duration-300 hover:scale-105 inline-block">Explore Our Vision</a>
-                    <!-- <a href="https://discord.com" target="_blank" class="w-full md:w-auto border-2 accent-border text-white font-bold py-3 px-8 rounded-lg text-lg transition-all duration-300 hover:bg-sky-500/20 hover:scale-105 inline-block">Join our Community</a> -->
-                </div>
+                    </div>
             </div>
         </section>
 
-        <!-- Section 2: The Problem -->
         <section id="problem" class="section bg-transparent">
             <div class="container mx-auto text-center">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4 scroll-reveal">Electronics Can Be Hard. <span class="accent-color">We're Changing That.</span></h2>
@@ -287,41 +280,35 @@
             </div>
         </section>
 
-        <!-- Section 3: The Vision -->
         <section id="vision" class="section bg-transparent">
             <div class="container mx-auto text-center">
                 <h2 class="text-3xl md:text-4xl font-bold mb-16 scroll-reveal">Our <span class="accent-color">Complete Ecosystem</span> for Innovation</h2>
                 <div class="flex flex-col items-start md:items-center vision-container">
-                    <!-- Vision Item 1: Dev -->
                     <div class="vision-item flex justify-start">
                         <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
                             <h3 class="text-2xl font-bold accent-color mb-3">Dev Section</h3>
                             <p class="text-gray-300">The innovation hub where our R&D team designs, tests, and develops new smart devices, tools, and solutions. This is where ideas become reality.</p>
                         </div>
                     </div>
-                    <!-- Vision Item 2: Teacher -->
                     <div class="vision-item flex justify-end">
                         <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
                             <h3 class="text-2xl font-bold accent-color mb-3">Teacher Section</h3>
                              <p class="text-gray-300">A dedicated space for experienced mentors specializing in coding, electronics, and IoT to share their expertise through structured lessons and hands-on training.</p>
                         </div>
                     </div>
-                    <!-- Vision Item 3: Student -->
                     <div class="vision-item flex justify-start">
                          <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
                             <h3 class="text-2xl font-bold accent-color mb-3">Student Section</h3>
                              <p class="text-gray-300">Tailored for enthusiasts to dive into IoT and electronics with affordable, structured learning paths, mentorship, and practical project exposure.</p>
                         </div>
                     </div>
-                    <!-- Vision Item 4: Library -->
                     <div class="vision-item flex justify-end">
                         <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
                             <h3 class="text-2xl font-bold accent-color mb-3">Tech Library</h3>
                              <p class="text-gray-300">A unique initiative to make resources accessible. For a minimal fee, access sensors, microcontrollers, books, and tools for hands-on learning.</p>
                         </div>
                     </div>
-                     <!-- Vision Item 5: Store -->
-                    <div class="vision-item flex justify-start">
+                     <div class="vision-item flex justify-start">
                          <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
                             <h3 class="text-2xl font-bold accent-color mb-3">Main Store</h3>
                              <p class="text-gray-300">The commercial arm where our R&D products will be available. We will also feature creations from our community, turning ideas into market-ready solutions.</p>
@@ -331,12 +318,10 @@
             </div>
         </section>
 
-        <!-- Section 4: Roadmap -->
         <section id="roadmap" class="section bg-transparent">
             <div class="container mx-auto">
                 <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 scroll-reveal">Charting Our <span class="accent-color">Course</span></h2>
                 <div class="relative max-w-2xl mx-auto border-l-2 border-gray-700">
-                    <!-- Timeline Item -->
                     <div class="mb-12 ml-8 timeline-item scroll-reveal">
                         <h3 class="text-xl font-semibold text-white">Phase 1: Our Current Focus</h3>
                         <p class="text-gray-400">This is where we are right now: laying the essential groundwork for our community and platform.</p>
@@ -346,8 +331,7 @@
                             <li>Building this foundational website to share our vision with you.</li>
                         </ul>
                     </div>
-                     <!-- Timeline Item -->
-                    <div class="mb-12 ml-8 timeline-item scroll-reveal">
+                     <div class="mb-12 ml-8 timeline-item scroll-reveal">
                         <h3 class="text-xl font-semibold text-white">Phase 2: What's Next</h3>
                         <p class="text-gray-400">Once our community is thriving, we will introduce the first pillars of our ecosystem to provide tangible value.</p>
                          <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
@@ -355,103 +339,83 @@
                             <li>Initiating a pilot program for the Tech Library in our local area.</li>
                         </ul>
                     </div>
-                     <!-- Timeline Item -->
-                    <div class="mb-12 ml-8 timeline-item scroll-reveal">
+                     <div class="mb-12 ml-8 timeline-item scroll-reveal">
                          <h3 class="text-xl font-semibold text-white">Phase 3: Expanding Horizons</h3>
                         <p class="text-gray-400">With the foundation set, our focus will shift to structured learning and mentorship to accelerate growth.</p>
                          <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
-                           <li>Onboarding the first mentors to our Teacher Section.</li>
-                           <li>Launching the Student Section with affordable, project-based courses.</li>
+                            <li>Onboarding the first mentors to our Teacher Section.</li>
+                            <li>Launching the Student Section with affordable, project-based courses.</li>
                         </ul>
                     </div>
-                    <!-- Timeline Item -->
                     <div class="ml-8 timeline-item scroll-reveal">
                         <h3 class="text-xl font-semibold text-white">Phase 4: The Ultimate Vision</h3>
                         <p class="text-gray-400">The final stage is to complete the loop: moving from learning to creating unique, home-grown innovations.</p>
                          <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
-                           <li>Establishing the formal R&D Dev Section for in-house projects.</li>
-                           <li>Launching the first official "Circuit Breakers" branded product.</li>
+                            <li>Establishing the formal R&D Dev Section for in-house projects.</li>
+                            <li>Launching the first official "Circuit Breakers" branded product.</li>
                         </ul>
                     </div>
                 </div>
             </div>
         </section>
 
-        <!-- Section 5: The Team (PHOTO-LESS VERSION) -->
         <section id="team" class="section bg-transparent">
             <div class="container mx-auto text-center">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4 scroll-reveal">Meet Our <span class="accent-color">Founding Team</span></h2>
                 <p class="text-gray-400 mb-12 max-w-3xl mx-auto text-lg leading-relaxed scroll-reveal">
-                    Circuit Breakers is built by a dedicated team of 12 co-founders. We are a collective of friends, classmates, and passionate tinkerers, each bringing a unique skill set to the table. From hardware design and software development to community management and content creation, every member plays a vital role in bringing this vision to life.
+                    Circuit Breakers is built by a dedicated team of 11 co-founders. We are a collective of friends, classmates, and passionate tinkerers, each bringing a unique skill set to the table. From hardware design and software development to community management and content creation, every member plays a vital role in bringing this vision to life.
                 </p>
                 
-                <!-- Team Grid -->
                 <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 text-center scroll-reveal">
-                    <!-- Founder 1 -->
                     <div>
                         <h4 class="text-xl font-semibold text-white">Pushkar Bose</h4>
                         <p class="text-sky-400">Manager - Team Strategist</p>
                     </div>
-                     <!-- Founder 2 -->
-                    <div>
+                     <div>
                         <h4 class="text-xl font-semibold text-white">Subham Chakraborty</h4>
                         <p class="text-sky-400">Manager - Team Strategist</p>
                     </div>
-                     <!-- Founder 3 -->
-                    <div>
+                     <div>
                         <h4 class="text-xl font-semibold text-white">Arijit Dey</h4>
                         <p class="text-sky-400">Manager - Team Strategist</p>
                     </div>
-                     <!-- Founder 4 -->
-                    <div>
+                     <div>
                         <h4 class="text-xl font-semibold text-white">Soumili Dey</h4>
                         <p class="text-sky-400">Project Strategist & Data Analyst<p>
                     </div>
-                     <!-- Founder 5 -->
-                    <div>
+                     <div>
                         <h4 class="text-xl font-semibold text-white">Apurba Hazra</h4>
                         <p class="text-sky-400">Finance Department</p>
                     </div>
-                     <!-- Founder 6 -->
-                    <div>
+                     <div>
                         <h4 class="text-xl font-semibold text-white">Poulami Ghosh</h4>
                         <p class="text-sky-400">Project Strategist & Data Analyst</p>
                     </div>
-                     <!-- Founder 7 -->
-                    <div>
+                     <div>
                         <h4 class="text-xl font-semibold text-white">Arnab Roy</h4>
                         <p class="text-sky-400">Logistics - Procurement Lead</p>
                     </div>
-                     <!-- Founder 8 -->
-                    <div>
+                     <div>
                         <h4 class="text-xl font-semibold text-white">Ayan Bhattacharya</h4>
                         <p class="text-sky-400">Designer & Creative Director</p>
                     </div>
-                     <!-- Founder 9 -->
-                    <div>
+                     <div>
                         <h4 class="text-xl font-semibold text-white">Trisha Guria</h4>
                         <p class="text-sky-400">Social Media Manager & Data Analyst</p>
                     </div>
-                     <!-- Founder 10 -->
-                    <div>
-                        <h4 class="text-xl font-semibold text-white">Prithwijit Sutradhar</h4>
-                        <p class="text-sky-400">Logistics - Procurement Lead</p>
-                    </div>
-                     <!-- Founder 11 -->
-                    <div>
-                        <h4 class="text-xl font-semibold text-white">Barsa Gorai</h4>
-                        <p class="text-sky-400">Finance Department</p>
-                    </div>
-                     <!-- Founder 12 -->
-                    <div>
+                     <div>
                         <h4 class="text-xl font-semibold text-white">Poulami Das</h4>
                         <p class="text-sky-400">Social Media Manager</p>
                     </div>
+                     <div>
+                        <h4 class="text-xl font-semibold text-white">Barsa Gorai</h4>
+                        <p class="text-sky-400">Finance Department</p>
+                    </div>
+                     
                 </div>
             </div>
         </section>
 
-        <!-- Section 6: Donation -->
         <section id="donate" class="section bg-transparent">
             <div class="container mx-auto text-center max-w-3xl">
                 <h2 class="text-3xl md:text-4xl font-bold mb-4 scroll-reveal">Help Us Build the <span class="accent-color">Future</span>.</h2>
@@ -460,13 +424,10 @@
     <h3 class="text-xl font-semibold mb-4">Where does your donation go?</h3>
     <p class="text-gray-300 mb-8">Every rupee is reinvested into building our ecosystem. It helps us purchase components for new YouTube tutorials, cover website hosting costs, and kickstart the development of our Tech Library for students.</p>
     
-    <!-- ADDED INPUT FIELDS -->
     <div class="space-y-4 mb-8 max-w-sm mx-auto">
         <input type="text" id="donor-name" class="bg-gray-700 text-white w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Your Name" required>
         <input type="text" id="donor-contact" class="bg-gray-700 text-white w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Email or Phone Number" required>
     </div>
-    <!-- END OF ADDED FIELDS -->
-
     <div class="flex flex-wrap justify-center gap-4 mb-8">
         <button class="donation-amount-btn" data-amount="100">₹100</button>
         <button class="donation-amount-btn" data-amount="250">₹250</button>
@@ -495,8 +456,7 @@
 </section>
     </main>
 
-    <!-- Footer -->
-<footer class="bg-transparent py-8">
+    <footer class="bg-transparent py-8">
     <div class="container mx-auto text-center text-gray-400">
         <div class="flex justify-center space-x-6 mb-6">
             <a href="https://wa.me/918910652873?text=HI!%20I'm%20Interested%20on%20your%20startup%20-%20Circuit%20Breakers" target="_blank" class="hover:text-sky-400 transition-colors duration-300">
@@ -512,8 +472,8 @@
                 </svg>
             </a>
             <a href="https://www.instagram.com/circuitbreakers_official/?igsh=a2c3d3ZrcDJnMXBk#" class="hover:text-sky-400 transition-colors duration-300">
-                 <span class="sr-only">Instagram</span>
-                 <svg class="w-7 h-7" fill="currentColor" viewBox="2.4 2.4 27.2 27.2">
+                <span class="sr-only">Instagram</span>
+                <svg class="w-7 h-7" fill="currentColor" viewBox="2.4 2.4 27.2 27.2">
                     <path d="M20,6h-8c-3.3,0-6,2.7-6,6v8c0,3.3,2.7,6,6,6h8c3.3,0,6-2.7,6-6v-8C26,8.7,23.3,6,20,6z M24.1,20 c0,2.3-1.9,4.1-4.1,4.1h-8c-2.3,0-4.1-1.9-4.1-4.1v-8c0-2.3,1.9-4.1,4.1-4.1h8c2.3,0,4.1,1.9,4.1,4.1V20z"/>
                     <path d="M16,11.2c-2.7,0-4.9,2.2-4.9,4.9c0,2.7,2.2,4.9,4.9,4.9s4.9-2.2,4.9-4.9C21,13.4,18.8,11.2,16,11.2z M16,19.3 c-1.7,0-3.2-1.4-3.2-3.2c0-1.7,1.4-3.2,3.2-3.2c1.7,0,3.2,1.4,3.2,3.2C19.2,17.9,17.8,19.3,16,19.3z"/>
                     <path d="M21.3,9.7c-0.6,0-1.2,0.5-1.2,1.2c0,0.7,0.5,1.2,1.2,1.2c0.7,0,1.2-0.5,1.2-1.2C22.4,10.2,21.9,9.7,21.3,9.7z"/>
@@ -526,10 +486,18 @@
                 </svg>
             </a>
         </div>
-        <div class="flex justify-center space-x-4 mb-4 text-base">
+        <div class="flex flex-wrap justify-center items-center space-x-2 md:space-x-4 mb-4 text-base px-4">
+            <a href="#" id="about-us-link" class="hover:accent-color transition-colors">About Us</a>
+            <span class="hidden md:inline">|</span>
+            <a href="#" id="contact-us-link" class="hover:accent-color transition-colors">Contact Us</a>
+            <span class="hidden md:inline">|</span>
             <a href="#" id="privacy-policy-link" class="hover:accent-color transition-colors">Privacy Policy</a>
-            <span>|</span>
+            <span class="hidden md:inline">|</span>
             <a href="#" id="terms-service-link" class="hover:accent-color transition-colors">Terms of Service</a>
+            <span class="hidden md:inline">|</span>
+            <a href="#" id="shipping-policy-link" class="hover:accent-color transition-colors">Shipping Policy</a>
+            <span class="hidden md:inline">|</span>
+            <a href="#" id="refund-policy-link" class="hover:accent-color transition-colors">Refund Policy</a>
         </div>
         <p class="text-base">&copy; 2025 Circuit Breakers. All Rights Reserved.</p>
         <p class="text-sm">Built with ❤️ by students, for the community.</p>
@@ -537,7 +505,6 @@
 </footer>
 
 
-    <!-- Modals -->
     <div id="privacy-policy-modal" class="modal-overlay">
         <div class="modal-content">
             <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
@@ -568,6 +535,76 @@
                 <p>If you choose to make a donation to support our project, you acknowledge that this is a voluntary contribution. Donations are processed through a third-party payment processor (Razorpay) and are subject to their terms and conditions. Donations are non-refundable.</p>
                  <h3 class="font-semibold text-lg text-white">Intellectual Property</h3>
                 <p>The Service and its original content, features and functionality are and will remain the exclusive property of Circuit Breakers. Our content is protected by copyright and other laws of India. Our trademarks may not be used in connection with any product or service without the prior written consent of Circuit Breakers.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="about-us-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
+            <h2 class="text-2xl font-bold accent-color mb-4">About Us</h2>
+            <div class="space-y-4 text-gray-300">
+                <p>Circuit Breakers is a student-led initiative born from a passion for electronics and a desire to empower India's next generation of innovators. We are a dedicated team of 12 co-founders—friends, classmates, and tinkerers—united by a single mission: to make learning and building smart devices simple, accessible, and affordable for everyone.</p>
+                <p>We recognized the key barriers facing aspiring creators: scattered knowledge, expensive tools, and the gap between a great idea and a market-ready product. To solve this, we are building a complete ecosystem that includes:</p>
+                <ul class="list-disc list-inside space-y-2 pl-4">
+                    <li>Structured, practical learning paths from beginner to expert.</li>
+                    <li>A Tech Library to provide affordable access to sensors, components, and tools.</li>
+                    <li>A Main Store to feature our own R&D products and community creations.</li>
+                    <li>A community of mentors and peers to guide and support creators on their journey.</li>
+                </ul>
+                <p>We are building the platform we wished we had when we started. Join us as we break down barriers and build the future of electronics in India, together.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="contact-us-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
+            <h2 class="text-2xl font-bold accent-color mb-4">Contact Us</h2>
+            <div class="space-y-4 text-gray-300">
+                <p>We'd love to hear from you! Whether you're a student, a potential mentor, or just an enthusiast with a question, feel free to reach out. Our founding team is always available to connect.</p>
+                <div>
+                    <h3 class="font-semibold text-lg text-white">General Inquiries & Support:</h3>
+                    <p>For any questions about our mission, content, or how to get involved.</p>
+                    <p><strong>Email:</strong> <a href="mailto:devteam.circuitbreakers@gmail.com" class="accent-color hover:underline">devteam.circuitbreakers@gmail.com</a></p>
+                </div>
+                <div>
+                    <h3 class="font-semibold text-lg text-white">Direct Contact:</h3>
+                    <p>For urgent matters or direct collaboration inquiries.</p>
+                    <p><strong>Phone:</strong> <a href="tel:+918910652873" class="accent-color hover:underline">+91 8910652873</a></p>
+                </div>
+                <p>As a student-run team, email is our preferred method of communication, but we will do our best to respond to all inquiries in a timely manner.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="shipping-policy-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
+            <h2 class="text-2xl font-bold accent-color mb-4">Shipping & Delivery Policy</h2>
+            <div class="space-y-4 text-gray-300">
+                <p><strong>Last updated: October 10, 2025</strong></p>
+                <p>Circuit Breakers is primarily a digital-first educational and community platform. Our current offerings, such as online tutorials and community engagement, are delivered digitally and do not require physical shipping.</p>
+                <h3 class="font-semibold text-lg text-white">Physical Goods</h3>
+                <p>At present, we do not sell or ship any physical products. Therefore, shipping charges and delivery timelines are not applicable to any of our current services or donations.</p>
+                <h3 class="font-semibold text-lg text-white">Future Updates</h3>
+                <p>Our roadmap includes launching a "Main Store" and "Tech Library" which will feature physical components and kits. When these services become available, this policy will be updated with comprehensive details regarding our shipping partners, delivery timelines, costs, and tracking information. All shipping details for specific products will be clearly stated on the product page at the time of purchase.</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="refund-policy-modal" class="modal-overlay">
+        <div class="modal-content">
+            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
+            <h2 class="text-2xl font-bold accent-color mb-4">Refund & Cancellation Policy</h2>
+            <div class="space-y-4 text-gray-300">
+                <p><strong>Last updated: October 10, 2025</strong></p>
+                <p>Thank you for supporting Circuit Breakers. As a bootstrapped, student-run initiative, your contributions are vital to our mission. Please read our policy on refunds and cancellations carefully.</p>
+                <h3 class="font-semibold text-lg text-white">Donations</h3>
+                <p>All contributions made through our "Support Us" section are considered voluntary donations to help us cover operational costs, purchase components for tutorials, and build our ecosystem. As such, these donations are non-refundable and cannot be cancelled once they are processed. We are incredibly grateful for your support, which directly fuels our mission to empower student innovators.</p>
+                <h3 class="font-semibold text-lg text-white">Future Products & Courses</h3>
+                <p>When we launch our "Main Store" with physical products or our "Student Section" with paid courses, those items will be subject to their own specific refund, return, and cancellation policies. The policy for each product or service will be clearly stated on its respective page at the time of purchase. We are committed to ensuring fairness and transparency in all future transactions.</p>
+                <p>If you have any questions about this policy, please contact us at <a href="mailto:devteam.circuitbreakers@gmail.com" class="accent-color hover:underline">devteam.circuitbreakers@gmail.com</a> before making a contribution.</p>
             </div>
         </div>
     </div>
@@ -691,8 +728,17 @@
             // --- Modal Logic ---
             const privacyLink = document.getElementById('privacy-policy-link');
             const termsLink = document.getElementById('terms-service-link');
+            const aboutLink = document.getElementById('about-us-link');
+            const contactLink = document.getElementById('contact-us-link');
+            const shippingLink = document.getElementById('shipping-policy-link');
+            const refundLink = document.getElementById('refund-policy-link');
+
             const privacyModal = document.getElementById('privacy-policy-modal');
             const termsModal = document.getElementById('terms-service-modal');
+            const aboutModal = document.getElementById('about-us-modal');
+            const contactModal = document.getElementById('contact-us-modal');
+            const shippingModal = document.getElementById('shipping-policy-modal');
+            const refundModal = document.getElementById('refund-policy-modal');
 
             function openModal(modal) {
                 modal.classList.add('visible');
@@ -710,7 +756,24 @@
                 openModal(termsModal);
             });
 
-            [privacyModal, termsModal].forEach(modal => {
+            aboutLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(aboutModal);
+            });
+            contactLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(contactModal);
+            });
+            shippingLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(shippingModal);
+            });
+            refundLink.addEventListener('click', (e) => {
+                e.preventDefault();
+                openModal(refundModal);
+            });
+
+            [privacyModal, termsModal, aboutModal, contactModal, shippingModal, refundModal].forEach(modal => {
                 modal.addEventListener('click', (e) => {
                     // Close if the overlay is clicked
                     if (e.target === modal) {
@@ -780,8 +843,8 @@ donateBtn.addEventListener('click', async () => {
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify({
         amount: amount * 100,
-        name: donorName,          //  Added
-        contact: donorContact     //  Added
+        name: donorName,         //  Added
+        contact: donorContact    //  Added
     })
 });
 
@@ -831,4 +894,3 @@ donateBtn.addEventListener('click', async () => {
     </script>
 </body>
 </html>
-
