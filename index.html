@@ -3,893 +3,911 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Circuit Breakers - Simplifying Electronics for India's Next Innovators</title>
+    <title>Circuit Breakers - India's Innovation Ecosystem</title>
+    
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://checkout.razorpay.com/v1/checkout.js"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
     <style>
+        :root {
+            /* Updated color palette for a warmer, creamy tone */
+            --cream-100: #F5EBD0; /* Main background, soft warm white */
+            --cream-200: #F3ECDF; /* Slightly richer cream for accents/cards */
+            --brand-orange: #F97316; /* Tailwind orange-500 */
+            --brand-orange-dark: #EA580C; /* Tailwind orange-600 */
+            --text-dark: #1F2937; /* Tailwind gray-800 */
+            --text-light: #4B5563; /* Tailwind gray-600 */
+        }
+        
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #111827; /* Dark Blue-Gray */
-            color: #E5E7EB; /* Light Gray */
+            background-color: var(--cream-100);
+            color: var(--text-dark);
+            line-height: 1.7; /* Enhanced readability */
         }
-        .accent-color { color: #38BDF8; } /* Electric Blue */
-        .accent-bg { background-color: #38BDF8; }
-        .accent-border { border-color: #38BDF8; }
-        .section {
-            padding: 8rem 1rem;
-            border-bottom: 1px solid #1F2937;
+        
+        h1, h2, h3, h4, h5, h6 {
+            line-height: 1.2;
         }
-        @media (min-width: 768px) {
-            .section { padding: 8rem 2rem; }
+
+        /* Custom button style */
+        .btn-primary {
+            background-color: var(--brand-orange);
+            color: white;
+            transition: background-color 0.3s ease;
         }
-        .glassmorphism {
-            background: rgba(31, 41, 55, 0.4);
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border: 1px solid rgba(255, 255, 255, 0.1);
+        .btn-primary:hover {
+            background-color: var(--brand-orange-dark);
         }
-        /* -- HEADER SCROLL EFFECT -- */
-        #header.scrolled {
-            background: rgba(17, 24, 39, 0.6); /* bg-gray-900 with opacity */
-            backdrop-filter: blur(10px);
-            -webkit-backdrop-filter: blur(10px);
-            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        
+        .btn-secondary {background-color: var(--brand-orange);
+            color: white;
+            transition: background-color 0.3s ease;
         }
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            top: 12px;
-            left: -21px;
-            width: 12px;
-            height: 12px;
-            border-radius: 50%;
-            background-color: #38BDF8;
-            border: 2px solid #111827;
+        .btn-secondary:hover {
+            
+            background-color: var(--brand-orange-dark);
+
         }
-        .glow {
-            box-shadow: 0 0 5px #38BDF8, 0 0 10px #38BDF8, 0 0 15px #38BDF8;
+
+        /* Special high-contrast button for hero slider */
+        .btn-secondary-hero {
+            background-color: transparent;
+            color: white;
+            border: 2px solid white;
+            transition: all 0.3s ease;
         }
-        .scroll-reveal {
+        .btn-secondary-hero:hover {
+            background-color: white;
+            color: var(--brand-orange);
+        }
+
+        /* Fade-in animation for sections */
+        .fade-in-section {
             opacity: 0;
-            transform: translateY(30px);
+            transform: translateY(20px);
             transition: opacity 0.8s ease-out, transform 0.8s ease-out;
         }
-        .scroll-reveal.visible {
+        
+        .fade-in-section.is-visible {
             opacity: 1;
             transform: translateY(0);
         }
-        /* -- NAVIGATION & HEADER STYLES -- */
-        .nav-link { 
-            position: relative; 
-            padding-bottom: 4px;
-        }
-        .nav-link::after {
-            content: '';
-            position: absolute;
-            width: 100%;
-            transform: scaleX(0);
-            height: 2px;
-            bottom: 0;
-            left: 0;
-            background-color: #38BDF8;
-            transform-origin: bottom right;
-            transition: transform 0.3s ease-out;
-        }
-        .nav-link:hover::after {
-            transform: scaleX(1);
-            transform-origin: bottom left;
-        }
-
-        .animated-gradient-text {
-            background: linear-gradient(90deg, #38BDF8, #A78BFA, #F472B6, #38BDF8);
-            background-size: 200% auto;
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-            animation: gradient-animation 4s linear infinite;
-        }
         
-        .animated-gradient-fill {
-            fill: url(#logoGradient);
-            animation: gradient-animation 4s linear infinite;
+        /* Custom styles for the vertical timeline */
+        .timeline-item {
+            position: relative;
+            padding-bottom: 2.5rem; /* 40px */
+            padding-left: 2.5rem; /* 40px */
+            border-left: 2px solid var(--cream-200);
+        }
+        .timeline-item:last-child {
+            border-left: 2px solid transparent;
+            padding-bottom: 0;
+        }
+        .timeline-dot {
+            position: absolute;
+            left: -0.5rem; /* -8px */
+            top: 0.25rem; /* 4px */
+            height: 1rem; /* 16px */
+            width: 1rem; /* 16px */
+            border-radius: 9999px;
+            background-color: var(--brand-orange);
+            border: 2px solid var(--cream-100);
         }
 
-        @keyframes gradient-animation {
-            to {
-                background-position: 200% center;
-            }
-        }
-        /* -- VISION SECTION ZIGZAG STYLES (MOBILE FIRST) -- */
-        .vision-container {
+        /* Hero Slider specific styles */
+        .hero-slider-container {
             position: relative;
-            padding-left: 2rem; /* space for the timeline */
+            overflow: hidden;
+            width: 100%;
+            height: 100vh; /* Full viewport height */
         }
-        .vision-container::before {
-            content: '';
-            position: absolute;
-            top: 0;
-            left: 19px; /* position line on the left for mobile, centered with dot */
-            width: 2px;
+        .hero-slider-wrapper {
+            display: flex;
+            transition: transform 0.8s ease-in-out;
             height: 100%;
-            background-color: #374151; /* gray-700 */
         }
-        .vision-item {
-            position: relative;
+        .hero-slide {
+            flex: 0 0 100%; /* Each slide takes full width */
             width: 100%;
-            margin-bottom: 3rem;
-        }
-        .vision-item::after {
-            content: '';
-            position: absolute;
-            top: 2rem;
-            left: -22px; /* align dot with the line */
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background-color: #111827;
-            border: 4px solid #38BDF8;
-        }
-        
-        /* DESKTOP ZIGZAG OVERRIDES */
-        @media (min-width: 768px) {
-            .vision-container {
-                padding-left: 0; /* reset padding */
-            }
-            .vision-container::before {
-                left: 50%; /* center line on desktop */
-                transform: translateX(-50%);
-            }
-            .vision-item {
-                width: 50%;
-            }
-            .vision-item:nth-child(odd) {
-                padding-right: 2rem;
-                align-self: flex-start;
-            }
-            .vision-item:nth-child(odd)::after {
-                left: auto; /* reset mobile position */
-                right: -10px;
-            }
-            .vision-item:nth-child(even) {
-                padding-left: 2rem;
-                align-self: flex-end;
-            }
-            .vision-item:nth-child(even)::after {
-                left: -10px; /* reset mobile position */
-            }
-        }
-        /* -- MODAL STYLES -- */
-        .modal-overlay {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(0, 0, 0, 0.7);
-            z-index: 100;
+            height: 100%; /* Full height of container */
+            
+            /* --- MODIFICATION (Hero) --- */
+            background-size: cover; /* Set to 'contain' per user request */
+            background-repeat: no-repeat; /* Added to prevent tiling */
+            
+            background-position: center;
             display: flex;
             align-items: center;
             justify-content: center;
+            text-align: center;
+            position: relative;
+            color: white;
+        }
+        .hero-slide::before {
+            content: "";
+            position: absolute;
+            inset: 0;
+            /* Darker gradient for better text contrast */
+            background: linear-gradient(to top, rgba(0,0,0,0.7) 0%, rgba(0,0,0,0.4) 50%, rgba(0,0,0,0.1) 100%);
+            z-index: 1;
+        }
+        .hero-slide-content {
+            position: relative;
+            z-index: 2;
+            max-width: 4xl;
+            padding: 0 1rem;
+        }
+        .slider-dots {
+            position: absolute;
+            bottom: 30px; /* Raised a bit */
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 10px; /* Increased gap */
+            z-index: 10;
+        }
+        .slider-dot {
+            width: 12px; /* Bigger dots */
+            height: 12px;
+            border-radius: 50%;
+            background-color: rgba(255, 255, 255, 0.4);
+            border: 1px solid rgba(255, 255, 255, 0.5);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        .slider-dot.active {
+            background-color: white;
+            transform: scale(1.1);
+        }
+
+        /* --- START: Added Styles for Header/Footer Fixes --- */
+
+        /* For the new SVG logo */
+        .animated-gradient-fill {
+            fill: url(#logo-gradient);
+        }
+
+        /* For the "Circuit Breakers" text */
+        .animated-gradient-text {
+            /* A gradient that matches the brand colors */
+            background: linear-gradient(90deg, var(--brand-orange-dark), var(--brand-orange), #FBBF24, var(--brand-orange), var(--brand-orange-dark)); /* Using Tailwind yellow-400 for a bright spot */
+            background-size: 200% auto;
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            animation: gradient-flow 5s linear infinite;
+        }
+
+        @keyframes gradient-flow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+
+        /* Modal (Popup) styles */
+        .modal-overlay {
+            position: fixed;
+            inset: 0;
+            background-color: rgba(0, 0, 0, 0.5);
+            z-index: 100; /* Higher than header */
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 1rem;
             opacity: 0;
             visibility: hidden;
             transition: opacity 0.3s ease, visibility 0.3s ease;
         }
-        .modal-overlay.visible {
+        .modal-overlay.is-open {
             opacity: 1;
             visibility: visible;
         }
         .modal-content {
-            background-color: #1F2937;
-            padding: 2rem;
-            border-radius: 0.75rem;
-            max-width: 90%;
-            width: 600px;
+            background-color: var(--cream-100); /* Match site theme */
+            color: var(--text-dark);
+            border-radius: 0.5rem; /* 8px */
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            width: 100%;
+            max-width: 42rem; /* max-w-2xl */
             max-height: 80vh;
+            display: flex;
+            flex-direction: column;
+        }
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 1rem 1.5rem;
+            border-bottom: 1px solid var(--cream-200);
+        }
+        .modal-body {
+            padding: 1.5rem;
             overflow-y: auto;
-            position: relative;
-            transform: scale(0.95);
-            transition: transform 0.3s ease;
+            line-height: 1.7;
         }
-        .modal-overlay.visible .modal-content {
-            transform: scale(1);
+        .modal-body h4 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            margin-top: 1rem;
+            margin-bottom: 0.5rem;
         }
+        .modal-body p {
+            margin-bottom: 1rem;
+        }
+        .modal-close-btn {
+            font-size: 1.875rem; /* 30px */
+            line-height: 1;
+            font-weight: bold;
+            color: #6B7280; /* gray-500 */
+            transition: color 0.2s ease;
+            background: none;
+            border: none;
+            cursor: pointer;
+        }
+        .modal-close-btn:hover {
+            color: #1F2937; /* gray-800 */
+        }
+        /* --- END: Added Styles for Header/Footer Fixes --- */
+
     </style>
 </head>
 <body class="antialiased">
+
     <svg width="0" height="0" style="position:absolute">
         <defs>
-            <linearGradient id="logoGradient" x1="0%" y1="0%" x2="200%" y2="0%">
-                <stop offset="0%" style="stop-color:#38BDF8;" />
-                <stop offset="25%" style="stop-color:#A78BFA;" />
-                <stop offset="50%" style="stop-color:#F472B6;" />
-                <stop offset="75%" style="stop-color:#A78BFA;" />
-                <stop offset="100%" style="stop-color:#38BDF8;" />
+            <linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                <stop offset="0%" style="stop-color:var(--brand-orange-dark);" />
+                <stop offset="100%" style="stop-color:var(--brand-orange);" />
             </linearGradient>
         </defs>
     </svg>
-    
-    <canvas id="particle-canvas" class="fixed top-0 left-0 w-full h-full -z-10"></canvas>
 
-    <header class="fixed top-0 left-0 right-0 z-50 transition-all duration-300" id="header">
-        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
-            <a href="#" class="flex items-center">
-                <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="270.4 256.8 291.2 358.4" class="w-8 h-8 mr-3 animated-gradient-fill">
-                <path d="M306.059814,335.034607 C340.353760,315.260315 374.340057,295.687073 408.313049,276.090851 C412.636780,273.596863 416.859650,270.927856 421.186188,268.438965 C425.866150,265.746735 428.265289,266.937836 428.288788,272.146729 C428.375854,291.464661 428.210022,310.783417 428.912750,330.096313 C429.034119,333.432617 427.610870,335.869385 424.385315,337.724762 C399.432892,352.078033 374.615967,366.666687 349.701447,381.086395 C347.070740,382.608978 345.965607,384.451599 345.972656,387.482178 C346.036896,414.977661 346.036987,442.473541 345.938568,469.968842 C345.926392,473.373535 347.152557,475.611877 350.058136,477.275513 C374.532990,491.288818 398.987610,505.337524 423.421661,519.421814 C426.164276,521.002747 428.548523,520.958557 431.342285,519.328552 C455.584045,505.184448 479.872253,491.119507 504.201660,477.126648 C507.383118,475.296906 509.096680,473.226654 508.949310,469.257385 C508.643280,461.013092 508.856873,452.749512 508.856873,443.826691 C499.369781,447.960236 491.769745,453.638245 483.572052,458.230743 C466.598724,467.739594 449.816803,477.589722 432.936340,487.264893 C428.150787,490.007782 426.040619,489.025391 426.002411,483.564087 C425.863586,463.735352 425.958496,443.904907 425.973846,424.075134 C425.976898,420.138306 428.738007,418.245880 431.682007,416.535614 C452.236481,404.594788 472.803497,392.675537 493.342834,380.708832 C494.718506,379.907349 496.609711,379.220276 496.427063,377.191711 C496.270599,375.454651 494.492676,375.145996 493.212494,374.400879 C482.003693,367.877228 470.785492,361.368073 459.658539,354.706787 C456.830261,353.013641 455.081024,350.299316 455.100891,346.844116 C455.210968,327.688416 455.296936,308.531921 455.564240,289.378174 C455.631409,284.563141 458.840637,283.166992 463.082458,285.600067 C484.266052,297.750763 505.494751,309.822876 526.664673,321.997253 C539.894043,329.605194 553.062744,337.319214 566.222229,345.047607 C568.970459,346.661591 570.359436,349.035370 570.402100,352.452728 C570.606079,368.776703 569.821411,385.109467 570.821472,401.425842 C571.114380,406.204590 568.526367,409.094757 564.569824,411.285950 C555.422668,416.351685 546.335815,421.527618 537.275391,426.747131 C536.047668,427.454346 534.524658,428.019470 533.824341,430.125000 C538.696106,434.726105 545.083862,437.252625 550.804810,440.760834 C556.182251,444.058472 561.728455,447.080200 567.184082,450.251282 C569.392090,451.534637 570.386536,453.489929 570.383179,456.060669 C570.361267,472.890930 570.328125,489.721558 570.415833,506.551453 C570.434937,510.220337 568.047302,511.875549 565.431641,513.384338 C538.664917,528.823792 511.855835,544.189880 485.099823,559.647888 C467.979248,569.539124 450.848572,579.417847 433.895874,589.591187 C429.070770,592.486755 425.054169,592.069641 420.454712,589.394592 C395.044800,574.615906 369.531464,560.015076 344.098389,545.276062 C325.715790,534.622864 307.411865,523.833923 289.051270,513.142639 C285.563995,511.112030 283.905396,508.304474 283.909576,504.171753 C283.960144,453.845520 283.950775,403.519196 283.874298,353.192993 C283.867889,348.988373 285.620667,346.431183 289.289307,344.528809 C294.879791,341.629761 300.271759,338.347870 306.059814,335.034607 z"/>
-                </svg>
-                <span class="text-2xl font-bold tracking-wider animated-gradient-text">Circuit Breakers</span>
-            </a>
-            <div class="hidden md:flex space-x-8 items-center">
-                <a href="#vision" class="nav-link hover:accent-color transition-colors duration-300">Our Vision</a>
-                <a href="#roadmap" class="nav-link hover:accent-color transition-colors duration-300">Roadmap</a>
-                <a href="#team" class="nav-link hover:accent-color transition-colors duration-300">Team</a>
-                <a href="#donate" class="nav-link hover:accent-color transition-colors duration-300">Support Us</a>
-                <a href="#join" class="bg-sky-500 hover:bg-sky-600 text-white font-semibold px-4 py-2 rounded-lg transition-transform duration-300 hover:scale-105">Join Us</a>
+    <header class="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-lg shadow-sm" style="background-color: rgba(250, 248, 241, 0.8);">
+        <nav class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-16 items-center justify-between">
+                
+                <a href="#" class="flex flex-shrink-0 items-center">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="277.33 265.33 277.33 341.33" class="w-8 h-8 mr-3 animated-gradient-fill">
+                        <path d="M306.059814,335.034607 C340.353760,315.260315 374.340057,295.687073 408.313049,276.090851 C412.636780,273.596863 416.859650,270.927856 421.186188,268.438965 C425.866150,265.746735 428.265289,266.937836 428.288788,272.146729 C428.375854,291.464661 428.210022,310.783417 428.912750,330.096313 C429.034119,333.432617 427.610870,335.869385 424.385315,337.724762 C399.432892,352.078033 374.615967,366.666687 349.701447,381.086395 C347.070740,382.608978 345.965607,384.451599 345.972656,387.482178 C346.036896,414.977661 346.036987,442.473541 345.938568,469.968842 C345.926392,473.373535 347.152557,475.611877 350.058136,477.275513 C374.532990,491.288818 398.987610,505.337524 423.421661,519.421814 C426.164276,521.002747 428.548523,520.958557 431.342285,519.328552 C455.584045,505.184448 479.872253,491.119507 504.201660,477.126648 C507.383118,475.296906 509.096680,473.226654 508.949310,469.257385 C508.643280,461.013092 508.856873,452.749512 508.856873,443.826691 C499.369781,447.960236 491.769745,453.638245 483.572052,458.230743 C466.598724,467.739594 449.816803,477.589722 432.936340,487.264893 C428.150787,490.007782 426.040619,489.025391 426.002411,483.564087 C425.863586,463.735352 425.958496,443.904907 425.973846,424.075134 C425.976898,420.138306 428.738007,418.245880 431.682007,416.535614 C452.236481,404.594788 472.803497,392.675537 493.342834,380.708832 C494.718506,379.907349 496.609711,379.220276 496.427063,377.191711 C496.270599,375.454651 494.492676,375.145996 493.212494,374.400879 C482.003693,367.877228 470.785492,361.368073 459.658539,354.706787 C456.830261,353.013641 455.081024,350.299316 455.100891,346.844116 C455.210968,327.688416 455.296936,308.531921 455.564240,289.378174 C455.631409,284.563141 458.840637,283.166992 463.082458,285.600067 C484.266052,297.750763 505.494751,309.822876 526.664673,321.997253 C539.894043,329.605194 553.062744,337.319214 566.222229,345.047607 C568.970459,346.661591 570.359436,349.035370 570.402100,352.452728 C570.606079,368.776703 569.821411,385.109467 570.821472,401.425842 C571.114380,406.204590 568.526367,409.094757 564.569824,411.285950 C555.422668,416.351685 546.335815,421.527618 537.275391,426.747131 C536.047668,427.454346 534.524658,428.019470 533.824341,430.125000 C538.696106,434.726105 545.083862,437.252625 550.804810,440.760834 C556.182251,444.058472 561.728455,447.080200 567.184082,450.251282 C569.392090,451.534637 570.386536,453.489929 570.383179,456.060669 C570.361267,472.890930 570.328125,489.721558 570.415833,506.551453 C570.434937,510.220337 568.047302,511.875549 565.431641,513.384338 C538.664917,528.823792 511.855835,544.189880 485.099823,559.647888 C467.979248,569.539124 450.848572,579.417847 433.895874,589.591187 C429.070770,592.486755 425.054169,592.069641 420.454712,589.394592 C395.044800,574.615906 369.531464,560.015076 344.098389,545.276062 C325.715790,534.622864 307.411865,523.833923 289.051270,513.142639 C285.563995,511.112030 283.905396,508.304474 283.909576,504.171753 C283.960144,453.845520 283.950775,403.519196 283.874298,353.192993 C283.867889,348.988373 285.620667,346.431183 289.289307,344.528809 C294.879791,341.629761 300.271759,338.347870 306.059814,335.034607 z"/>
+                    </svg>
+                    <div class="flex flex-col -mt-1">
+                        <span class="text-2xl font-bold animated-gradient-text">Circuit Breakers</span>
+                        <span class="text-xs font-medium text-gray-500" style="margin-top: -4px;">Rewriting the future</span>
+                    </div>
+                </a>
+                <div class="hidden lg:ml-6 lg:flex lg:space-x-8">
+                    <a href="#problem" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium text-gray-600 hover:border-orange-500 hover:text-gray-900 transition-colors duration-200">The Problem</a>
+                    <a href="#solution" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium text-gray-600 hover:border-orange-500 hover:text-gray-900 transition-colors duration-200">Our Solution</a>
+                    <a href="#roadmap" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium text-gray-600 hover:border-orange-500 hover:text-gray-900 transition-colors duration-200">Roadmap</a>
+                    <a href="#vision" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium text-gray-600 hover:border-orange-500 hover:text-gray-900 transition-colors duration-200">Vision</a>
+                </div>
+                
+                <div class="hidden lg:ml-6 lg:flex lg:items-center">
+                    <a href="#footer" class="btn-primary rounded-md px-5 py-2.5 text-base font-medium shadow-md">
+                        Join the Community
+                    </a>
+                </div>
+                
+                <div class="flex items-center lg:hidden">
+                    <button id="mobile-menu-button" type="button" class="inline-flex items-center justify-center rounded-md p-2 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-orange-500" aria-controls="mobile-menu" aria-expanded="false">
+                        <span class="sr-only">Open main menu</span>
+                        <svg class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 6.75h16.5M3.75 12h16.5m-16.5 5.25h16.5" />
+                        </svg>
+                        <svg class="hidden h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" aria-hidden="true">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
             </div>
-            <div class="md:hidden">
-                <button id="menu-btn" class="text-white focus:outline-none">
-                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7"></path></svg>
-                </button>
+
+            <div class="hidden lg:hidden" id="mobile-menu">
+                <div class="space-y-1 pb-3 pt-2">
+                    <a href="#problem" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-orange-500 hover:bg-orange-50 hover:text-gray-800">The Problem</a>
+                    <a href="#solution" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-orange-500 hover:bg-orange-50 hover:text-gray-800">Our Solution</a>
+                    <a href="#roadmap" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-orange-500 hover:bg-orange-50 hover:text-gray-800">Roadmap</a>
+                    <a href="#vision" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-orange-500 hover:bg-orange-50 hover:text-gray-800">Vision</a>
+                </div>
+                <div class="border-t border-gray-200 pb-3 pt-4">
+                    <a href="#footer" class="btn-primary w-full rounded-md px-4 py-2 text-center text-base font-medium shadow-sm">
+                        Join the Community
+                    </a>
+                </div>
             </div>
         </nav>
-        <div id="mobile-menu" class="hidden md:hidden bg-gray-900/80 backdrop-blur-sm">
-            <a href="#vision" class="block py-2 px-6 text-sm hover:bg-gray-700">Our Vision</a>
-            <a href="#roadmap" class="block py-2 px-6 text-sm hover:bg-gray-700">Roadmap</a>
-            <a href="#team" class="block py-2 px-6 text-sm hover:bg-gray-700">Team</a>
-            <a href="#donate" class="block py-2 px-6 text-sm hover:bg-gray-700">Support Us</a>
-            <a href="#join" class="block py-2 px-6 text-sm hover:bg-gray-700">Join Us</a>
-        </div>
     </header>
 
     <main>
-        <section id="hero" class="h-screen flex items-center justify-center text-center relative overflow-hidden">
-            <div class="z-10 container mx-auto px-4">
-                <h1 class="text-4xl md:text-6xl font-extrabold mb-4 leading-tight scroll-reveal">
-                    Simplifying Electronics for India's <span class="accent-color">Next Innovators.</span>
-                </h1>
-                <p class="text-lg md:text-xl text-gray-300 max-w-3xl mx-auto mb-8 scroll-reveal" style="transition-delay: 200ms;">
-                    We are Circuit Breakers, a student-led initiative building a complete ecosystem for learning, building, and launching smart devices.
-                </p>
-                <div class="flex flex-col md:flex-row items-center justify-center space-y-4 md:space-y-0 md:space-x-4 scroll-reveal" style="transition-delay: 400ms;">
-                    <a href="#vision" class="w-full md:w-auto bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-8 rounded-lg text-lg transition-transform duration-300 hover:scale-105 inline-block">Explore Our Vision</a>
-                    </div>
-            </div>
-        </section>
-
-        <section id="problem" class="section bg-transparent">
-            <div class="container mx-auto text-center">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 scroll-reveal">Electronics Can Be Hard. <span class="accent-color">We're Changing That.</span></h2>
-                <p class="text-gray-400 mb-12 max-w-2xl mx-auto scroll-reveal">We identified three key barriers for aspiring creators in India, and we're building a solution for each one.</p>
-                <div class="grid md:grid-cols-3 gap-8">
-                    <div class="p-8 rounded-xl glassmorphism scroll-reveal">
-                        <svg class="w-12 h-12 accent-color mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2a4 4 0 00-4-4H3V9h2a4 4 0 004-4V3l7 4-7 4zM19 17v-2a4 4 0 00-4-4h-2V9h2a4 4 0 004-4V3l-7 4 7 4z"/></svg>
-                        <h3 class="text-xl font-semibold mb-2">Scattered Knowledge</h3>
-                        <p class="text-gray-400">Finding structured, practical learning paths for IoT is a challenge. We're creating a clear roadmap from beginner to expert.</p>
-                    </div>
-                    <div class="p-8 rounded-xl glassmorphism scroll-reveal" style="transition-delay: 200ms;">
-                        <svg class="w-12 h-12 accent-color mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 16v-1m0-1v.01M4 6h16M4 10h16M4 14h16M4 18h16"/></svg>
-                        <h3 class="text-xl font-semibold mb-2">Expensive Tools</h3>
-                        <p class="text-gray-400">High costs of sensors and gear shouldn't be a barrier. We're making resources affordable and accessible for everyone.</p>
-                    </div>
-                    <div class="p-8 rounded-xl glassmorphism scroll-reveal" style="transition-delay: 400ms;">
-                        <svg class="w-12 h-12 accent-color mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"/></svg>
-                        <h3 class="text-xl font-semibold mb-2">Idea-to-Market Gap</h3>
-                        <p class="text-gray-400">Brilliant projects often remain as prototypes. We're building a bridge to help creators turn their ideas into real-world products.</p>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="vision" class="section bg-transparent">
-            <div class="container mx-auto text-center">
-                <h2 class="text-3xl md:text-4xl font-bold mb-16 scroll-reveal">Our <span class="accent-color">Complete Ecosystem</span> for Innovation</h2>
-                <div class="flex flex-col items-start md:items-center vision-container">
-                    <div class="vision-item flex justify-start">
-                        <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
-                            <h3 class="text-2xl font-bold accent-color mb-3">Dev Section</h3>
-                            <p class="text-gray-300">The innovation hub where our R&D team designs, tests, and develops new smart devices, tools, and solutions. This is where ideas become reality.</p>
-                        </div>
-                    </div>
-                    <div class="vision-item flex justify-end">
-                        <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
-                            <h3 class="text-2xl font-bold accent-color mb-3">Teacher Section</h3>
-                             <p class="text-gray-300">A dedicated space for experienced mentors specializing in coding, electronics, and IoT to share their expertise through structured lessons and hands-on training.</p>
-                        </div>
-                    </div>
-                    <div class="vision-item flex justify-start">
-                         <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
-                            <h3 class="text-2xl font-bold accent-color mb-3">Student Section</h3>
-                             <p class="text-gray-300">Tailored for enthusiasts to dive into IoT and electronics with affordable, structured learning paths, mentorship, and practical project exposure.</p>
-                        </div>
-                    </div>
-                    <div class="vision-item flex justify-end">
-                        <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
-                            <h3 class="text-2xl font-bold accent-color mb-3">Tech Library</h3>
-                             <p class="text-gray-300">A unique initiative to make resources accessible. For a minimal fee, access sensors, microcontrollers, books, and tools for hands-on learning.</p>
-                        </div>
-                    </div>
-                     <div class="vision-item flex justify-start">
-                         <div class="vision-content glassmorphism p-6 rounded-lg scroll-reveal">
-                            <h3 class="text-2xl font-bold accent-color mb-3">Main Store</h3>
-                             <p class="text-gray-300">The commercial arm where our R&D products will be available. We will also feature creations from our community, turning ideas into market-ready solutions.</p>
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="roadmap" class="section bg-transparent">
-            <div class="container mx-auto">
-                <h2 class="text-3xl md:text-4xl font-bold text-center mb-12 scroll-reveal">Charting Our <span class="accent-color">Course</span></h2>
-                <div class="relative max-w-2xl mx-auto border-l-2 border-gray-700">
-                    <div class="mb-12 ml-8 timeline-item scroll-reveal">
-                        <h3 class="text-xl font-semibold text-white">Phase 1: Our Current Focus</h3>
-                        <p class="text-gray-400">This is where we are right now: laying the essential groundwork for our community and platform.</p>
-                        <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
-                            <li>Establishing our core online community on Discord & Telegram.</li>
-                            <li>Creating high-value, practical tutorials on YouTube.</li>
-                            <li>Building this foundational website to share our vision with you.</li>
-                        </ul>
-                    </div>
-                     <div class="mb-12 ml-8 timeline-item scroll-reveal">
-                        <h3 class="text-xl font-semibold text-white">Phase 2: What's Next</h3>
-                        <p class="text-gray-400">Once our community is thriving, we will introduce the first pillars of our ecosystem to provide tangible value.</p>
-                         <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
-                            <li>Launching the Main Store with a curated list of essential components.</li>
-                            <li>Initiating a pilot program for the Tech Library in our local area.</li>
-                        </ul>
-                    </div>
-                     <div class="mb-12 ml-8 timeline-item scroll-reveal">
-                         <h3 class="text-xl font-semibold text-white">Phase 3: Expanding Horizons</h3>
-                        <p class="text-gray-400">With the foundation set, our focus will shift to structured learning and mentorship to accelerate growth.</p>
-                         <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
-                            <li>Onboarding the first mentors to our Teacher Section.</li>
-                            <li>Launching the Student Section with affordable, project-based courses.</li>
-                        </ul>
-                    </div>
-                    <div class="ml-8 timeline-item scroll-reveal">
-                        <h3 class="text-xl font-semibold text-white">Phase 4: The Ultimate Vision</h3>
-                        <p class="text-gray-400">The final stage is to complete the loop: moving from learning to creating unique, home-grown innovations.</p>
-                         <ul class="list-disc list-inside text-gray-400 space-y-1 mt-2">
-                            <li>Establishing the formal R&D Dev Section for in-house projects.</li>
-                            <li>Launching the first official "Circuit Breakers" branded product.</li>
-                        </ul>
-                    </div>
-                </div>
-            </div>
-        </section>
-
-        <section id="team" class="section bg-transparent">
-            <div class="container mx-auto text-center">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 scroll-reveal">Meet Our <span class="accent-color">Founding Team</span></h2>
-                <p class="text-gray-400 mb-12 max-w-3xl mx-auto text-lg leading-relaxed scroll-reveal">
-                    Circuit Breakers is built by a dedicated team of 11 co-founders. We are a collective of friends, classmates, and passionate tinkerers, each bringing a unique skill set to the table. From hardware design and software development to community management and content creation, every member plays a vital role in bringing this vision to life.
-                </p>
+        
+        <section id="home" class="hero-slider-container">
+            <div class="hero-slider-wrapper" id="hero-slider">
                 
-                <div class="max-w-5xl mx-auto grid grid-cols-2 md:grid-cols-3 gap-8 text-center scroll-reveal">
-                    <div>
-                        <h4 class="text-xl font-semibold text-white">Pushkar Bose</h4>
-                        <p class="text-sky-400">Manager - Team Strategist</p>
+                <div class="hero-slide" style="background-image: url('https://res.cloudinary.com/dpoubdg6d/image/upload/v1762020836/hero1_ahglwg.webp');">
+                    <div class="hero-slide-content text-white">
+                        <p class="text-base font-semibold uppercase tracking-wider text-orange-200">
+                            Empowering India's Next-Gen
+                        </p>
+                        <h1 class="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                            Unlock Your Innovation Potential
+                        </h1>
+                        <p class="mt-6 text-lg text-gray-200 max-w-2xl mx-auto">
+                            Circuit Breakers is building a complete, self-sustaining ecosystem for electronics, IoT, and smart device innovation in India.
+                        </p>
+                        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="#solution" class="btn-primary rounded-md px-8 py-3 text-base font-medium shadow-lg">
+                                Explore Our Ecosystem
+                            </a>
+                        </div>
                     </div>
-                     <div>
-                        <h4 class="text-xl font-semibold text-white">Subham Chakraborty</h4>
-                        <p class="text-sky-400">Manager - Team Strategist</p>
+                </div>
+
+                <div class="hero-slide" style="background-image: url('https://res.cloudinary.com/dpoubdg6d/image/upload/v1762020960/hero2_jryfpu.webp');">
+                    <div class="hero-slide-content text-white">
+                        <p class="text-base font-semibold uppercase tracking-wider text-orange-200">
+                            Knowledge, Hardware, Mentorship
+                        </p>
+                        <h2 class="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                            Break Barriers, Build Futures
+                        </h2>
+                        <p class="mt-6 text-lg text-gray-200 max-w-2xl mx-auto">
+                            We dismantle prohibitive costs, fragmented knowledge, and the gap between prototype and product.
+                        </p>
+                        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="#problem" class="btn-primary rounded-md px-8 py-3 text-base font-medium shadow-lg">
+                                See The Challenges We Address
+                            </a>
+                        </div>
                     </div>
-                     <div>
-                        <h4 class="text-xl font-semibold text-white">Arijit Dey</h4>
-                        <p class="text-sky-400">Manager - Team Strategist</p>
+                </div>
+
+                <div class="hero-slide" style="background-image: url('https://res.cloudinary.com/dpoubdg6d/image/upload/v1762021004/hero3_l5jr21.webp');">
+                    <div class="hero-slide-content text-white">
+                        <p class="text-base font-semibold uppercase tracking-wider text-orange-200">
+                            From Prototype to Product
+                        </p>
+                        <h2 class="mt-4 text-4xl font-extrabold tracking-tight sm:text-5xl lg:text-6xl">
+                            Ignite Your Ideas, Launch Your Impact
+                        </h2>
+                        <p class="mt-6 text-lg text-gray-200 max-w-2xl mx-auto">
+                            Our unique 360-degree approach provides a direct path to commercialization and real-world impact.
+                        </p>
+                        <div class="mt-10 flex flex-col sm:flex-row gap-4 justify-center">
+                            <a href="#roadmap" class="btn-primary rounded-md px-8 py-3 text-base font-medium shadow-lg">
+                                Our Journey Forward
+                            </a>
+                        </div>
                     </div>
-                     <div>
-                        <h4 class="text-xl font-semibold text-white">Soumili Dey</h4>
-                        <p class="text-sky-400">Project Strategist & Data Analyst<p>
-                    </div>
-                     <div>
-                        <h4 class="text-xl font-semibold text-white">Apurba Hazra</h4>
-                        <p class="text-sky-400">Finance Department</p>
-                    </div>
-                     <div>
-                        <h4 class="text-xl font-semibold text-white">Poulami Ghosh</h4>
-                        <p class="text-sky-400">Project Strategist & Data Analyst</p>
-                    </div>
-                     <div>
-                        <h4 class="text-xl font-semibold text-white">Arnab Roy</h4>
-                        <p class="text-sky-400">Marketing Manager</p>
-                    </div>
-                     <div>
-                        <h4 class="text-xl font-semibold text-white">Ayan Bhattacharya</h4>
-                        <p class="text-sky-400">Designer & Creative Director</p>
-                    </div>
-                     <div>
-                        <h4 class="text-xl font-semibold text-white">Trisha Guria</h4>
-                        <p class="text-sky-400">Social Media Manager & Data Analyst</p>
-                    </div>
-                     <div>
-                        <h4 class="text-xl font-semibold text-white">Poulami Das</h4>
-                        <p class="text-sky-400">Social Media Manager</p>
-                    </div>
-                     <div>
-                        <h4 class="text-xl font-semibold text-white">Barsa Gorai</h4>
-                        <p class="text-sky-400">Finance Department</p>
-                    </div>
-                     
                 </div>
             </div>
+            <div class="slider-dots" id="slider-dots"></div>
         </section>
 
-        <section id="donate" class="section bg-transparent">
-            <div class="container mx-auto text-center max-w-3xl">
-                <h2 class="text-3xl md:text-4xl font-bold mb-4 scroll-reveal">Help Us Build the <span class="accent-color">Future</span>.</h2>
-                <p class="text-gray-400 mb-8 scroll-reveal">We're a bootstrapped, student-run initiative. Your contribution, no matter the size, directly fuels our mission and helps us get off the ground faster.</p>
-                <div class="p-8 rounded-xl glassmorphism scroll-reveal">
-    <h3 class="text-xl font-semibold mb-4">Where does your donation go?</h3>
-    <p class="text-gray-300 mb-8">Every rupee is reinvested into building our ecosystem. It helps us purchase components for new YouTube tutorials, cover website hosting costs, and kickstart the development of our Tech Library for students.</p>
-    
-    <div class="space-y-4 mb-8 max-w-sm mx-auto">
-        <input type="text" id="donor-name" class="bg-gray-700 text-white w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Your Name" required>
-        <input type="text" id="donor-contact" class="bg-gray-700 text-white w-full px-4 py-3 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Email or Phone Number" required>
-    </div>
-    <div class="flex flex-wrap justify-center gap-4 mb-8">
-        <button class="donation-amount-btn" data-amount="100">₹100</button>
-        <button class="donation-amount-btn" data-amount="250">₹250</button>
-        <button class="donation-amount-btn" data-amount="500">₹500</button>
-    </div>
-    <div class="flex items-center justify-center max-w-xs mx-auto mb-8">
-        <span class="text-lg font-semibold mr-2">₹</span>
-        <input type="number" id="custom-amount" class="bg-gray-700 text-white text-center w-full px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-sky-500" placeholder="Or enter a custom amount">
-    </div>
-     <button id="donate-btn" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-12 rounded-lg text-lg transition-transform duration-300 hover:scale-105 w-full md:w-auto">Donate Now</button>
-</div>
-                <div id="donation-message" class="mt-4 text-green-400"></div>
+
+        <section id="executive-summary" class="py-24 md:py-32 fade-in-section">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h2 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl">
+                        Executive Summary
+                    </h2>
+                    <p class="mt-6 text-xl text-gray-700">
+                        Circuit Breakers is a student-led initiative poised to fundamentally reshape the landscape of electronics, IoT, and smart device innovation in India. Our mission is to dismantle the primary barriers that stifle the potential of aspiring engineers, hobbyists, and student creators.
+                    </p>
+                    <p class="mt-4 text-lg text-gray-600">
+                        We are not merely a platform; we are building a complete, self-sustaining ecosystem. This ecosystem integrates affordable education, accessible hardware, expert mentorship, and a direct path to commercialization, creating a powerful loop that fosters a community-driven culture of innovation. Our Unique Selling Proposition (USP) is this holistic, 360-degree approach, built with the authenticity of a team that has lived the very problems we aim to solve.
+                    </p>
+                </div>
             </div>
         </section>
         
-        <section id="join" class="section bg-transparent">
-    <div class="container mx-auto text-center max-w-3xl">
-        <h2 class="text-3xl md:text-4xl font-bold mb-4 scroll-reveal">Become a Part of Our <span class="accent-color">Story</span>.</h2>
-        <p class="text-gray-400 mb-8 scroll-reveal">Whether you're a student, a mentor, or just an enthusiast with a great idea, we would love to hear from you. The best way to reach our founding team directly is through email.</p>
-        <div class="scroll-reveal">
-            <a href="mailto:devteam.circuitbreakers@gmail.com" class="bg-sky-500 hover:bg-sky-600 text-white font-bold py-3 px-12 rounded-lg text-lg transition-transform duration-300 hover:scale-105 inline-block">
-                Email Us: devteam.circuitbreakers@gmail.com
-            </a>
-        </div>
-    </div>
-</section>
+        <section id="problem" class="py-24 md:py-32 bg-cream-200 fade-in-section">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                        The Core Challenges We're Solving
+                    </h2>
+                    <p class="mt-4 text-lg text-gray-600">
+                        The journey for an electronics enthusiast in India is fraught with significant challenges. We are building Circuit Breakers because we've experienced these roadblocks first-hand.
+                    </p>
+                </div>
+
+                <div class="mt-20 grid grid-cols-1 gap-12 md:grid-cols-2 lg:grid-cols-4">
+                    <div class="text-center bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <div class="flex h-14 w-14 items-center justify-center rounded-full bg-cream-100 text-orange-600 mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-2 text-xl font-semibold text-gray-900">Prohibitive Costs</h3>
+                        <p class="mt-2 text-base text-gray-600">The cost of essential components, advanced sensors, and crucial measurement instruments is a major deterrent. Many aspiring innovators abandon ambitious projects due to these financial hurdles.</p>
+                    </div>
+
+                    <div class="text-center bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <div class="flex h-14 w-14 items-center justify-center rounded-full bg-cream-100 text-orange-600 mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-2 text-xl font-semibold text-gray-900">Fragmented Knowledge</h3>
+                        <p class="mt-2 text-base text-gray-600">Online information is abundant but often disorganized, overly theoretical, or lacks practical context. This leads to endless searching, frustration, and a high dropout rate among budding engineers.</p>
+                    </div>
+
+                    <div class="text-center bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <div class="flex h-14 w-14 items-center justify-center rounded-full bg-cream-100 text-orange-600 mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-2 text-xl font-semibold text-gray-900">"Prototype Purgatory"</h3>
+                        <p class="mt-2 text-base text-gray-600">Countless brilliant student projects, once graded, are relegated to gathering dust. There is no clear, accessible pathway for these creators to refine their prototypes, scale their ideas, or bring a viable product to market.</p>
+                    </div>
+
+                    <div class="text-center bg-white p-6 rounded-lg shadow-md hover:shadow-xl transition-shadow duration-300">
+                        <div class="flex h-14 w-14 items-center justify-center rounded-full bg-cream-100 text-orange-600 mx-auto mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-2.238M4 20h5v-2a3 3 0 00-5.356-2.238M12 8a3 3 0 100-6 3 3 0 000 6zM12 15a3 3 0 100-6 3 3 0 000 6z" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-2 text-xl font-semibold text-gray-900">Isolated Learning</h3>
+                        <p class="mt-2 text-base text-gray-600">Learning in isolation is difficult and demotivating. There is a tangible need for a centralized community where peers can collaborate, solve problems together, and receive invaluable guidance from experienced mentors.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section id="solution" class="py-24 md:py-32 fade-in-section overflow-hidden">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                        Our 5-Pillar Ecosystem: Your Path to Innovation
+                    </h2>
+                    <p class="mt-4 text-lg text-gray-600">
+                        Our solution is a meticulously designed platform where each component supports the others, creating a powerful engine for growth and innovation.
+                    </p>
+                </div>
+
+                <div class="mt-24 grid grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-20">
+                    <div class="fade-in-section">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-cream-200 text-orange-600 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                              <path d="M12 14l9-5-9-5-9 5 9 5z" />
+                              <path d="M12 14l6.16-3.422a12.083 12.083 0 01.665 6.479A11.952 11.952 0 0012 20.055a11.952 11.952 0 00-6.824-2.998 12.078 12.078 0 01.665-6.479L12 14z" />
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 14l9-5-9-5-9 5 9 5zM12 14v6m0 0v-6m0 0L5.121 9.686M12 20.055L18.879 16.314" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-2 text-3xl font-bold text-gray-900">1. The Student Section</h3>
+                        <p class="mt-4 text-lg text-gray-700">This is the primary entry point for enthusiasts. For a highly affordable subscription (e.g., ₹500/month), students gain access to structured, project-based learning paths curated by experts. This section moves beyond random tutorials, offering a clear roadmap from fundamental concepts to advanced applications in coding, embedded systems, and IoT.</p>
+                        <div class="mt-6">
+                            <span class="inline-block rounded-full bg-orange-100 px-4 py-1.5 text-sm font-semibold text-orange-800">Affordable Learning: Est. ₹500/month</span>
+                        </div>
+                    </div>
+                    <div class="fade-in-section">
+                        <img src="https://res.cloudinary.com/dpoubdg6d/image/upload/v1762021150/student-section_avot98.png" alt="Students learning electronics" class="rounded-2xl shadow-2xl object-cover h-80 w-full lg:h-96">
+                    </div>
+                </div>
+
+                <div class="mt-24 grid grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-20">
+                    <div class="fade-in-section md:order-2">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-cream-200 text-orange-600 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M21 13.255A23.931 23.931 0 0112 15c-3.183 0-6.22-.62-9-1.745M16 6V4a2 2 0 00-2-2h-4a2 2 0 00-2 2v2m4 6h.01M5 20h14a2 2 0 002-2V8a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-2 text-3xl font-bold text-gray-900">2. The Teacher Section</h3>
+                        <p class="mt-4 text-lg text-gray-700">This pillar serves as the knowledge core of our ecosystem. It is a dedicated space for experienced mentors, professionals, and senior engineers to share their expertise. Teachers can host courses, provide one-on-one guidance, and build a following, creating a valuable resource for our student members while also establishing their own brand within the community.</p>
+                    </div>
+                    <div class="fade-in-section md:order-1">
+                        <img src="https://res.cloudinary.com/dpoubdg6d/image/upload/v1762021262/teacher-section_i5tkny.png" alt="Mentor teaching students" class="rounded-2xl shadow-2xl object-cover h-80 w-full lg:h-96">
+                    </div>
+                </div>
+
+                <div class="mt-24 grid grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-20">
+                    <div class="fade-in-section">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-cream-200 text-orange-600 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M8 14v3m4-3v3m4-3v3M3 21h18M3 10h18M3 7l9-4 9 4M4 10h16v11H4V10z" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-2 text-3xl font-bold text-gray-900">3. The Tech Library</h3>
+                        <p class="mt-4 text-lg text-gray-700">Our most disruptive offering. For a nominal subscription (e.g., ₹100/month), members gain physical access to a comprehensive library of hardware. They can borrow components like sensors, microcontrollers, testing gear, and more, just like borrowing a book. This single initiative shatters the financial barrier to entry, enabling true hands-on learning and experimentation for everyone.</p>
+                        <div class="mt-6">
+                            <span class="inline-block rounded-full bg-orange-100 px-4 py-1.5 text-sm font-semibold text-orange-800">Hardware-as-a-Service: Est. ₹100/month</span>
+                        </div>
+                    </div>
+                    <div class="fade-in-section">
+                        <img src="https://res.cloudinary.com/dpoubdg6d/image/upload/v1762021339/tech-library_uyrerg.png" alt="Library of hardware components" class="rounded-2xl shadow-2xl object-cover h-80 w-full lg:h-96">
+                    </div>
+                </div>
+
+                <div class="mt-24 grid grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-20">
+                    <div class="fade-in-section md:order-2">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-cream-200 text-orange-600 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-2 text-3xl font-bold text-gray-900">4. The Dev Section</h3>
+                        <p class="mt-4 text-lg text-gray-700">This is the creative R&D heart of Circuit Breakers. Our core team will design and develop our own line of branded products and kits, born from community needs. It will also feature and support promising projects from our members, providing resources and a platform for talented students and teachers to collaborate, turning their innovative ideas into polished prototypes.</p>
+                    </div>
+                    <div class="fade-in-section md:order-1">
+                        <img src="https://res.cloudinary.com/dpoubdg6d/image/upload/v1762021433/dev-section_anhoyq.png" alt="Team collaborating on a prototype" class="rounded-2xl shadow-2xl object-cover h-80 w-full lg:h-96">
+                    </div>
+                </div>
+
+                <div class="mt-24 grid grid-cols-1 items-center gap-12 md:grid-cols-2 md:gap-20">
+                    <div class="fade-in-section">
+                        <div class="flex h-16 w-16 items-center justify-center rounded-full bg-cream-200 text-orange-600 mb-4">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                            </svg>
+                        </div>
+                        <h3 class="mt-2 text-3xl font-bold text-gray-900">5. The Main Store</h3>
+                        <p class="mt-4 text-lg text-gray-700">This is the commercial engine that closes the loop. It is where our internally developed products and curated component kits will be sold. Crucially, it will also serve as a launchpad for the best products developed by our community members in the Dev Section. This provides a tangible "learning-to-earning" pathway, transforming student projects into market-ready solutions and giving creators a share in their success.</p>
+                    </div>
+                    <div class="fade-in-section">
+                        <img src="https://res.cloudinary.com/dpoubdg6d/image/upload/v1762021511/main-store_davagn.png" alt="Online store showing electronic kits" class="rounded-2xl shadow-2xl object-cover h-80 w-full lg:h-96">
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        
+        <section id="roadmap" class="py-24 md:py-32 bg-white fade-in-section">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                        Our Phased Rollout & Go-to-Market Strategy
+                    </h2>
+                    <p class="mt-4 text-lg text-gray-600">
+                        Recognizing the constraints of a bootstrapped, student-run venture, our launch will be strategic and phased, building momentum and credibility step by step.
+                    </p>
+                </div>
+
+                <div class="mt-20 max-w-3xl mx-auto">
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <span class="text-sm font-semibold uppercase tracking-wider text-orange-600">Phase 1: Foundation (Current Focus)</span>
+                        <h3 class="mt-1 text-xl font-bold text-gray-900">Build Audience & Credibility</h3>
+                        <p class="mt-2 text-base text-gray-700">Establish a strong online presence through high-value content on platforms like YouTube and Instagram, focusing on tutorials, project guides, and inspirational stories. Launch our foundational website (this one!) to articulate our vision and attract early followers to our Discord/Telegram community.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <span class="text-sm font-semibold uppercase tracking-wider text-orange-600">Phase 2: Commerce & Resources</span>
+                        <h3 class="mt-1 text-xl font-bold text-gray-900">Initial Offerings & Local Pilot</h3>
+                        <p class="mt-2 text-base text-gray-700">Launch the Main Store, initially focused on reselling curated, high-demand components and starter kits. Simultaneously, we will pilot the Tech Library in our local community (e.g., Barrackpore) to rigorously test and prove the hardware-as-a-service model, gathering crucial feedback.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <span class="text-sm font-semibold uppercase tracking-wider text-orange-600">Phase 3: Education Expansion</span>
+                        <h3 class="mt-1 text-xl font-bold text-gray-900">Structured Learning & Mentorship</h3>
+                        <p class="mt-2 text-base text-gray-700">With initial traction and revenue, we will onboard the first cohort of experienced mentors and professionals into the Teacher Section. Concurrently, we will officially launch the Student Section with a foundational set of structured, project-based courses covering key areas of electronics and IoT.</p>
+                    </div>
+                    
+                    <div class="timeline-item">
+                        <div class="timeline-dot"></div>
+                        <span class="text-sm font-semibold uppercase tracking-wider text-orange-600">Phase 4: Innovation Hub Activation</span>
+                        <h3 class="mt-1 text-xl font-bold text-gray-900">Product Development & Community Projects</h3>
+                        <p class="mt-2 text-base text-gray-700">With a thriving community and established revenue streams, we will formally establish the Dev Section. This will kickstart internal R&D for our own line of Circuit Breakers branded products and, more importantly, begin actively supporting and showcasing promising community projects, guiding them from concept to market-ready prototypes.</p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        
+        <section id="vision" class="py-24 md:py-32 bg-cream-200 fade-in-section">
+            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                <div class="max-w-4xl mx-auto text-center">
+                    <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                        Our Vision: Fueling the Next Wave of "Make in India" Innovation
+                    </h2>
+                    <p class="mt-6 text-xl text-gray-700">
+                        Our vision extends far beyond simply selling components or teaching basic electronics. We aim to cultivate India's largest and most vibrant community of electronics innovators, empowering them to transform raw curiosity into impactful creations.
+                    </p>
+                    <p class="mt-4 text-lg text-gray-600">
+                        We are building the essential infrastructure that will empower a generation of students to move from passive consumers of technology to active, skilled creators. By making the tools and knowledge of the digital world radically accessible and providing a clear path to market, Circuit Breakers will be the undeniable catalyst that transforms countless sparks of ingenuity into the next wave of "Make in India" innovation.
+                    </p>
+                    <div class="mt-10">
+                        <a href="#footer" class="btn-primary rounded-md px-8 py-3 text-base font-medium shadow-lg">
+                            Be Part of This Transformative Journey
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </section>
+        
     </main>
 
-    <footer class="bg-transparent py-8">
-    <div class="container mx-auto text-center text-gray-400">
-        <div class="flex justify-center space-x-6 mb-6">
-            <a href="https://wa.me/918910652873?text=HI!%20I'm%20Interested%20on%20your%20startup%20-%20Circuit%20Breakers" target="_blank" class="hover:text-sky-400 transition-colors duration-300">
-                <span class="sr-only">WhatsApp</span>
-                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 30.667 30.667">
+    <footer id="footer" class="bg-gray-800 text-gray-400">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
+                
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Contact Us</h3>
+                    <div class="space-y-3">
+                        <p>
+                            <a href="mailto:devteam.circuitbreakers@gmail.com" class="hover:text-orange-500 transition-colors">devteam.circuitbreakers@gmail.com</a>
+                        </p>
+                        <p>
+                            Phone: 8910652873 / 6295000265
+                        </p>
+                        <p class="leading-relaxed">
+                            Address: N44, G.C.ROAD, NEAR KALYANI HIGHWAY, KARATKAL MORE, PIN-700119.
+                        </p>
+                    </div>
+                </div>
+                
+                <div>
+                    <h3 class="text-lg font-semibold text-white mb-4">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="policy-link hover:text-orange-500 transition-colors" data-policy="About Us">About Us</a></li>
+                        <li><a href="#" class="policy-link hover:text-orange-500 transition-colors" data-policy="Contact Us">Contact Us</a></li>
+                        <li><a href="#" class="policy-link hover:text-orange-500 transition-colors" data-policy="Privacy Policy">Privacy Policy</a></li>
+                        <li><a href="#" class="policy-link hover:text-orange-500 transition-colors" data-policy="Terms of Service">Terms of Service</a></li>
+                        <li><a href="#" class="policy-link hover:text-orange-500 transition-colors" data-policy="Shipping Policy">Shipping Policy</a></li>
+                        <li><a href="#" class="policy-link hover:text-orange-500 transition-colors" data-policy="Refund Policy">Refund Policy</a></li>
+                    </ul>
+                </div>
+                
+                <div class="text-center">
+                    <h3 class="text-lg font-semibold text-white mb-4">Join Our Community</h3>
+                    <p class="mt-3 text-base mb-6">Stay updated and join the conversation.</p>
+                    
+                    <div class="flex justify-center space-x-6 mb-6">
+                        <a href="https://wa.me/918910652873?text=HI!%20I'm%20Interested%20on%20your%20startup%20-%20Circuit%20Breakers" target="_blank" class="text-gray-400 hover:text-green-500 transition-colors duration-300">
+                            <span class="sr-only">WhatsApp</span>
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 30.667 30.667">
                     <path d="M30.667,14.939c0,8.25-6.74,14.938-15.056,14.938c-2.639,0-5.118-0.675-7.276-1.857L0,30.667l2.717-8.017 c-1.37-2.25-2.159-4.892-2.159-7.712C0.559,6.688,7.297,0,15.613,0C23.928,0.002,30.667,6.689,30.667,14.939z M15.61,2.382 c-6.979,0-12.656,5.634-12.656,12.56c0,2.748,0.896,5.292,2.411,7.362l-1.58,4.663l4.862-1.545c2,1.312,4.393,2.076,6.963,2.076 c6.979,0,12.658-5.633,12.658-12.559C28.27,8.016,22.59,2.382,15.61,2.382z M23.214,18.38c-0.094-0.151-0.34-0.243-0.708-0.427 c-0.367-0.184-2.184-1.069-2.521-1.189c-0.34-0.123-0.586-0.185-0.832,0.182c-0.243,0.367-0.951,1.191-1.168,1.437 c-0.215,0.245-0.43,0.276-0.799,0.095c-0.369-0.186-1.559-0.57-2.969-1.817c-1.097-0.972-1.838-2.169-2.052-2.536 c-0.217-0.366-0.022-0.564,0.161-0.746c0.165-0.165,0.369-0.428,0.554-0.643c0.185-0.213,0.246-0.364,0.369-0.609 c0.121-0.245,0.06-0.458-0.031-0.643c-0.092-0.184-0.829-1.984-1.138-2.717c-0.307-0.732-0.614-0.611-0.83-0.611 c-0.215,0-0.461-0.03-0.707-0.03S9.897,8.215,9.56,8.582s-1.291,1.252-1.291,3.054c0,1.804,1.321,3.543,1.506,3.787 c0.186,0.243,2.554,4.062,6.305,5.528c3.753,1.465,3.753,0.976,4.429,0.914c0.678-0.062,2.184-0.885,2.49-1.739 C23.307,19.268,23.307,18.533,23.214,18.38z"/>
                 </svg>
-            </a>
-            <a href="https://www.facebook.com/people/Circuit-Breakers/61581766473273/" class="hover:text-sky-400 transition-colors duration-300">
-                <span class="sr-only">Facebook</span>
-                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 512 512">
+                        </a>
+                        <a href="https://www.facebook.com/share/1aFMAAapqx/" target="_blank" class="text-gray-400 hover:text-blue-500 transition-colors duration-300">
+                            <span class="sr-only">Facebook</span>
+                            <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 512 512">
                     <path d="M480,257.35c0-123.7-100.3-224-224-224s-224,100.3-224,224c0,111.8,81.9,204.47,189,221.29V322.12H164.11V257.35H221V208c0-56.13,33.45-87.16,84.61-87.16,24.51,0,50.15,4.38,50.15,4.38v55.13H327.5c-27.81,0-36.51,17.26-36.51,35v42h62.12l-9.92,64.77H291V478.66C398.1,461.85,480,369.18,480,257.35Z" fill-rule="evenodd"/>
                 </svg>
-            </a>
-            <a href="https://www.instagram.com/circuitbreakers_official/?igsh=a2c3d3ZrcDJnMXBk#" class="hover:text-sky-400 transition-colors duration-300">
-                <span class="sr-only">Instagram</span>
-                <svg class="w-7 h-7" fill="currentColor" viewBox="2.4 2.4 27.2 27.2">
+                        </a>
+                        <a href="https://www.instagram.com/circuitbreakers_official?igsh=MXdwMXd4ejNjb2htNw==" target="_blank" class="text-gray-400 hover:text-pink-500 transition-colors duration-300">
+                             <span class="sr-only">Instagram</span>
+                             <svg class="w-7 h-7" fill="currentColor" viewBox="2.4 2.4 27.2 27.2">
                     <path d="M20,6h-8c-3.3,0-6,2.7-6,6v8c0,3.3,2.7,6,6,6h8c3.3,0,6-2.7,6-6v-8C26,8.7,23.3,6,20,6z M24.1,20 c0,2.3-1.9,4.1-4.1,4.1h-8c-2.3,0-4.1-1.9-4.1-4.1v-8c0-2.3,1.9-4.1,4.1-4.1h8c2.3,0,4.1,1.9,4.1,4.1V20z"/>
                     <path d="M16,11.2c-2.7,0-4.9,2.2-4.9,4.9c0,2.7,2.2,4.9,4.9,4.9s4.9-2.2,4.9-4.9C21,13.4,18.8,11.2,16,11.2z M16,19.3 c-1.7,0-3.2-1.4-3.2-3.2c0-1.7,1.4-3.2,3.2-3.2c1.7,0,3.2,1.4,3.2,3.2C19.2,17.9,17.8,19.3,16,19.3z"/>
                     <path d="M21.3,9.7c-0.6,0-1.2,0.5-1.2,1.2c0,0.7,0.5,1.2,1.2,1.2c0.7,0,1.2-0.5,1.2-1.2C22.4,10.2,21.9,9.7,21.3,9.7z"/>
                 </svg>
-            </a>
-            <a href="https://www.youtube.com/@CircuitBreakers-r6p3f" class="hover:text-sky-400 transition-colors duration-300">
-                <span class="sr-only">YouTube</span>
-                <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 260 180">
+                        </a>
+                        <a href="https://youtube.com/@circuitbreakers-r6p3f?si=LP8GrRaPhRvyKKaV" target="_blank" class="text-gray-400 hover:text-red-500 transition-colors duration-300">
+                             <span class="sr-only">YouTube</span>
+                             <svg class="w-7 h-7" fill="currentColor" viewBox="0 0 260 180">
                     <path d="M220,2H40C19.01,2,2,19.01,2,40v100c0,20.99,17.01,38,38,38h180c20.99,0,38-17.01,38-38V40C258,19.01,240.99,2,220,2z M102,130V50l68,40L102,130z"/>
                 </svg>
-            </a>
-        </div>
-        <div class="flex flex-wrap justify-center items-center space-x-2 md:space-x-4 mb-4 text-base px-4">
-            <a href="#" id="about-us-link" class="hover:accent-color transition-colors">About Us</a>
-            <span class="hidden md:inline">|</span>
-            <a href="#" id="contact-us-link" class="hover:accent-color transition-colors">Contact Us</a>
-            <span class="hidden md:inline">|</span>
-            <a href="#" id="privacy-policy-link" class="hover:accent-color transition-colors">Privacy Policy</a>
-            <span class="hidden md:inline">|</span>
-            <a href="#" id="terms-service-link" class="hover:accent-color transition-colors">Terms of Service</a>
-            <span class="hidden md:inline">|</span>
-            <a href="#" id="shipping-policy-link" class="hover:accent-color transition-colors">Shipping Policy</a>
-            <span class="hidden md:inline">|</span>
-            <a href="#" id="refund-policy-link" class="hover:accent-color transition-colors">Refund Policy</a>
-        </div>
-        <p class="text-base">&copy; 2025 Circuit Breakers. All Rights Reserved.</p>
-        <p class="text-sm">Built with ❤️ by students, for the community.</p>
-    </div>
-</footer>
+                        </a>
+                    </div>
+                    </div>
 
-
-    <div id="privacy-policy-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
-            <h2 class="text-2xl font-bold accent-color mb-4">Privacy Policy</h2>
-            <div class="space-y-4 text-gray-300">
-                <p><strong>Last updated: October 05, 2025</strong></p>
-                <p>Circuit Breakers ("us", "we", or "our") operates the circuitbreakers.in website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
-                <h3 class="font-semibold text-lg text-white">Information Collection and Use</h3>
-                <p>We collect several different types of information for various purposes to provide and improve our Service to you. The only personal information we collect is what you voluntarily provide to us through our contact form (such as your name and email address) or when making a donation.</p>
-                <h3 class="font-semibold text-lg text-white">Use of Data</h3>
-                <p>Circuit Breakers uses the collected data for various purposes: to provide and maintain the Service, to notify you about changes to our Service, to allow you to participate in interactive features of our Service when you choose to do so, to provide customer care and support, and to gather analysis or valuable information so that we can improve the Service.</p>
-                 <h3 class="font-semibold text-lg text-white">Security of Data</h3>
-                <p>The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security.</p>
+            </div>
+            
+            <div class="mt-12 border-t border-gray-700 pt-8 text-center">
+                <p class="text-base text-gray-500">
+                    Built with 🖤 by students, for the community.
+                </p>
+                <p class="mt-2 text-sm text-gray-500">
+                    &copy; 2025 Circuit Breakers. All rights reserved.
+                </p>
             </div>
         </div>
-    </div>
+    </footer>
 
-    <div id="terms-service-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
-            <h2 class="text-2xl font-bold accent-color mb-4">Terms of Service</h2>
-             <div class="space-y-4 text-gray-300">
-                <p><strong>Last updated: October 05, 2025</strong></p>
-                <p>Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the circuitbreakers.in website (the "Service") operated by Circuit Breakers ("us", "we", or "our").</p>
-                <h3 class="font-semibold text-lg text-white">Agreement to Terms</h3>
-                <p>By accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of the terms then you may not access the Service. The content provided on this website is for informational purposes only. We are a student-led initiative sharing our journey and future plans.</p>
-                <h3 class="font-semibold text-lg text-white">Donations</h3>
-                <p>If you choose to make a donation to support our project, you acknowledge that this is a voluntary contribution. Donations are processed through a third-party payment processor (Razorpay) and are subject to their terms and conditions. Donations are non-refundable.</p>
-                 <h3 class="font-semibold text-lg text-white">Intellectual Property</h3>
-                <p>The Service and its original content, features and functionality are and will remain the exclusive property of Circuit Breakers. Our content is protected by copyright and other laws of India. Our trademarks may not be used in connection with any product or service without the prior written consent of Circuit Breakers.</p>
+
+    <div id="policy-modal-overlay" class="modal-overlay">
+        <div class="modal-content" id="modal-content-box">
+            <div class="modal-header">
+                <h3 id="modal-title" class="text-2xl font-bold"></h3>
+                <button id="modal-close-btn" class_="modal-close-btn">&times;</button>
             </div>
-        </div>
-    </div>
-
-    <div id="about-us-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
-            <h2 class="text-2xl font-bold accent-color mb-4">About Us</h2>
-            <div class="space-y-4 text-gray-300">
-                <p>Circuit Breakers is a student-led initiative born from a passion for electronics and a desire to empower India's next generation of innovators. We are a dedicated team of 12 co-founders—friends, classmates, and tinkerers—united by a single mission: to make learning and building smart devices simple, accessible, and affordable for everyone.</p>
-                <p>We recognized the key barriers facing aspiring creators: scattered knowledge, expensive tools, and the gap between a great idea and a market-ready product. To solve this, we are building a complete ecosystem that includes:</p>
-                <ul class="list-disc list-inside space-y-2 pl-4">
-                    <li>Structured, practical learning paths from beginner to expert.</li>
-                    <li>A Tech Library to provide affordable access to sensors, components, and tools.</li>
-                    <li>A Main Store to feature our own R&D products and community creations.</li>
-                    <li>A community of mentors and peers to guide and support creators on their journey.</li>
-                </ul>
-                <p>We are building the platform we wished we had when we started. Join us as we break down barriers and build the future of electronics in India, together.</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="contact-us-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
-            <h2 class="text-2xl font-bold accent-color mb-4">Contact Us</h2>
-            <div class="space-y-4 text-gray-300">
-                <p>We'd love to hear from you! Whether you're a student, a potential mentor, or just an enthusiast with a question, feel free to reach out. Our founding team is always available to connect.</p>
-                <div>
-                    <h3 class="font-semibold text-lg text-white">General Inquiries & Support:</h3>
-                    <p>For any questions about our mission, content, or how to get involved.</p>
-                    <p><strong>Email:</strong> <a href="mailto:devteam.circuitbreakers@gmail.com" class="accent-color hover:underline">devteam.circuitbreakers@gmail.com</a></p>
+            <div id="modal-body" class="modal-body">
                 </div>
-                <div>
-                    <h3 class="font-semibold text-lg text-white">Direct Contact:</h3>
-                    <p>For urgent matters or direct collaboration inquiries.</p>
-                    <p><strong>Phone:</strong> <a href="tel:+918910652873" class="accent-color hover:underline">+91 8910652873</a></p>
-                </div>
-                <p>As a student-run team, email is our preferred method of communication, but we will do our best to respond to all inquiries in a timely manner.</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="shipping-policy-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
-            <h2 class="text-2xl font-bold accent-color mb-4">Shipping & Delivery Policy</h2>
-            <div class="space-y-4 text-gray-300">
-                <p><strong>Last updated: October 10, 2025</strong></p>
-                <p>Circuit Breakers is primarily a digital-first educational and community platform. Our current offerings, such as online tutorials and community engagement, are delivered digitally and do not require physical shipping.</p>
-                <h3 class="font-semibold text-lg text-white">Physical Goods</h3>
-                <p>At present, we do not sell or ship any physical products. Therefore, shipping charges and delivery timelines are not applicable to any of our current services or donations.</p>
-                <h3 class="font-semibold text-lg text-white">Future Updates</h3>
-                <p>Our roadmap includes launching a "Main Store" and "Tech Library" which will feature physical components and kits. When these services become available, this policy will be updated with comprehensive details regarding our shipping partners, delivery timelines, costs, and tracking information. All shipping details for specific products will be clearly stated on the product page at the time of purchase.</p>
-            </div>
-        </div>
-    </div>
-
-    <div id="refund-policy-modal" class="modal-overlay">
-        <div class="modal-content">
-            <button class="absolute top-4 right-4 text-gray-400 hover:text-white">&times;</button>
-            <h2 class="text-2xl font-bold accent-color mb-4">Refund & Cancellation Policy</h2>
-            <div class="space-y-4 text-gray-300">
-                <p><strong>Last updated: October 10, 2025</strong></p>
-                <p>Thank you for supporting Circuit Breakers. As a bootstrapped, student-run initiative, your contributions are vital to our mission. Please read our policy on refunds and cancellations carefully.</p>
-                <h3 class="font-semibold text-lg text-white">Donations</h3>
-                <p>All contributions made through our "Support Us" section are considered voluntary donations to help us cover operational costs, purchase components for tutorials, and build our ecosystem. As such, these donations are non-refundable and cannot be cancelled once they are processed. We are incredibly grateful for your support, which directly fuels our mission to empower student innovators.</p>
-                <h3 class="font-semibold text-lg text-white">Future Products & Courses</h3>
-                <p>When we launch our "Main Store" with physical products or our "Student Section" with paid courses, those items will be subject to their own specific refund, return, and cancellation policies. The policy for each product or service will be clearly stated on its respective page at the time of purchase. We are committed to ensuring fairness and transparency in all future transactions.</p>
-                <p>If you have any questions about this policy, please contact us at <a href="mailto:devteam.circuitbreakers@gmail.com" class="accent-color hover:underline">devteam.circuitbreakers@gmail.com</a> before making a contribution.</p>
-            </div>
         </div>
     </div>
 
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            // --- Particle Background Animation ---
-            const canvas = document.getElementById('particle-canvas');
-            const ctx = canvas.getContext('2d');
-            let particles = [];
-
-            function resizeCanvas() {
-                canvas.width = window.innerWidth;
-                canvas.height = window.innerHeight;
-            }
-            resizeCanvas();
-
-            class Particle {
-                constructor() {
-                    this.x = Math.random() * canvas.width;
-                    this.y = Math.random() * canvas.height;
-                    this.size = Math.random() * 1.5 + 1;
-                    this.speedX = Math.random() * 1 - 0.5;
-                    this.speedY = Math.random() * 1 - 0.5;
-                    this.color = '#374151'; // gray-700
-                }
-                update() {
-                    if (this.x > canvas.width || this.x < 0) this.speedX *= -1;
-                    if (this.y > canvas.height || this.y < 0) this.speedY *= -1;
-                    this.x += this.speedX;
-                    this.y += this.speedY;
-                }
-                draw() {
-                    ctx.fillStyle = this.color;
-                    ctx.beginPath();
-                    ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-                    ctx.fill();
-                }
-            }
-
-            function initParticles() {
-                const particleCount = Math.floor(canvas.width * canvas.height / 20000);
-                particles = [];
-                for (let i = 0; i < particleCount; i++) {
-                    particles.push(new Particle());
-                }
-            }
-            initParticles();
-
-            function connectParticles() {
-                let opacityValue = 1;
-                for (let a = 0; a < particles.length; a++) {
-                    for (let b = a; b < particles.length; b++) {
-                        let distance = Math.sqrt(
-                            (particles[a].x - particles[b].x) * (particles[a].x - particles[b].x) +
-                            (particles[a].y - particles[b].y) * (particles[a].y - particles[b].y)
-                        );
-                        if (distance < 120) {
-                            opacityValue = 1 - (distance / 120);
-                            ctx.strokeStyle = `rgba(55, 65, 81, ${opacityValue})`; // gray-600
-                            ctx.lineWidth = 1;
-                            ctx.beginPath();
-                            ctx.moveTo(particles[a].x, particles[a].y);
-                            ctx.lineTo(particles[b].x, particles[b].y);
-                            ctx.stroke();
-                        }
-                    }
-                }
-            }
-
-            function animate() {
-                ctx.clearRect(0, 0, canvas.width, canvas.height);
-                for (let i = 0; i < particles.length; i++) {
-                    particles[i].update();
-                    particles[i].draw();
-                }
-                connectParticles();
-                requestAnimationFrame(animate);
-            }
-            animate();
             
-            window.addEventListener('resize', () => {
-                resizeCanvas();
-                initParticles();
-            });
-
-
-            // --- General Website Logic ---
-            const menuBtn = document.getElementById('menu-btn');
+            // --- Mobile Menu Toggle (Unchanged) ---
+            const menuButton = document.getElementById('mobile-menu-button');
             const mobileMenu = document.getElementById('mobile-menu');
-            menuBtn.addEventListener('click', () => {
+            const hamburgerIcon = menuButton.querySelector('svg:first-child');
+            const closeIcon = menuButton.querySelector('svg:last-child');
+
+            menuButton.addEventListener('click', () => {
+                const isExpanded = menuButton.getAttribute('aria-expanded') === 'true';
+                menuButton.setAttribute('aria-expanded', !isExpanded);
                 mobileMenu.classList.toggle('hidden');
+                hamburgerIcon.classList.toggle('hidden');
+                hamburgerIcon.classList.toggle('block');
+                closeIcon.classList.toggle('hidden');
+                closeIcon.classList.toggle('block');
             });
-            
-            document.querySelectorAll('#mobile-menu a, .nav-link').forEach(link => {
+
+            mobileMenu.querySelectorAll('a').forEach(link => {
                 link.addEventListener('click', () => {
+                    menuButton.setAttribute('aria-expanded', 'false');
                     mobileMenu.classList.add('hidden');
+                    hamburgerIcon.classList.remove('hidden');
+                    hamburgerIcon.classList.add('block');
+                    closeIcon.classList.add('hidden');
+                    closeIcon.classList.remove('block');
                 });
             });
 
-            const header = document.getElementById('header');
-            window.addEventListener('scroll', () => {
-                if (window.scrollY > 50) {
-                    header.classList.add('scrolled');
-                } else {
-                    header.classList.remove('scrolled');
-                }
-            });
-
-            const revealElements = document.querySelectorAll('.scroll-reveal');
-            const observer = new IntersectionObserver((entries) => {
+            // --- Scroll Animation Observer (Unchanged) ---
+            const sections = document.querySelectorAll('.fade-in-section');
+            const observerOptions = {
+                root: null,
+                rootMargin: '0px',
+                threshold: 0.1
+            };
+            const sectionObserver = new IntersectionObserver((entries, observer) => {
                 entries.forEach(entry => {
                     if (entry.isIntersecting) {
-                        entry.target.classList.add('visible');
+                        entry.target.classList.add('is-visible');
                     }
                 });
-            }, { threshold: 0.1 });
-            revealElements.forEach(el => observer.observe(el));
+            }, observerOptions);
+            sections.forEach(section => {
+                sectionObserver.observe(section);
+            });
+
+
+            // --- Hero Section Auto Slider (Unchanged) ---
+            const slider = document.getElementById('hero-slider');
+            if (slider) {
+                const slides = document.querySelectorAll('.hero-slide');
+                const dotsContainer = document.getElementById('slider-dots');
+                let currentSlide = 0;
+                const slideIntervalTime = 5000;
+                
+                slides.forEach((_, index) => {
+                    const dot = document.createElement('div');
+                    dot.classList.add('slider-dot');
+                    if (index === 0) dot.classList.add('active');
+                    dot.addEventListener('click', () => goToSlide(index));
+                    dotsContainer.appendChild(dot);
+                });
+
+                const allDots = document.querySelectorAll('.slider-dot');
+
+                const updateSlider = () => {
+                    slider.style.transform = `translateX(-${currentSlide * 100}%)`;
+                    allDots.forEach((dot, index) => {
+                        dot.classList.toggle('active', index === currentSlide);
+                    });
+                };
+
+                const goToSlide = (index) => {
+                    currentSlide = index;
+                    updateSlider();
+                    resetInterval();
+                };
+
+                const nextSlide = () => {
+                    currentSlide = (currentSlide + 1) % slides.length;
+                    updateSlider();
+                };
+
+                let slideInterval = setInterval(nextSlide, slideIntervalTime);
+
+                const resetInterval = () => {
+                    clearInterval(slideInterval);
+                    slideInterval = setInterval(nextSlide, slideIntervalTime);
+                };
+
+                updateSlider();
+            }
+
+
+            // --- START: New Modal (Popup) Logic ---
             
-            // --- Modal Logic ---
-            const privacyLink = document.getElementById('privacy-policy-link');
-            const termsLink = document.getElementById('terms-service-link');
-            const aboutLink = document.getElementById('about-us-link');
-            const contactLink = document.getElementById('contact-us-link');
-            const shippingLink = document.getElementById('shipping-policy-link');
-            const refundLink = document.getElementById('refund-policy-link');
-
-            const privacyModal = document.getElementById('privacy-policy-modal');
-            const termsModal = document.getElementById('terms-service-modal');
-            const aboutModal = document.getElementById('about-us-modal');
-            const contactModal = document.getElementById('contact-us-modal');
-            const shippingModal = document.getElementById('shipping-policy-modal');
-            const refundModal = document.getElementById('refund-policy-modal');
-
-            function openModal(modal) {
-                modal.classList.add('visible');
-            }
-            function closeModal(modal) {
-                modal.classList.remove('visible');
-            }
+            // (Using placeholder text since none was provided)
+            const policyContent = {
+                'About Us': `
+                    <h4>Who We Are</h4>
+                    <p>Circuit Breakers is a student-led initiative in India focused on electronics, IoT, and smart device innovation. We are a team of passionate creators, engineers, and hobbyists who have experienced the exact challenges we aim to solve.</p>
+                    <h4>Our Mission</h4>
+                    <p>Our mission is to build a complete, self-sustaining ecosystem that integrates affordable education, accessible hardware, expert mentorship, and a direct path to commercialization. We want to empower the next generation of Indian innovators to move from passive consumers to active creators.</p>
+                `,
+                'Contact Us': `
+                    <p>You can reach our team through any of the following methods:</p>
+                    <p><strong>Email:</strong><br><a href="mailto:devteam.circuitbreakers@gmail.com" class="text-orange-600 hover:underline">devteam.circuitbreakers@gmail.com</a></p>
+                    <p><strong>Phone:</strong><br>8910652873<br>6295000265</p>
+                    <p><strong>Address:</strong><br>N44, G.C.ROAD, NEAR KALYANI HIGHWAY, KARATKAL MORE, PIN-700119.</p>
+                `,
+                'Privacy Policy': `
+                    <p><strong>Last updated: October 05, 2025</strong></p>
+                <p>Circuit Breakers ("us", "we", or "our") operates the circuitbreakers.in website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
+                <h4>Information Collection and Use</h4>
+                <p>We collect several different types of information for various purposes to provide and improve our Service to you. The only personal information we collect is what you voluntarily provide to us through our contact form (such as your name and email address) or when making a donation.</p>
+                <h4>Use of Data</h4>
+                <p>Circuit Breakers uses the collected data for various purposes: to provide and maintain the Service, to notify you about changes to our Service, to allow you to participate in interactive features of our Service when you choose to do so, to provide customer care and support, and to gather analysis or valuable information so that we can improve the Service.</p>
+                 <h4>Security of Data</h4>
+                <p>The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security.</p>
             
-            privacyLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal(privacyModal);
-            });
-            termsLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal(termsModal);
-            });
+                `,
+                'Terms of Service': `
+                    <p><strong>Last updated: October 05, 2025</strong></p>
+                <p>Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the circuitbreakers.in website (the "Service") operated by Circuit Breakers ("us", "we", or "our").</p>
+                <h4>Agreement to Terms</h4>
+                <p>By accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of the terms then you may not access the Service. The content provided on this website is for informational purposes only. We are a student-led initiative sharing our journey and future plans.</p>
+                 <h4>Intellectual Property</h4>
+                <p>The Service and its original content, features and functionality are and will remain the exclusive property of Circuit Breakers. Our content is protected by copyright and other laws of India. Our trademarks may not be used in connection with any product or service without the prior written consent of Circuit Breakers.</p>
+            
+                `,
+                'Shipping Policy': `
+                    <p><strong>Last updated: October 10, 2025</strong></p>
+                <p>Circuit Breakers is primarily a digital-first educational and community platform. Our current offerings, such as online tutorials and community engagement, are delivered digitally and do not require physical shipping.</p>
+                <h4>Physical Goods</h4>
+                <p>At present, we do not sell or ship any physical products. Therefore, shipping charges and delivery timelines are not applicable to any of our current services or donations.</p>
+                <h4>Future Updates</h4><p>Our roadmap includes launching a "Main Store" and "Tech Library" which will feature physical components and kits. When these services become available, this policy will be updated with comprehensive details regarding our shipping partners, delivery timelines, costs, and tracking information. All shipping details for specific products will be clearly stated on the product page at the time of purchase.</p>
+            
+                
+                `,
+                'Refund Policy': `
+                    <p><strong>Last updated: October 10, 2025</strong></p>
+                <p>Thank you for supporting Circuit Breakers. As a bootstrapped, student-run initiative, your contributions are vital to our mission. Please read our policy on refunds and cancellations carefully.</p>
+                 <h4>Future Products & Courses</h4>
+                <p>When we launch our "Main Store" with physical products or our "Student Section" with paid courses, those items will be subject to their own specific refund, return, and cancellation policies. The policy for each product or service will be clearly stated on its respective page at the time of purchase. We are committed to ensuring fairness and transparency in all future transactions.</p>
+                <p>If you have any questions about this policy, please contact us at <a href="mailto:devteam.circuitbreakers@gmail.com" class="accent-color hover:underline">devteam.circuitbreakers@gmail.com</a> before making a contribution.</p>
+            
+                `
+            };
 
-            aboutLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal(aboutModal);
-            });
-            contactLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal(contactModal);
-            });
-            shippingLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal(shippingModal);
-            });
-            refundLink.addEventListener('click', (e) => {
-                e.preventDefault();
-                openModal(refundModal);
-            });
+            const policyLinks = document.querySelectorAll('.policy-link');
+            const modalOverlay = document.getElementById('policy-modal-overlay');
+            const modalBox = document.getElementById('modal-content-box');
+            const modalTitle = document.getElementById('modal-title');
+            const modalBody = document.getElementById('modal-body');
+            const modalCloseBtn = document.getElementById('modal-close-btn');
 
-            [privacyModal, termsModal, aboutModal, contactModal, shippingModal, refundModal].forEach(modal => {
-                modal.addEventListener('click', (e) => {
-                    // Close if the overlay is clicked
-                    if (e.target === modal) {
-                        closeModal(modal);
-                    }
-                    // Close if the close button is clicked
-                    if (e.target.tagName === 'BUTTON') {
-                        closeModal(modal);
-                    }
+            const openModal = (policyName) => {
+                const content = policyContent[policyName];
+                if (content) {
+                    modalTitle.innerText = policyName;
+                    modalBody.innerHTML = content;
+                    modalOverlay.classList.add('is-open');
+                }
+            };
+
+            const closeModal = () => {
+                modalOverlay.classList.remove('is-open');
+            };
+
+            policyLinks.forEach(link => {
+                link.addEventListener('click', (e) => {
+                    e.preventDefault();
+                    const policyName = e.target.getAttribute('data-policy');
+                    openModal(policyName);
                 });
             });
 
-            // --- Donation Logic ---
-            const donationAmountBtns = document.querySelectorAll('.donation-amount-btn');
-            const customAmountInput = document.getElementById('custom-amount');
-            const donateBtn = document.getElementById('donate-btn');
-            const donationMessage = document.getElementById('donation-message');
-            let selectedAmount = 0;
+            // Close modal when 'X' button is clicked
+            modalCloseBtn.addEventListener('click', closeModal);
 
-            const style = document.createElement('style');
-            style.innerHTML = `
-                .donation-amount-btn {
-                    background-color: #374151; color: white; font-semibold: 600; padding: 0.75rem 1.5rem; border-radius: 0.5rem; border: 2px solid transparent; transition: all 0.3s;
+            // Close modal when clicking outside the content box
+            modalOverlay.addEventListener('click', (e) => {
+                // Check if the click is on the overlay itself, not on the modal-content box
+                if (e.target === modalOverlay) {
+                    closeModal();
                 }
-                .donation-amount-btn.selected, .donation-amount-btn:hover {
-                    background-color: #1F2937; border-color: #38BDF8;
-                }
-            `;
-            document.head.appendChild(style);
-
-            donationAmountBtns.forEach(btn => {
-                btn.addEventListener('click', () => {
-                    donationAmountBtns.forEach(b => b.classList.remove('selected'));
-                    btn.classList.add('selected');
-                    selectedAmount = parseInt(btn.dataset.amount, 10);
-                    customAmountInput.value = '';
-                });
             });
 
-            customAmountInput.addEventListener('input', () => {
-                donationAmountBtns.forEach(b => b.classList.remove('selected'));
-                selectedAmount = parseInt(customAmountInput.value, 10);
-            });
+            // --- END: New Modal (Popup) Logic ---
 
-donateBtn.addEventListener('click', async () => {
-    // Get values from ALL fields
-    const donorName = document.getElementById('donor-name').value;
-    const donorContact = document.getElementById('donor-contact').value;
-    const amount = selectedAmount;
-
-    // Add validation for new fields
-    if (!donorName || !donorContact) {
-        alert('Please enter your name and contact information to proceed.');
-        return;
-    }
-    if (!amount || amount < 10) {
-        alert('Please select or enter a valid amount (minimum ₹10).');
-        return;
-    }
-
-    donateBtn.disabled = true;
-    donateBtn.textContent = 'Processing...';
-
-    try {
-        const response = await fetch('/create_order', {
-    method: 'POST',
-    headers: { 'Content-Type': 'application/json' },
-    body: JSON.stringify({
-        amount: amount * 100,
-        name: donorName,         //  Added
-        contact: donorContact    //  Added
-    })
-});
-
-        if (!response.ok) throw new Error('Failed to create order.');
-        
-        const order = await response.json();
-
-        const options = {
-            key: order.key,
-            amount: order.amount,
-            currency: "INR",
-            name: "Circuit Breakers",
-            description: "Donation to support student innovation",
-            image: "https://placehold.co/100x100/38BDF8/FFFFFF?text=CB",
-            order_id: order.id,
-            handler: function (response){
-                donationMessage.textContent = 'Thank you so much for your generous support!';
-                console.log(response);
-            },
-            prefill: {
-                // Use the data from the new input fields
-                name: donorName,
-                email: donorContact.includes('@') ? donorContact : "",
-                contact: !donorContact.includes('@') ? donorContact : ""
-            },
-            notes: {
-                address: "Donation from Website"
-            },
-            theme: {
-                color: "#38BDF8"
-            }
-        };
-        const rzp1 = new Razorpay(options);
-        rzp1.on('payment.failed', function (response){
-            alert("Payment Failed: " + response.error.description);
-        });
-        rzp1.open();
-    } catch (error) {
-        console.error('Donation error:', error);
-        alert('Could not initiate donation. Please try again later.');
-    } finally {
-        donateBtn.disabled = false;
-        donateBtn.textContent = 'Donate Now';
-    }
-});
         });
     </script>
 </body>
