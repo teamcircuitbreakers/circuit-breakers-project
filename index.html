@@ -163,36 +163,50 @@
             transform: scale(1.1);
         }
 
-        /* --- START: Added Styles for Header/Footer Fixes --- */
+        /* --- START: Added Styles for Header/Footer/New Section Fixes --- */
 
-        /* For the new SVG logo */
+        /* 1. New Announcement Bar */
+        .announcement-bar {
+            background-color: var(--brand-orange-dark);
+            color: white;
+            padding: 0.5rem 0;
+            overflow: hidden;
+            white-space: nowrap;
+        }
+        .announcement-text {
+            display: inline-block;
+            padding-left: 100%; /* Start off-screen */
+            animation: marquee 25s linear infinite;
+        }
+        @keyframes marquee {
+            0%   { transform: translateX(0); }
+            100% { transform: translateX(-100%); }
+        }
+
+        /* 2. Header Logo/Text */
         .animated-gradient-fill {
             fill: url(#logo-gradient);
         }
-
-        /* For the "Circuit Breakers" text */
         .animated-gradient-text {
-            /* A gradient that matches the brand colors */
-            background: linear-gradient(90deg, var(--brand-orange-dark), var(--brand-orange), #FBBF24, var(--brand-orange), var(--brand-orange-dark)); /* Using Tailwind yellow-400 for a bright spot */
+            background: linear-gradient(90deg, var(--brand-orange-dark), var(--brand-orange), #FBBF24, var(--brand-orange), var(--brand-orange-dark));
             background-size: 200% auto;
             background-clip: text;
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             animation: gradient-flow 5s linear infinite;
         }
-
         @keyframes gradient-flow {
             0% { background-position: 0% 50%; }
             50% { background-position: 100% 50%; }
             100% { background-position: 0% 50%; }
         }
 
-        /* Modal (Popup) styles */
+        /* 3. Modal (Popup) styles */
         .modal-overlay {
             position: fixed;
             inset: 0;
             background-color: rgba(0, 0, 0, 0.5);
-            z-index: 100; /* Higher than header */
+            z-index: 100;
             display: flex;
             align-items: center;
             justify-content: center;
@@ -206,12 +220,12 @@
             visibility: visible;
         }
         .modal-content {
-            background-color: var(--cream-100); /* Match site theme */
+            background-color: var(--cream-100);
             color: var(--text-dark);
-            border-radius: 0.5rem; /* 8px */
+            border-radius: 0.5rem;
             box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
             width: 100%;
-            max-width: 42rem; /* max-w-2xl */
+            max-width: 42rem;
             max-height: 80vh;
             display: flex;
             flex-direction: column;
@@ -238,19 +252,19 @@
             margin-bottom: 1rem;
         }
         .modal-close-btn {
-            font-size: 1.875rem; /* 30px */
+            font-size: 1.875rem;
             line-height: 1;
             font-weight: bold;
-            color: #6B7280; /* gray-500 */
+            color: #6B7280;
             transition: color 0.2s ease;
             background: none;
             border: none;
             cursor: pointer;
         }
         .modal-close-btn:hover {
-            color: #1F2937; /* gray-800 */
+            color: #1F2937;
         }
-        /* --- END: Added Styles for Header/Footer Fixes --- */
+        /* --- END: Added Styles --- */
 
     </style>
 </head>
@@ -265,6 +279,14 @@
         </defs>
     </svg>
 
+    <div class="announcement-bar">
+        <div class="announcement-text">
+            <span>Our new project services are now live! Get Ready-to-Use Kits, Custom Budget Projects, or Bring Your Ideas to Life.</span>
+            <span class="ml-16">Our new project services are now live! Get Ready-to-Use Kits, Custom Budget Projects, or Bring Your Ideas to Life.</span>
+        </div>
+    </div>
+
+
     <header class="sticky top-0 z-50 w-full bg-white/80 backdrop-blur-lg shadow-sm" style="background-color: rgba(250, 248, 241, 0.8);">
         <nav class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
             <div class="flex h-16 items-center justify-between">
@@ -278,9 +300,11 @@
                         <span class="text-xs font-medium text-gray-500" style="margin-top: -4px;">Rewriting the future</span>
                     </div>
                 </a>
+                
                 <div class="hidden lg:ml-6 lg:flex lg:space-x-8">
                     <a href="#problem" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium text-gray-600 hover:border-orange-500 hover:text-gray-900 transition-colors duration-200">The Problem</a>
                     <a href="#solution" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium text-gray-600 hover:border-orange-500 hover:text-gray-900 transition-colors duration-200">Our Solution</a>
+                    <a href="#start-project" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium text-orange-600 hover:border-orange-500 hover:text-gray-900 transition-colors duration-200">Start a Project</a>
                     <a href="#roadmap" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium text-gray-600 hover:border-orange-500 hover:text-gray-900 transition-colors duration-200">Roadmap</a>
                     <a href="#vision" class="inline-flex items-center border-b-2 border-transparent px-1 pt-1 text-base font-medium text-gray-600 hover:border-orange-500 hover:text-gray-900 transition-colors duration-200">Vision</a>
                 </div>
@@ -308,6 +332,7 @@
                 <div class="space-y-1 pb-3 pt-2">
                     <a href="#problem" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-orange-500 hover:bg-orange-50 hover:text-gray-800">The Problem</a>
                     <a href="#solution" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-orange-500 hover:bg-orange-50 hover:text-gray-800">Our Solution</a>
+                    <a href="#start-project" class="block border-l-4 border-orange-500 bg-orange-50 py-2 pl-3 pr-4 text-base font-medium text-orange-700">Start a Project</a>
                     <a href="#roadmap" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-orange-500 hover:bg-orange-50 hover:text-gray-800">Roadmap</a>
                     <a href="#vision" class="block border-l-4 border-transparent py-2 pl-3 pr-4 text-base font-medium text-gray-600 hover:border-orange-500 hover:bg-orange-50 hover:text-gray-800">Vision</a>
                 </div>
@@ -557,9 +582,144 @@
             </div>
         </section>
 
-        
-        <section id="roadmap" class="py-24 md:py-32 bg-white fade-in-section">
+
+        <section id="start-project" class="py-24 md:py-32 bg-white fade-in-section">
             <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+                
+                <div class="text-center max-w-3xl mx-auto">
+                    <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                        Start Your Project Path
+                    </h2>
+                    <p class="mt-4 text-lg text-gray-600">
+                        Choose how you want your project built. Whether it's a pre-made kit, a custom build on your budget, or your own unique idea, we're here to make it happen. Just click & browse the best suitable option for you, fill & submit the form next to it, and we'll get back to you within next 24 hours! 
+                    </p>
+                </div>
+
+                <div class="mt-20 grid grid-cols-1 gap-10 md:grid-cols-3 lg:gap-12">
+                    
+                    <div class="flex flex-col text-center bg-cream-100 p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <div class="flex-shrink-0">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-orange-600 mx-auto mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z" />
+                                </svg>
+                            </div>
+                            <h3 class="mt-2 text-2xl font-bold text-gray-900">Ready-to-Use Projects</h3>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="mt-4 text-base text-gray-700">Browse our pre-built, ready-to-use IoT and electronics projects. Perfect for gifts, hobbies, or learning.
+                                <br><strong class="text-gray-900">(e.g., Weather Station, Security Alarm)</strong>
+                            </p>
+                        </div>
+                        <div class="mt-8">
+                            <a href="https://forms.gle/nW8b8tZAVibpZkxP7" target="_blank" class="btn-primary rounded-md px-8 py-3 text-base font-medium shadow-md">
+                                Browse Ready Kits
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col text-center bg-cream-100 p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <div class="flex-shrink-0">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-orange-600 mx-auto mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01M12 16v-1m0-4v-1m0-4V7m0 1v.01" />
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M7 16l-4-4m0 0l4-4m-4 4h18" />
+                                </svg>
+                            </div>
+                            <h3 class="mt-2 text-2xl font-bold text-gray-900">Customize by Budget</h3>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="mt-4 text-base text-gray-700">Have a fixed budget? Just tell us your price range and basic need. We'll plan, design, and develop the best possible project for you.</p>
+                        </div>
+                        <div class="mt-8">
+                            <a href="https://forms.gle/nMxRdwbHKMZmGEiz5" target="_blank" class="btn-primary rounded-md px-8 py-3 text-base font-medium shadow-md">
+                                Request Custom Project
+                            </a>
+                        </div>
+                    </div>
+
+                    <div class="flex flex-col text-center bg-cream-100 p-8 rounded-lg shadow-lg hover:shadow-xl transition-shadow duration-300">
+                        <div class="flex-shrink-0">
+                            <div class="flex h-14 w-14 items-center justify-center rounded-full bg-white text-orange-600 mx-auto mb-4">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-7 w-7" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
+                                  <path stroke-linecap="round" stroke-linejoin="round" d="M9.663 17h4.673M12 3v1m6.364 1.636l-.707.707M21 12h-1M4 12H3m3.343-5.657l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707m12.728 0l-.707-.707M12 21v-1m0-8c-3.314 0-6 2.686-6 6h12c0-3.314-2.686-6-6-6z" />
+                                </svg>
+                            </div>
+                            <h3 class="mt-2 text-2xl font-bold text-gray-900">Turn Your Idea Into Reality</h3>
+                        </div>
+                        <div class="flex-grow">
+                            <p class="mt-4 text-base text-gray-700">Have a unique concept, a sketch, or just an idea? Share it with us. We'll analyze it, estimate the cost, and guide you on making it practical.</p>
+                        </div>
+                        <div class="mt-8">
+                            <a href="https://forms.gle/T1fCf6MUF4fgVGAS8" target="_blank" class="btn-primary rounded-md px-8 py-3 text-base font-medium shadow-md">
+                                Submit Your Idea
+                            </a>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="mt-16 max-w-4xl mx-auto">
+                    <blockquote class="bg-yellow-50 border-l-4 border-yellow-400 p-6 rounded-r-lg shadow-md">
+                        <h4 class="text-lg font-bold text-yellow-900">A Special Note on Payments</h4>
+                        <p class="mt-2 text-yellow-800">
+                            Do not make any kind of payments anywhere before our team has discussed with you over call and confirms any order request. We demand the payment in advance because we're bootstrapped, but we **don't** demand any payment before you are totally satisfied & confirmed with us over call.
+                        </p>
+                        <p class="mt-2 text-yellow-800 font-semibold">
+                            Any payments made outside these policies will not fall under "Circuit Breakers" responsibility!
+                        </p>
+                    </blockquote>
+                </div>
+
+
+                <div class="mt-16 text-center"> <h3 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
+                        All Projects Come in Two Flavors
+                    </h3>
+                </div>
+
+                <div class="mt-16 max-w-5xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-8">
+                    <div class="bg-cream-200 p-8 rounded-lg shadow-md">
+                        <h4 class="text-2xl font-bold text-gray-900">DIY (Do It Yourself)</h4>
+                        <p class="mt-4 text-gray-700">Perfect for hands-on learners. We provide everything you need to build it yourself.</p>
+                        <ul class="mt-4 space-y-2 text-gray-800 list-disc list-inside">
+                            <li>All raw components included</li>
+                            <li>Detailed PDF documentation</li>
+                            <li>Step-by-step setup guide</li>
+                            <li>No assembling charges</li>
+                        </ul>
+                        <p class="mt-6 text-xl font-bold text-orange-600">
+                            Additional Cost: ₹49
+                            <span class="block text-sm font-medium text-gray-600">(for PDF manual + setup guide)</span>
+                        </p>
+                        <p class="mt-4 text-sm italic text-gray-600">
+                            Delivery & secure packaging charges will be added and calculated dynamically based on your location & order.
+                        </p>
+                    </div>
+
+                    <div class="bg-cream-200 p-8 rounded-lg shadow-md">
+                        <h4 class="text-2xl font-bold text-gray-900">Ready-to-Use Assembled</h4>
+                        <p class="mt-4 text-gray-700">Receive a fully assembled and tested project, delivered in working condition.</p>
+                         <ul class="mt-4 space-y-2 text-gray-800 list-disc list-inside">
+                            <li>Fully assembled and tested</li>
+                            <li>Ready to use out of the box</li>
+                            <li><strong class="font-semibold">Free</strong> PDF + instruction manual</li>
+                            <li>Peace of mind</li>
+                        </ul>
+                        <p class="mt-6 text-xl font-bold text-orange-600">
+                            Assembling Charge: ₹69
+                            <span class="block text-sm font-medium text-gray-600">(no extra cost for documentation)</span>
+                        </p>
+                        <p class="mt-4 text-sm italic text-gray-600">
+                            Delivery & secure packaging charges will be added and calculated dynamically based on your location & order.
+                        </p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+
+        
+        <section id="roadmap" class="py-24 md:py-32 bg-cream-200 fade-in-section"> <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="text-center max-w-3xl mx-auto">
                     <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                         Our Phased Rollout & Go-to-Market Strategy
@@ -602,8 +762,7 @@
         </section>
 
         
-        <section id="vision" class="py-24 md:py-32 bg-cream-200 fade-in-section">
-            <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+        <section id="vision" class="py-24 md:py-32 bg-white fade-in-section"> <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
                 <div class="max-w-4xl mx-auto text-center">
                     <h2 class="text-3xl font-extrabold tracking-tight text-gray-900 sm:text-4xl">
                         Our Vision: Fueling the Next Wave of "Make in India" Innovation
@@ -812,60 +971,92 @@
             }
 
 
-            // --- START: New Modal (Popup) Logic ---
+            // --- Modal (Popup) Logic (Unchanged) ---
             
-            // (Using placeholder text since none was provided)
             const policyContent = {
-                'About Us': `
-                    <h4>Who We Are</h4>
-                    <p>Circuit Breakers is a student-led initiative in India focused on electronics, IoT, and smart device innovation. We are a team of passionate creators, engineers, and hobbyists who have experienced the exact challenges we aim to solve.</p>
-                    <h4>Our Mission</h4>
-                    <p>Our mission is to build a complete, self-sustaining ecosystem that integrates affordable education, accessible hardware, expert mentorship, and a direct path to commercialization. We want to empower the next generation of Indian innovators to move from passive consumers to active creators.</p>
-                `,
-                'Contact Us': `
-                    <p>You can reach our team through any of the following methods:</p>
-                    <p><strong>Email:</strong><br><a href="mailto:devteam.circuitbreakers@gmail.com" class="text-orange-600 hover:underline">devteam.circuitbreakers@gmail.com</a></p>
-                    <p><strong>Phone:</strong><br>8910652873<br>6295000265</p>
-                    <p><strong>Address:</strong><br>N44, G.C.ROAD, NEAR KALYANI HIGHWAY, KARATKAL MORE, PIN-700119.</p>
-                `,
-                'Privacy Policy': `
-                    <p><strong>Last updated: October 05, 2025</strong></p>
-                <p>Circuit Breakers ("us", "we", or "our") operates the circuitbreakers.in website (the "Service"). This page informs you of our policies regarding the collection, use, and disclosure of personal data when you use our Service and the choices you have associated with that data.</p>
-                <h4>Information Collection and Use</h4>
-                <p>We collect several different types of information for various purposes to provide and improve our Service to you. The only personal information we collect is what you voluntarily provide to us through our contact form (such as your name and email address) or when making a donation.</p>
-                <h4>Use of Data</h4>
-                <p>Circuit Breakers uses the collected data for various purposes: to provide and maintain the Service, to notify you about changes to our Service, to allow you to participate in interactive features of our Service when you choose to do so, to provide customer care and support, and to gather analysis or valuable information so that we can improve the Service.</p>
-                 <h4>Security of Data</h4>
-                <p>The security of your data is important to us, but remember that no method of transmission over the Internet, or method of electronic storage is 100% secure. While we strive to use commercially acceptable means to protect your Personal Data, we cannot guarantee its absolute security.</p>
-            
-                `,
-                'Terms of Service': `
-                    <p><strong>Last updated: October 05, 2025</strong></p>
-                <p>Please read these Terms of Service ("Terms", "Terms of Service") carefully before using the circuitbreakers.in website (the "Service") operated by Circuit Breakers ("us", "we", or "our").</p>
-                <h4>Agreement to Terms</h4>
-                <p>By accessing or using the Service you agree to be bound by these Terms. If you disagree with any part of the terms then you may not access the Service. The content provided on this website is for informational purposes only. We are a student-led initiative sharing our journey and future plans.</p>
-                 <h4>Intellectual Property</h4>
-                <p>The Service and its original content, features and functionality are and will remain the exclusive property of Circuit Breakers. Our content is protected by copyright and other laws of India. Our trademarks may not be used in connection with any product or service without the prior written consent of Circuit Breakers.</p>
-            
-                `,
-                'Shipping Policy': `
-                    <p><strong>Last updated: October 10, 2025</strong></p>
-                <p>Circuit Breakers is primarily a digital-first educational and community platform. Our current offerings, such as online tutorials and community engagement, are delivered digitally and do not require physical shipping.</p>
-                <h4>Physical Goods</h4>
-                <p>At present, we do not sell or ship any physical products. Therefore, shipping charges and delivery timelines are not applicable to any of our current services or donations.</p>
-                <h4>Future Updates</h4><p>Our roadmap includes launching a "Main Store" and "Tech Library" which will feature physical components and kits. When these services become available, this policy will be updated with comprehensive details regarding our shipping partners, delivery timelines, costs, and tracking information. All shipping details for specific products will be clearly stated on the product page at the time of purchase.</p>
-            
-                
-                `,
-                'Refund Policy': `
-                    <p><strong>Last updated: October 10, 2025</strong></p>
-                <p>Thank you for supporting Circuit Breakers. As a bootstrapped, student-run initiative, your contributions are vital to our mission. Please read our policy on refunds and cancellations carefully.</p>
-                 <h4>Future Products & Courses</h4>
-                <p>When we launch our "Main Store" with physical products or our "Student Section" with paid courses, those items will be subject to their own specific refund, return, and cancellation policies. The policy for each product or service will be clearly stated on its respective page at the time of purchase. We are committed to ensuring fairness and transparency in all future transactions.</p>
-                <p>If you have any questions about this policy, please contact us at <a href="mailto:devteam.circuitbreakers@gmail.com" class="accent-color hover:underline">devteam.circuitbreakers@gmail.com</a> before making a contribution.</p>
-            
-                `
-            };
+    'About Us': `
+        <h4>Who We Are</h4>
+        <p>Circuit Breakers is a student-led initiative in India focused on electronics, IoT, and smart device innovation. We are a team of passionate creators, engineers, and hobbyists who have experienced the exact challenges we aim to solve.</p>
+        <h4>Our Mission</h4>
+        <p>Our mission is to build a complete, self-sustaining "5-Pillar Ecosystem" that integrates affordable education, accessible hardware, expert mentorship, and a direct path to commercialization. We want to empower the next generation of Indian innovators to move from passive consumers to active creators.</p>
+    `,
+    'Contact Us': `
+        <p>You can reach our team through any of the following methods:</p>
+        <p><strong>Email:</strong><br><a href="mailto:devteam.circuitbreakers@gmail.com" class="text-orange-600 hover:underline">devteam.circuitbreakers@gmail.com</a></p>
+        <p><strong>Phone / WhatsApp:</strong><br>8910652873<br>6295000265</p>
+        <p><strong>Address:</strong><br>N44, G.C.ROAD, NEAR KALYANI HIGHWAY, KARATKAL MORE, PIN-700119.</p>
+    `,
+    'Privacy Policy': `
+        <p><strong>Last updated: November 07, 2025</strong></p>
+        <p>Circuit Breakers ("us", "we", or "our") is committed to protecting your privacy. This policy outlines how we collect, use, and safeguard your information.</p>
+        <h4>Information We Collect</h4>
+        <p>We may collect the following information:</p>
+        <ul>
+            <li><strong>Personal Information:</strong> Name, email address, phone number, and shipping address when you place an order.</li>
+            <li><strong>Project Information:</strong> Details, ideas, budget, and requirements you submit through our Google Forms or in conversation with our team.</li>
+            <li><strong>Usage Data:</strong> Non-personal information about how you interact with our website.</li>
+        </ul>
+        <h4>How We Use Your Information</h4>
+        <ul>
+            <li>To contact you, confirm, and discuss your project ideas and orders (as stated in our project forms).</li>
+            <li>To process payments and fulfill your orders (e.g., build and ship your project).</li>
+            <li>To provide customer support and respond to inquiries.</li>
+            <li>To improve our website and service offerings.</li>
+        </ul>
+        <h4>Data Security & Third Parties</h4>
+        <p>We use third-party services, such as Google Forms, to collect project information. While we strive to protect your personal data, no method of transmission over the Internet is 100% secure. By submitting information, you acknowledge that you are also subject to the privacy policies of these third-party providers.</p>
+        <p>We will **never** sell or share your personal project ideas with any third party, except as necessary to fulfill your order (e.g., providing your address to a courier service).</p>
+    `,
+    'Terms of Service': `
+        <p><strong>Last updated: November 07, 2025</strong></p>
+        <p>Please read these Terms of Service ("Terms") carefully before using the circuitbreakers.in website (the "Service") and our project services.</p>
+        <h4>1. Agreement to Terms</h4>
+        <p>By accessing our Service or placing an order, you agree to be bound by these Terms. If you disagree with any part, you may not use our services.</p>
+        <h4>2. Project Orders & Payments</h4>
+        <p>All project orders ("Ready-to-Use", "Custom Budget", "Your Idea") are initiated via our online forms. An order is **not confirmed** until a member of the Circuit Breakers team has contacted you via call or WhatsApp to discuss and finalize the project details and total cost.</p>
+        <p>As stated on our website, we require **100% advance payment** *after* this confirmation call. This is because we are a bootstrapped, student-run initiative and must purchase components specifically for your custom order. Any payments made before this confirmation call, or to any account not provided by our official team, are not the responsibility of Circuit Breakers.</p>
+        <h4>3. Intellectual Property</h4>
+        <p><strong>Our IP:</strong> The Service, its content, and the design of our "Ready-to-Use Projects" are the exclusive property of Circuit Breakers.</p>
+        <p><strong>Your IP:</strong> When you submit a project for the "Turn Your Idea Into Reality" service, you retain all intellectual property rights to your unique concept. We will only use your idea to build your project for you and will not replicate it for other customers without your express permission.</p>
+        <h4>4. Product Use & Limitation of Liability</h4>
+        <p>Our products (DIY Kits and Assembled Projects) are intended for educational, hobbyist, and prototyping purposes only. They are not certified for commercial, industrial, or critical applications. Circuit Breakers is not liable for any damages, losses, or injuries resulting from the use, misuse, or inability to use our products.</p>
+        <h4>5. Governing Law</h4>
+        <p>These Terms shall be governed in accordance with the laws of India.</p>
+    `,
+    'Shipping Policy': `
+        <p><strong>Last updated: November 07, 2025</strong></p>
+        <p>This policy details how we handle the shipping and delivery of our physical project kits (both DIY and Assembled).</p>
+        <h4>1. Order Processing Time</h4>
+        <p>We are dedicated to quality. All custom and assembled orders require time for planning, component sourcing, building, and testing. Please allow **4-5 business days** for us to process, build, and prepare your order for dispatch.</p>
+        <h4>2. Delivery Time</h4>
+        <p>Once your order is processed and dispatched, delivery typically takes an additional **3-7 business days**, depending on your location and courier service availability.</p>
+        <p><strong>Total Time = Processing (4-5 days) + Delivery (3-7 days)</strong></p>
+        <h4>3. Shipping & Packaging Charges</h4>
+        <p>Shipping and secure packaging charges are **not included** in the base project price. These charges are calculated dynamically based on your delivery location, and the order's weight and dimensions. The final, all-inclusive amount (including project cost, assembly, and shipping) will be provided to you during your confirmation call, before you make any payment.</p>
+        <h4>4. Tracking</h4>
+        <p>Once your order is shipped, we will provide you with a tracking number via email or WhatsApp so you can monitor your delivery.</p>
+        <h4>5. Service Area</h4>
+        <p>We currently ship to all serviceable pin codes within India.</p>
+    `,
+    'Refund Policy': `
+        <p><strong>Last updated: November 07, 2025</strong></p>
+        <p>Thank you for supporting our student-led initiative. Please read our refund policy carefully, as our custom, on-demand services have specific conditions.</p>
+        <h4>1. Custom Projects ("Customize by Budget", "Turn Your Idea Into Reality")</h4>
+        <p>Due to the highly custom nature of these projects, **advance payments are non-refundable once our team has begun purchasing components or allocating design time for your project.** We communicate this clearly during the confirmation call. We cannot accept cancellations or offer refunds for custom work that is already in progress.</p>
+        <h4>2. "Ready-to-Use" Projects & DIY Kits</h4>
+        <p><strong>Damaged on Arrival (DOA):</strong> We package our products securely. However, if your item arrives visibly damaged or non-functional, you MUST contact us at <a href="mailto:devteam.circuitbreakers@gmail.com" class="text-orange-600 hover:underline">devteam.circuitbreakers@gmail.com</a> **within 48 hours** of receiving the delivery. Please include your order details and clear photos/videos of the damage and packaging.</p>
+        <p>If the claim is validated, we will arrange for a **replacement** of the damaged item or, if a replacement is not possible, a **full refund**.</p>
+        <h4>3. Non-Refundable Situations</h4>
+        <p>We cannot issue refunds or accept returns for:</p>
+        <ul>
+            <li>Projects (DIY or Assembled) that are damaged by the user due to incorrect assembly, improper use, or modification.</li>
+            <li>"Change of mind" after an order has been shipped.</li>
+            <li>Cancellation requests for custom projects that are already in the processing (building) phase.</li>
+        </ul>
+        <h4>4. Future Services (Subscriptions)</h4>
+        <p>Our future "Student Section" and "Tech Library" subscription services will have their own specific cancellation and refund policies, which will be available at their launch.</p>
+    `
+};
 
             const policyLinks = document.querySelectorAll('.policy-link');
             const modalOverlay = document.getElementById('policy-modal-overlay');
@@ -895,18 +1086,13 @@
                 });
             });
 
-            // Close modal when 'X' button is clicked
             modalCloseBtn.addEventListener('click', closeModal);
 
-            // Close modal when clicking outside the content box
             modalOverlay.addEventListener('click', (e) => {
-                // Check if the click is on the overlay itself, not on the modal-content box
                 if (e.target === modalOverlay) {
                     closeModal();
                 }
             });
-
-            // --- END: New Modal (Popup) Logic ---
 
         });
     </script>
