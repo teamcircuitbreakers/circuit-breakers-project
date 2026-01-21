@@ -1,2 +1,7 @@
+---
+layout: null
+permalink: /robots.txt
+---
 User-agent: *
 Allow: /
+Sitemap: https://teamcircuitbreakers.in/sitemap.xml
