@@ -194,7 +194,7 @@
                 </div>
             </div>
 
-            <!-- Manual End Chat Button (Text based, distinct, red) -->
+            <!-- Manual End Chat Button -->
             <button id="end-chat-btn" class="text-sm font-bold text-red-500 hover:text-red-700 transition-colors px-3 py-1.5 bg-red-50 hover:bg-red-100 rounded-full" aria-label="End Chat">
                 End chat
             </button>
@@ -303,6 +303,43 @@
             function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(chatHistory)); } catch(e) {} }
 
             // ==========================================
+            // SECRET QA REPORTING SYSTEM
+            // ==========================================
+            async function sendFailureReport(userReason) {
+                try {
+                    // 1. Ask Gemini to secretly summarize the chat
+                    const secretPrompt = `Based on the conversation history, write a brief 2-3 sentence technical summary of what the user was trying to achieve and why this support chat failed to resolve it. The user explicitly ended the chat stating the reason: "${userReason}". Write only the summary.`;
+                    
+                    const tempHistory = [...chatHistory, { role: "user", parts: [{ text: secretPrompt }] }];
+                    const summaryRes = await fetch(WORKER_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            systemInstruction: { parts: [{ text: "You are an internal QA bot. Summarize the issue strictly and objectively." }] },
+                            contents: tempHistory
+                        })
+                    });
+                    
+                    const summaryData = await summaryRes.json();
+                    const aiSummary = summaryData.candidates[0].content.parts[0].text;
+
+                    // 2. Fire the summary + reason to your Cloudflare Worker 'send_report' route
+                    await fetch(WORKER_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            action: "send_report",
+                            userReason: userReason,
+                            aiSummary: aiSummary
+                        })
+                    });
+                    console.log("QA Report Sent Successfully");
+                } catch (e) {
+                    console.error("Silent QA Report Failed", e);
+                }
+            }
+
+            // ==========================================
             // FINAL CLOSURE & REDIRECT SYSTEM
             // ==========================================
             function executeFinalClosure(botMessageText) {
@@ -314,15 +351,14 @@
                 // Hide any existing quick actions
                 quickActionsWrapper.style.display = 'none';
 
-                // The Mandatory Feedback Note formatted beautifully in HTML
+                // The Mandatory Feedback Note
                 const feedbackNoteHtml = `
                     <div class="feedback-note">
                         <strong>Need further assistance?</strong><br>
-                        You can give feedback or raise a complaint if you think so, directly to us:<br>
+                        You can give feedback or raise a complaint directly to us:<br>
                         📞 <strong>+91-8910652873</strong> or <strong>+91-9062420056</strong>
                     </div>`;
 
-                // Render the bot's apology/goodbye + the feedback note
                 const container = document.createElement('div');
                 container.className = 'msg-container msg-bot-wrapper';
                 const bubble = document.createElement('div');
@@ -338,7 +374,7 @@
                 setTimeout(() => {
                     try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
                     window.location.href = '../index.html';
-                }, 6000); // 6 seconds to read the message and number
+                }, 6000); 
             }
 
             // ==========================================
@@ -352,10 +388,7 @@
 
                 appendMessage("It looks like you want to end the chat! Can you please let us know the reason? 🙏", true, false);
                 
-                // Fetch the very last message container we just appended
                 const lastMsgContainer = chatArea.lastElementChild;
-                
-                // Inject buttons cleanly underneath it using flex-wrap
                 const endActions = document.createElement('div');
                 endActions.id = 'end-reason-actions';
                 endActions.className = 'flex flex-wrap gap-2 mt-3 ml-2 opacity-100 transition-opacity';
@@ -365,13 +398,10 @@
                     <button class="action-chip chip-outline" onclick="handleEndReason('Other')">Other ✍️</button>
                 `;
                 lastMsgContainer.appendChild(endActions);
-                
-                // Wait slightly for DOM to paint before calculating scroll height
                 setTimeout(scrollToBottom, 100);
             });
 
-            window.handleEndReason = function(reason) {
-                // Remove the dynamic buttons immediately
+            window.handleEndReason = async function(reason) {
                 const reasonBtns = document.getElementById('end-reason-actions');
                 if(reasonBtns) reasonBtns.remove();
 
@@ -382,15 +412,15 @@
                     chatInput.disabled = false;
                     chatInput.placeholder = "Please type your reason here...";
                     if (window.innerWidth > 768) chatInput.focus();
+                } else if (reason.includes("answer")) {
+                    // Success! No report needed.
+                    executeFinalClosure("That is fantastic to hear! We are so thrilled we could assist you today. Have an amazing rest of your day, and keep innovating!");
                 } else {
-                    // Hardcoded warm responses for the standard buttons
-                    let reply = "";
-                    if (reason.includes("answer")) {
-                        reply = "That is fantastic to hear! We are so thrilled we could assist you today. Have an amazing rest of your day, and keep innovating!";
-                    } else {
-                        reply = "We sincerely apologize that we couldn't completely resolve your query this time. We are constantly learning, and your feedback is incredibly valuable to us.";
-                    }
-                    executeFinalClosure(reply);
+                    // Failed: Standard button "Still confused"
+                    showTypingIndicator(); // Show typing while secret report fires
+                    await sendFailureReport(reason);
+                    removeTypingIndicator();
+                    executeFinalClosure("We sincerely apologize that we couldn't completely resolve your query this time. We are constantly learning, and your feedback is incredibly valuable to us.");
                 }
             }
 
@@ -454,10 +484,14 @@
                 appendMessage(text, false, true);
                 showTypingIndicator();
 
-                // Inject temporary AI instructions if user selected "Other" as their end reason
+                // If user typed a custom end reason
+                if (chatState === 'ENDING_OTHER') {
+                    await sendFailureReport(text); // Fire the secret report
+                }
+
                 let currentSystemInstruction = SYSTEM_INSTRUCTION;
                 if (chatState === 'ENDING_OTHER') {
-                    currentSystemInstruction += `\n\nCRITICAL OVERRIDE: The user is ending the chat and provided this feedback/reason. You MUST write a warm, empathetic apology, acknowledge their specific reason, and bid them a friendly farewell. You MUST append [ACTION: END_CHAT] at the end.`;
+                    currentSystemInstruction += `\n\nCRITICAL OVERRIDE: The user is ending the chat because: "${text}". Write a warm, empathetic apology, acknowledge their specific reason, and bid them a friendly farewell. YOU MUST APPEND [ACTION: END_CHAT] at the end of your response.`;
                 }
 
                 const payload = {
@@ -478,11 +512,10 @@
                     
                     removeTypingIndicator();
 
-                    // Check if AI triggered the end chat code
                     if (rawBotText.includes('[ACTION: END_CHAT]')) {
                         rawBotText = rawBotText.replace('[ACTION: END_CHAT]', '').trim();
                         executeFinalClosure(rawBotText);
-                        return; // Stop execution
+                        return;
                     }
 
                     if(chatState !== 'CLOSED') {
@@ -581,5 +614,3 @@
     </script>
 </body>
 </html>
-
-
