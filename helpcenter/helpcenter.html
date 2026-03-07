@@ -264,7 +264,7 @@
             // App State
             const STORAGE_KEY = 'cb_help_chat_history';
             let chatHistory = [];
-            let chatState = 'NORMAL'; // NORMAL, ENDING_PROMPT, ENDING_OTHER, CLOSED
+            let chatState = 'NORMAL'; 
 
             const WORKER_URL = 'https://circuitbreakers-gemini-proxy.devteam-circuitbreakers.workers.dev'; 
 
@@ -298,7 +298,6 @@
                 return `<a target="_blank" rel="noopener noreferrer" href="${href}">${text}</a>`;
             };
 
-            // Basic Helpers
             function scrollToBottom() { chatArea.scrollTo({ top: chatArea.scrollHeight, behavior: 'smooth' }); }
             function saveState() { try { localStorage.setItem(STORAGE_KEY, JSON.stringify(chatHistory)); } catch(e) {} }
 
@@ -307,7 +306,6 @@
             // ==========================================
             async function sendFailureReport(userReason) {
                 try {
-                    // 1. Ask Gemini to secretly summarize the chat
                     const secretPrompt = `Based on the conversation history, write a brief 2-3 sentence technical summary of what the user was trying to achieve and why this support chat failed to resolve it. The user explicitly ended the chat stating the reason: "${userReason}". Write only the summary.`;
                     
                     const tempHistory = [...chatHistory, { role: "user", parts: [{ text: secretPrompt }] }];
@@ -323,7 +321,6 @@
                     const summaryData = await summaryRes.json();
                     const aiSummary = summaryData.candidates[0].content.parts[0].text;
 
-                    // 2. Fire the summary + reason to your Cloudflare Worker 'send_report' route
                     await fetch(WORKER_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
@@ -348,10 +345,8 @@
                 chatInput.placeholder = "Chat ended. Redirecting...";
                 chatSendBtn.disabled = true;
                 
-                // Hide any existing quick actions
                 quickActionsWrapper.style.display = 'none';
 
-                // The Mandatory Feedback Note
                 const feedbackNoteHtml = `
                     <div class="feedback-note">
                         <strong>Need further assistance?</strong><br>
@@ -369,7 +364,6 @@
                 
                 setTimeout(scrollToBottom, 50);
 
-                // Trigger Redirect
                 redirectToast.classList.add('active');
                 setTimeout(() => {
                     try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
@@ -386,7 +380,8 @@
                 chatInput.disabled = true;
                 quickActionsWrapper.style.display = 'none';
 
-                appendMessage("It looks like you want to end the chat! Can you please let us know the reason? 🙏", true, false);
+                // We do NOT save this automated text into the memory payload, only visually
+                appendMessage("It looks like you want to end the chat! Can you please let us know the reason? 🙏", true, false); 
                 
                 const lastMsgContainer = chatArea.lastElementChild;
                 const endActions = document.createElement('div');
@@ -405,7 +400,8 @@
                 const reasonBtns = document.getElementById('end-reason-actions');
                 if(reasonBtns) reasonBtns.remove();
 
-                appendMessage(reason, false, false); // Print user choice
+                // Do not push the UI clicks into Gemini's standard memory payload
+                appendMessage(reason, false, false); 
 
                 if (reason === 'Other') {
                     chatState = 'ENDING_OTHER';
@@ -413,11 +409,9 @@
                     chatInput.placeholder = "Please type your reason here...";
                     if (window.innerWidth > 768) chatInput.focus();
                 } else if (reason.includes("answer")) {
-                    // Success! No report needed.
                     executeFinalClosure("That is fantastic to hear! We are so thrilled we could assist you today. Have an amazing rest of your day, and keep innovating!");
                 } else {
-                    // Failed: Standard button "Still confused"
-                    showTypingIndicator(); // Show typing while secret report fires
+                    showTypingIndicator(); 
                     await sendFailureReport(reason);
                     removeTypingIndicator();
                     executeFinalClosure("We sincerely apologize that we couldn't completely resolve your query this time. We are constantly learning, and your feedback is incredibly valuable to us.");
@@ -440,6 +434,7 @@
                 chatArea.appendChild(container);
                 scrollToBottom();
 
+                // CRITICAL FIX: Only pushes to API memory if save == true
                 if (save) {
                     chatHistory.push({ role: isBot ? "model" : "user", parts: [{ text: text }] });
                     saveState();
@@ -481,12 +476,11 @@
                 chatSendBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>'; 
                 lucide.createIcons();
 
-                appendMessage(text, false, true);
+                appendMessage(text, false, true); // Push User message to API memory
                 showTypingIndicator();
 
-                // If user typed a custom end reason
                 if (chatState === 'ENDING_OTHER') {
-                    await sendFailureReport(text); // Fire the secret report
+                    await sendFailureReport(text); 
                 }
 
                 let currentSystemInstruction = SYSTEM_INSTRUCTION;
@@ -519,7 +513,7 @@
                     }
 
                     if(chatState !== 'CLOSED') {
-                        appendMessage(rawBotText, true, true);
+                        appendMessage(rawBotText, true, true); // Push Model reply to API memory
                     }
 
                 } catch (error) {
@@ -546,7 +540,7 @@
             function checkMemoryFirst() {
                 let savedData = null;
                 try { savedData = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
-                return (savedData && Array.isArray(savedData) && savedData.length > 1);
+                return (savedData && Array.isArray(savedData) && savedData.length > 0);
             }
 
             function loadMemoryMode() {
@@ -557,6 +551,10 @@
                     resumeModal.classList.remove('active');
                     quickActionsWrapper.style.display = 'none';
                     chatHistory = savedData;
+                    
+                    // CRITICAL FIX: Render greeting VISUALLY but do NOT save to API memory payload
+                    appendMessage(INITIAL_BOT_MESSAGE, true, false); 
+                    
                     chatHistory.forEach(msg => appendMessage(msg.parts[0].text, msg.role === "model", false));
                     if (window.innerWidth > 768) chatInput.focus();
                 };
@@ -571,24 +569,23 @@
                 try { localStorage.removeItem(STORAGE_KEY); } catch(e) {}
                 chatHistory = [];
                 chatArea.innerHTML = ''; 
-                appendMessage(INITIAL_BOT_MESSAGE, true, true);
+                // CRITICAL FIX: Render greeting VISUALLY but do NOT save to API memory payload
+                // This ensures the first item sent to Gemini is always the User.
+                appendMessage(INITIAL_BOT_MESSAGE, true, false); 
                 if (window.innerWidth > 768) chatInput.focus();
             }
 
-            // Initialization execution
             const hasMemory = checkMemoryFirst();
             const splashScreen = document.getElementById('splash-screen');
 
             if (hasMemory) {
-                // Instantly hide splash and load resume modal
                 splashScreen.style.display = 'none';
                 loadMemoryMode();
             } else {
-                // Run full splash animation for new users
                 const splashTexts = [
                     "Preparing your experience... ✨",
                     "Connecting your personal assistant...",
-                    "Sit back & relax - we're here! 🎉"
+                    "Sit back & relax - we're here! ✨"
                 ];
                 let splashIndex = 0;
                 const splashTextEl = document.getElementById('splash-text');
