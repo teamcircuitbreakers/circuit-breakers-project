@@ -312,8 +312,7 @@
                 chatSendBtn.disabled = true;
                 
                 // Hide any existing quick actions
-                const actions = chatArea.querySelectorAll('.quick-actions-wrapper');
-                actions.forEach(el => el.style.display = 'none');
+                quickActionsWrapper.style.display = 'none';
 
                 // The Mandatory Feedback Note formatted beautifully in HTML
                 const feedbackNoteHtml = `
@@ -331,7 +330,8 @@
                 bubble.innerHTML = marked.parse(botMessageText, { renderer: renderer }) + feedbackNoteHtml;
                 container.appendChild(bubble);
                 chatArea.appendChild(container);
-                scrollToBottom();
+                
+                setTimeout(scrollToBottom, 50);
 
                 // Trigger Redirect
                 redirectToast.classList.add('active');
@@ -352,23 +352,28 @@
 
                 appendMessage("It looks like you want to end the chat! Can you please let us know the reason? 🙏", true, false);
                 
-                // Inject the dynamic end-chat reason buttons
+                // Fetch the very last message container we just appended
+                const lastMsgContainer = chatArea.lastElementChild;
+                
+                // Inject buttons cleanly underneath it using flex-wrap
                 const endActions = document.createElement('div');
-                endActions.className = 'quick-actions-wrapper opacity-100 transition-opacity mt-2';
+                endActions.id = 'end-reason-actions';
+                endActions.className = 'flex flex-wrap gap-2 mt-3 ml-2 opacity-100 transition-opacity';
                 endActions.innerHTML = `
-                    <div class="quick-actions">
-                        <button class="action-chip" onclick="handleEndReason('Got my answer! 🎉')">Got my answer! 🎉</button>
-                        <button class="action-chip" onclick="handleEndReason('Still confused 🤔')">Still confused 🤔</button>
-                        <button class="action-chip chip-outline" onclick="handleEndReason('Other')">Other ✍️</button>
-                    </div>`;
-                chatArea.appendChild(endActions);
-                scrollToBottom();
+                    <button class="action-chip" onclick="handleEndReason('Got my answer! 🎉')">Got my answer! 🎉</button>
+                    <button class="action-chip" onclick="handleEndReason('Still confused 🤔')">Still confused 🤔</button>
+                    <button class="action-chip chip-outline" onclick="handleEndReason('Other')">Other ✍️</button>
+                `;
+                lastMsgContainer.appendChild(endActions);
+                
+                // Wait slightly for DOM to paint before calculating scroll height
+                setTimeout(scrollToBottom, 100);
             });
 
             window.handleEndReason = function(reason) {
                 // Remove the dynamic buttons immediately
-                const actions = chatArea.querySelectorAll('.quick-actions-wrapper');
-                actions.forEach(el => el.remove());
+                const reasonBtns = document.getElementById('end-reason-actions');
+                if(reasonBtns) reasonBtns.remove();
 
                 appendMessage(reason, false, false); // Print user choice
 
@@ -503,58 +508,30 @@
             chatInput.addEventListener('keypress', (e) => { if (e.key === 'Enter') sendMessage(); });
             
             // ==========================================
-            // BOOT SEQUENCE & SPLASH SCREEN LOGIC
+            // BOOT SEQUENCE & MEMORY CHECK
             // ==========================================
-            function runSplashAndBoot() {
-                const splashTexts = [
-                    "Getting things ready...",
-                    "Connecting your personal assistant...",
-                    "Sit back & relax - we're here! 🎉"
-                ];
-                let splashIndex = 0;
-                const splashTextEl = document.getElementById('splash-text');
-                const splashScreen = document.getElementById('splash-screen');
-
-                const splashInterval = setInterval(() => {
-                    splashIndex++;
-                    if(splashIndex < splashTexts.length) {
-                        splashTextEl.style.opacity = 0;
-                        setTimeout(() => {
-                            splashTextEl.textContent = splashTexts[splashIndex];
-                            splashTextEl.style.opacity = 1;
-                        }, 300); // Wait for fade out
-                    } else {
-                        clearInterval(splashInterval);
-                        setTimeout(() => {
-                            splashScreen.classList.add('hidden');
-                            initMemoryCheck(); // Now check memory after splash
-                        }, 800);
-                    }
-                }, 1600); // Time per text
-            }
-
-            function initMemoryCheck() {
+            function checkMemoryFirst() {
                 let savedData = null;
                 try { savedData = JSON.parse(localStorage.getItem(STORAGE_KEY)); } catch(e) {}
+                return (savedData && Array.isArray(savedData) && savedData.length > 1);
+            }
 
-                if (savedData && Array.isArray(savedData) && savedData.length > 1) {
-                    resumeModal.classList.add('active');
-                    
-                    document.getElementById('btn-resume').onclick = () => {
-                        resumeModal.classList.remove('active');
-                        quickActionsWrapper.style.display = 'none';
-                        chatHistory = savedData;
-                        chatHistory.forEach(msg => appendMessage(msg.parts[0].text, msg.role === "model", false));
-                        if (window.innerWidth > 768) chatInput.focus();
-                    };
+            function loadMemoryMode() {
+                let savedData = JSON.parse(localStorage.getItem(STORAGE_KEY));
+                resumeModal.classList.add('active');
+                
+                document.getElementById('btn-resume').onclick = () => {
+                    resumeModal.classList.remove('active');
+                    quickActionsWrapper.style.display = 'none';
+                    chatHistory = savedData;
+                    chatHistory.forEach(msg => appendMessage(msg.parts[0].text, msg.role === "model", false));
+                    if (window.innerWidth > 768) chatInput.focus();
+                };
 
-                    document.getElementById('btn-new').onclick = () => {
-                        resumeModal.classList.remove('active');
-                        startFreshChat();
-                    };
-                } else {
+                document.getElementById('btn-new').onclick = () => {
+                    resumeModal.classList.remove('active');
                     startFreshChat();
-                }
+                };
             }
 
             function startFreshChat() {
@@ -565,8 +542,41 @@
                 if (window.innerWidth > 768) chatInput.focus();
             }
 
-            // Start App
-            runSplashAndBoot();
+            // Initialization execution
+            const hasMemory = checkMemoryFirst();
+            const splashScreen = document.getElementById('splash-screen');
+
+            if (hasMemory) {
+                // Instantly hide splash and load resume modal
+                splashScreen.style.display = 'none';
+                loadMemoryMode();
+            } else {
+                // Run full splash animation for new users
+                const splashTexts = [
+                    "Preparing your experience... ✨",
+                    "Connecting your personal assistant...",
+                    "Sit back & relax - we're here! 🎉"
+                ];
+                let splashIndex = 0;
+                const splashTextEl = document.getElementById('splash-text');
+
+                const splashInterval = setInterval(() => {
+                    splashIndex++;
+                    if(splashIndex < splashTexts.length) {
+                        splashTextEl.style.opacity = 0;
+                        setTimeout(() => {
+                            splashTextEl.textContent = splashTexts[splashIndex];
+                            splashTextEl.style.opacity = 1;
+                        }, 300);
+                    } else {
+                        clearInterval(splashInterval);
+                        setTimeout(() => {
+                            splashScreen.classList.add('hidden');
+                            setTimeout(startFreshChat, 300);
+                        }, 800);
+                    }
+                }, 1600);
+            }
         });
     </script>
 </body>
