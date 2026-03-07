@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Support - Circuit Breakers</title>
+    <title>Circuit Breakers | Help & Support</title>
     
     <!-- Modern Typography: Plus Jakarta Sans for a premium tech feel -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -241,7 +241,6 @@
             color: #9ca3af;
             cursor: not-allowed;
         }
-        .send-btn svg { width: 20px; height: 20px; transform: translateX(1px); }
 
         /* Modern Typing Indicator */
         .typing-dots {
@@ -281,7 +280,7 @@
                 <!-- Avatar & Status -->
                 <div class="flex items-center gap-3">
                     <div class="relative">
-                        <!-- Fetches favicon.png from the root directory based on your GitHub structure -->
+                        <!-- Cloudinary Logo -->
                         <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 overflow-hidden">
                             <img src="https://res.cloudinary.com/dzazor3or/image/upload/v1772895033/favicon_1_g7dbcn.png" alt="Circuit Breakers Logo" class="w-full h-full object-contain p-1">
                         </div>
@@ -320,14 +319,18 @@
         <div class="input-area">
             <input type="text" id="chat-input" class="chat-input" placeholder="Message Circuit Breakers..." autocomplete="off">
             <button id="chat-send" class="send-btn" aria-label="Send Message" disabled>
-                <i data-lucide="send" class="w-5 h-5"></i>
+                <!-- Sleek Standard Paper Plane SVG -->
+                <svg class="w-5 h-5 transform translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>
             </button>
         </div>
         
     </div>
 
     <script>
-        // Initialize Lucide Icons
+        // Initialize Lucide Icons for back arrow
         lucide.createIcons();
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -335,6 +338,13 @@
             const chatInput = document.getElementById('chat-input');
             const chatSendBtn = document.getElementById('chat-send');
             const quickActionsWrapper = document.getElementById('quick-actions-wrapper');
+            
+            // Standard Send SVG for restoring after loading spinner
+            const standardSendSVG = `
+                <svg class="w-5 h-5 transform translate-x-0.5" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" viewBox="0 0 24 24">
+                    <line x1="22" y1="2" x2="11" y2="13"></line>
+                    <polygon points="22 2 15 22 11 13 2 9 22 2"></polygon>
+                </svg>`;
 
             // Input Validation for Send Button
             chatInput.addEventListener('input', () => {
@@ -347,7 +357,7 @@
             const WORKER_URL = 'https://circuitbreakers-gemini-proxy.devteam-circuitbreakers.workers.dev'; 
 
             // ==========================================
-            // OPTIMIZED SYSTEM PROMPT 
+            // OPTIMIZED SYSTEM PROMPT (WITH EXACT LINKS)
             // ==========================================
             const SYSTEM_INSTRUCTION = `
             You are the official Customer Support AI for "Circuit Breakers" (teamcircuitbreakers.in).
@@ -376,7 +386,7 @@
             - Website: https://teamcircuitbreakers.in
             - Instagram: https://www.instagram.com/circuitbreakers_official?igsh=MXdwMXd4ejNjb2htNw==
             - YouTube: https://youtube.com/@team_circuitbreakers?si=pJjUDKRdzbAzJeCO
-            - Facebook: https://www.facebook.com/share/1CYF1SQf3h/
+            - Facebook: https://www.facebook.com/profile.php?id=61581766473273
             - WhatsApp Channel: https://whatsapp.com/channel/0029VbCDhkdA2pLATx0B6C3w
             `;
 
@@ -387,6 +397,20 @@
                 chatArea.scrollTo({ top: chatArea.scrollHeight, behavior: 'smooth' });
             }
 
+            // ==========================================
+            // FIX FOR MARKED.JS "UNDEFINED" BUG
+            // ==========================================
+            const renderer = new marked.Renderer();
+            renderer.link = function(href, title, text) {
+                // In modern marked.js versions, it passes a single token object instead of 3 arguments
+                if (typeof href === 'object' && href !== null) {
+                    const token = href;
+                    return `<a target="_blank" rel="noopener noreferrer" href="${token.href}" title="${token.title || ''}">${token.text}</a>`;
+                }
+                // Fallback for older versions
+                return `<a target="_blank" rel="noopener noreferrer" href="${href}" title="${title || ''}">${text}</a>`;
+            };
+
             // Renders a message bubble instantly
             function appendMessage(text, isBot = false, isHtml = false) {
                 const container = document.createElement('div');
@@ -396,11 +420,6 @@
                 bubble.className = `bubble ${isBot ? 'bubble-bot' : 'bubble-user'}`;
                 
                 if (isHtml) {
-                    // Configure marked to open links in new tabs safely
-                    const renderer = new marked.Renderer();
-                    renderer.link = function(href, title, text) {
-                        return `<a target="_blank" rel="noopener noreferrer" href="${href}" title="${title || ''}">${text}</a>`;
-                    };
                     bubble.innerHTML = marked.parse(text, { renderer: renderer });
                 } else {
                     bubble.textContent = text;
@@ -456,6 +475,7 @@
                 chatInput.value = '';
                 chatInput.disabled = true;
                 chatSendBtn.disabled = true;
+                // Temporarily swap to the lucide loading spinner
                 chatSendBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>'; 
                 lucide.createIcons();
 
@@ -493,8 +513,8 @@
                     chatHistory.pop(); 
                 } finally {
                     chatInput.disabled = false;
-                    chatSendBtn.innerHTML = '<i data-lucide="send" class="w-5 h-5"></i>';
-                    lucide.createIcons();
+                    // Restore the standard SVG
+                    chatSendBtn.innerHTML = standardSendSVG;
                     if (window.innerWidth > 768) chatInput.focus(); 
                 }
             }
@@ -511,3 +531,5 @@
     </script>
 </body>
 </html>
+
+
