@@ -2,286 +2,433 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Help Center - Circuit Breakers</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Support - Circuit Breakers</title>
     
+    <!-- Modern Typography: Plus Jakarta Sans for a premium tech feel -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Dependencies -->
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
 
     <script>
         tailwind.config = {
             theme: {
                 extend: {
-                    colors: {
-                        cream: { 50: '#FCF9F2', 100: '#F5EBD0', 200: '#F3ECDF' },
-                        brand: { orange: '#F97316', orangedark: '#EA580C' }
+                    fontFamily: {
+                        sans: ['"Plus Jakarta Sans"', 'sans-serif'],
                     },
-                    fontFamily: { sans: ['Inter', 'sans-serif'] }
+                    colors: {
+                        brand: {
+                            50: '#fff7ed',
+                            100: '#ffedd5',
+                            500: '#f97316',
+                            600: '#ea580c',
+                            900: '#7c2d12',
+                        },
+                        surface: '#f9fafb',
+                    },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'float': '0 10px 25px -5px rgba(234, 88, 12, 0.25)',
+                    }
                 }
             }
         }
     </script>
 
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #F5EBD0; color: #1F2937; height: 100vh; overflow: hidden; display: flex; flex-direction: column;}
-        
-        .chat-container {
-            width: 100%;
-            max-width: 900px;
-            margin: 0 auto;
-            background: white;
-            flex-grow: 1;
+        /* Base Resets & Mobile Fixes */
+        body, html {
+            margin: 0;
+            padding: 0;
+            height: 100dvh; 
+            background-color: #f3f4f6;
+            color: #111827;
+            overflow: hidden;
             display: flex;
-            flex-direction: column;
-            box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15);
-            /* Soft rounded corners on desktop, full bleed on mobile */
-            @media (min-width: 768px) { border-radius: 1.5rem; margin-top: 2rem; margin-bottom: 2rem; height: calc(100vh - 4rem); }
-        }
-
-        .chat-header {
-            background: linear-gradient(135deg, #F97316, #EA580C);
-            color: white;
-            padding: 1.5rem;
-            display: flex;
+            justify-content: center;
             align-items: center;
-            justify-content: space-between;
-            border-top-left-radius: inherit;
-            border-top-right-radius: inherit;
         }
-
-        .chat-messages {
-            flex-grow: 1;
-            padding: 2rem;
-            overflow-y: auto;
+        
+        /* App Container */
+        .app-wrapper {
+            width: 100%;
+            height: 100dvh;
             display: flex;
             flex-direction: column;
-            gap: 1.5rem;
-            background: #FCF9F2;
-            scrollbar-width: thin;
-            scrollbar-color: #F97316 #F5EBD0;
-            scroll-behavior: smooth;
+            background: #ffffff;
+            position: relative;
         }
-        .chat-messages::-webkit-scrollbar { width: 6px; }
-        .chat-messages::-webkit-scrollbar-track { background: #F5EBD0; }
-        .chat-messages::-webkit-scrollbar-thumb { background-color: #F97316; border-radius: 10px; }
 
-        .msg-bubble {
-            max-width: 85%;
+        /* Desktop specific styling */
+        @media (min-width: 768px) {
+            .app-wrapper {
+                height: 90dvh;
+                max-height: 850px;
+                max-width: 480px; 
+                border-radius: 24px;
+                box-shadow: 0 25px 50px -12px rgba(0,0,0,0.15), 0 0 0 1px rgba(0,0,0,0.05);
+                overflow: hidden;
+            }
+            body { background: linear-gradient(135deg, #fff7ed 0%, #f3f4f6 100%); }
+        }
+
+        /* Chat Header */
+        .chat-header {
+            background: rgba(255, 255, 255, 0.9);
+            backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(0,0,0,0.05);
             padding: 1rem 1.25rem;
-            border-radius: 1.25rem;
-            font-size: 1.05rem;
-            line-height: 1.6;
-            word-wrap: break-word;
-            opacity: 0;
-            animation: fadeIn 0.3s ease forwards;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            z-index: 10;
         }
-        @keyframes fadeIn { to { opacity: 1; } }
 
-        .msg-bot { background: white; align-self: flex-start; border-bottom-left-radius: 0.25rem; border: 1px solid #F3ECDF; box-shadow: 0 4px 6px rgba(0,0,0,0.02); }
-        .msg-user { background: #EA580C; color: white; align-self: flex-end; border-bottom-right-radius: 0.25rem; box-shadow: 0 4px 6px rgba(234, 88, 12, 0.2); }
+        /* Chat Area */
+        .chat-area {
+            flex-grow: 1;
+            overflow-y: auto;
+            padding: 1.5rem 1.25rem;
+            display: flex;
+            flex-direction: column;
+            gap: 1.25rem;
+            background: #fcfcfd;
+            scroll-behavior: smooth;
+            scrollbar-width: none; 
+            -ms-overflow-style: none;
+        }
+        .chat-area::-webkit-scrollbar { display: none; }
+
+        /* Message Bubbles & Animations */
+        .msg-container {
+            display: flex;
+            flex-direction: column;
+            max-width: 85%;
+            opacity: 0;
+            transform: translateY(10px);
+            animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
         
-        /* Markdown Styling inside Bubbles */
-        .msg-bot p { margin-bottom: 0.75rem; }
-        .msg-bot p:last-child { margin-bottom: 0; }
-        .msg-bot ul, .msg-bot ol { margin-left: 1.5rem; margin-bottom: 0.75rem; list-style-type: disc; }
-        .msg-bot li { margin-bottom: 0.25rem; }
-        .msg-bot strong { font-weight: 700; color: #9a3412; }
-        .msg-bot a { color: #ea580c; font-weight: bold; text-decoration: underline; transition: color 0.2s; }
-        .msg-bot a:hover { color: #c2410c; }
+        .msg-bot-wrapper { align-self: flex-start; }
+        .msg-user-wrapper { align-self: flex-end; }
 
+        .bubble {
+            padding: 0.875rem 1.125rem;
+            font-size: 0.95rem;
+            line-height: 1.5;
+            word-wrap: break-word;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.02);
+        }
+
+        .bubble-bot {
+            background: white;
+            color: #1f2937;
+            border: 1px solid rgba(0,0,0,0.04);
+            border-radius: 20px 20px 20px 4px;
+        }
+
+        .bubble-user {
+            background: linear-gradient(135deg, #f97316, #ea580c);
+            color: white;
+            border-radius: 20px 20px 4px 20px;
+            box-shadow: 0 4px 12px rgba(234, 88, 12, 0.15);
+        }
+
+        /* Markdown Styling within Bot Bubbles */
+        .bubble-bot p { margin-bottom: 0.5rem; }
+        .bubble-bot p:last-child { margin-bottom: 0; }
+        .bubble-bot ul { margin-left: 1.25rem; margin-bottom: 0.5rem; list-style-type: none; padding: 0;}
+        .bubble-bot li { position: relative; margin-bottom: 0.25rem; padding-left: 0.5rem;}
+        .bubble-bot li::before { content: '•'; color: #f97316; font-weight: bold; position: absolute; left: -0.75rem; }
+        .bubble-bot strong { font-weight: 700; color: #111827; }
+        .bubble-bot a { color: #ea580c; font-weight: 600; text-decoration: none; border-bottom: 1px solid transparent; transition: all 0.2s;}
+        .bubble-bot a:hover { border-bottom-color: #ea580c; }
+
+        /* Animations */
+        @keyframes slideUp {
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Quick Actions */
+        .quick-actions-wrapper {
+            width: 100%;
+            overflow-x: auto;
+            padding: 0.5rem 1.25rem 1rem 1.25rem;
+            background: linear-gradient(to top, #ffffff, transparent);
+            scrollbar-width: none;
+            -ms-overflow-style: none;
+            transition: opacity 0.3s ease;
+        }
+        .quick-actions-wrapper::-webkit-scrollbar { display: none; }
+        
         .quick-actions {
-            padding: 1rem 2rem;
-            background: #FCF9F2;
+            display: flex;
+            gap: 0.5rem;
+            width: max-content;
+        }
+
+        .action-chip {
+            background: white;
+            border: 1px solid #ffedd5;
+            color: #ea580c;
+            padding: 0.5rem 1rem;
+            border-radius: 999px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 2px 4px rgba(249, 115, 22, 0.05);
+            white-space: nowrap;
+        }
+        .action-chip:hover {
+            background: #fff7ed;
+            border-color: #f97316;
+            transform: translateY(-1px);
+        }
+
+        /* Input Area */
+        .input-area {
+            background: white;
+            padding: 1rem 1.25rem;
+            padding-bottom: max(1rem, env(safe-area-inset-bottom));
+            border-top: 1px solid rgba(0,0,0,0.05);
             display: flex;
             gap: 0.75rem;
-            flex-wrap: wrap;
-            transition: all 0.3s ease;
+            align-items: center;
         }
-        .quick-actions.hidden { display: none; }
-        .action-pill {
-            background: white; border: 1px solid #F97316; color: #EA580C; padding: 0.5rem 1rem; border-radius: 99px; font-size: 0.9rem; font-weight: 600; cursor: pointer; transition: all 0.2s ease; box-shadow: 0 2px 4px rgba(249, 115, 22, 0.1);
-        }
-        .action-pill:hover { background: #F97316; color: white; transform: translateY(-2px); }
 
-        .chat-input-area {
-            padding: 1.5rem;
+        .chat-input {
+            flex-grow: 1;
+            background: #f3f4f6;
+            border: 1px solid transparent;
+            padding: 0.875rem 1.25rem;
+            border-radius: 24px;
+            font-size: 0.95rem;
+            outline: none;
+            transition: all 0.3s;
+        }
+        .chat-input:focus {
             background: white;
-            border-top: 1px solid #F3ECDF;
+            border-color: #fdba74;
+            box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1);
+        }
+
+        .send-btn {
+            background: #f97316;
+            color: white;
+            border: none;
+            width: 44px;
+            height: 44px;
+            border-radius: 50%;
             display: flex;
-            gap: 1rem;
-            border-bottom-left-radius: inherit;
-            border-bottom-right-radius: inherit;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
         }
-        .chat-input { flex-grow: 1; padding: 1rem 1.5rem; border: 2px solid #F3ECDF; border-radius: 99px; outline: none; font-size: 1.05rem; background: #FCF9F2; transition: all 0.3s ease; }
-        .chat-input:focus { border-color: #F97316; background: white; box-shadow: 0 0 0 4px rgba(249, 115, 22, 0.1); }
-        .chat-send-btn { background: #F97316; color: white; border: none; width: 56px; height: 56px; border-radius: 50%; display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s; box-shadow: 0 4px 10px rgba(249, 115, 22, 0.3); }
-        .chat-send-btn:hover { background: #EA580C; transform: scale(1.05); }
-        .chat-send-btn:disabled { background: #cbd5e1; cursor: not-allowed; transform: scale(1); box-shadow: none;}
-
-        .typing-indicator { display: flex; gap: 6px; padding: 8px 12px; align-items: center; }
-        .typing-dot { width: 8px; height: 8px; background: #EA580C; border-radius: 50%; animation: typing 1.4s infinite ease-in-out both; opacity: 0.7;}
-        .typing-dot:nth-child(1) { animation-delay: -0.32s; }
-        .typing-dot:nth-child(2) { animation-delay: -0.16s; }
-        @keyframes typing { 0%, 80%, 100% { transform: scale(0); } 40% { transform: scale(1); } }
-
-        /* Cursor for the typing effect */
-        .typing-cursor::after {
-            content: '▌';
-            animation: blink 1s step-start infinite;
-            color: #EA580C;
+        .send-btn:hover:not(:disabled) {
+            background: #ea580c;
+            transform: scale(1.05);
         }
-        @keyframes blink { 50% { opacity: 0; } }
+        .send-btn:disabled {
+            background: #e5e7eb;
+            color: #9ca3af;
+            cursor: not-allowed;
+        }
+        .send-btn svg { width: 20px; height: 20px; transform: translateX(1px); }
+
+        /* Modern Typing Indicator */
+        .typing-dots {
+            display: flex;
+            align-items: center;
+            gap: 4px;
+            padding: 0.5rem 0.25rem;
+        }
+        .dot {
+            width: 6px;
+            height: 6px;
+            background-color: #cbd5e1;
+            border-radius: 50%;
+            animation: bounce 1.4s infinite ease-in-out both;
+        }
+        .dot:nth-child(1) { animation-delay: -0.32s; }
+        .dot:nth-child(2) { animation-delay: -0.16s; }
+        
+        @keyframes bounce {
+            0%, 80%, 100% { transform: scale(0); }
+            40% { transform: scale(1); }
+        }
     </style>
 </head>
 <body>
 
-    <div class="chat-container">
+    <div class="app-wrapper">
         
-        <div class="chat-header">
-            <div class="flex items-center">
-                <div class="w-12 h-12 bg-white rounded-full flex items-center justify-center mr-4 shadow-md">
-                    <svg class="w-7 h-7 text-orange-600" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" d="M13 10V3L4 14h7v7l9-11h-7z"></path>
-                    </svg>
-                </div>
-                <div>
-                    <h1 class="text-xl font-extrabold tracking-wide">Circuit Breakers Support</h1>
-                    <p class="text-sm text-orange-100 font-medium">Powered by AI Assistant</p>
+        <!-- HEADER -->
+        <header class="chat-header">
+            <div class="flex items-center gap-3 w-full">
+                <!-- Back Button -->
+                <a href="../index.html" class="p-2 -ml-2 text-gray-400 hover:text-brand-600 transition-colors rounded-full hover:bg-brand-50" aria-label="Back to Website">
+                    <i data-lucide="chevron-left" class="w-6 h-6"></i>
+                </a>
+                
+                <!-- Avatar & Status -->
+                <div class="flex items-center gap-3">
+                    <div class="relative">
+                        <!-- Fetches favicon.png from the root directory based on your GitHub structure -->
+                        <div class="w-10 h-10 bg-white rounded-full flex items-center justify-center shadow-sm border border-gray-100 overflow-hidden">
+                            <img src="https://res.cloudinary.com/dzazor3or/image/upload/v1772895033/favicon_1_g7dbcn.png" alt="Circuit Breakers Logo" class="w-full h-full object-contain p-1">
+                        </div>
+                        <div class="absolute bottom-0 right-0 w-3 h-3 bg-green-500 border-2 border-white rounded-full"></div>
+                    </div>
+                    <div>
+                        <h1 class="font-bold text-gray-900 leading-none">Circuit Breakers | Help & Support</h1>
+                        <span class="text-xs font-medium text-brand-600">Powered by AI</span>
+                    </div>
                 </div>
             </div>
-            <a href="i../index.html" class="flex items-center text-white hover:text-orange-200 transition-colors font-semibold text-sm">
-                <svg class="w-5 h-5 mr-1" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M10 19l-7-7m0 0l7-7m-7 7h18"></path></svg>
-                Back to Website
-            </a>
-        </div>
+        </header>
 
-        <div class="chat-messages" id="chat-messages">
-            <div class="msg-bubble msg-bot">
-                <p>Hi there! 👋 Welcome to the Circuit Breakers Help Center.</p>
-                <p>I can help you with questions about our DIY kits, custom projects, pricing, shipping, or our 5-pillar ecosystem.</p>
+        <!-- CHAT MESSAGES AREA -->
+        <div class="chat-area" id="chat-area">
+            <!-- Initial Bot Message -->
+            <div class="msg-container msg-bot-wrapper">
+                <div class="bubble bubble-bot">
+                    <p>Hi there! 👋 Welcome to the Circuit Breakers Help Center.</p>
+                    <p>How can I assist you today? I can help with our DIY kits, custom projects, or general inquiries!</p>
+                </div>
             </div>
         </div>
 
-        <div class="quick-actions" id="quick-actions">
-            <button class="action-pill" onclick="sendQuickAction('How do custom projects work?')">How do custom projects work?</button>
-            <button class="action-pill" onclick="sendQuickAction('What is the difference between DIY and Assembled?')">DIY vs Assembled?</button>
-            <button class="action-pill" onclick="sendQuickAction('What is your shipping policy?')">Shipping Policy?</button>
-            <button class="action-pill" onclick="sendQuickAction('I need to talk to a human.')">Talk to a human 💬</button>
+        <!-- QUICK ACTIONS -->
+        <div class="quick-actions-wrapper" id="quick-actions-wrapper">
+            <div class="quick-actions">
+                <button class="action-chip" onclick="sendQuickAction('How do custom projects work?')">Custom Projects 🛠️</button>
+                <button class="action-chip" onclick="sendQuickAction('DIY vs Assembled kits?')">DIY vs Assembled?</button>
+                <button class="action-chip" onclick="sendQuickAction('What is the 5-pillar ecosystem?')">The 5 Pillars 📚</button>
+                <button class="action-chip" onclick="sendQuickAction('I want to talk to a human.')">Talk to a human 💬</button>
+            </div>
         </div>
 
-        <div class="chat-input-area">
-            <input type="text" id="chat-input" class="chat-input" placeholder="Type your question here..." autocomplete="off">
-            <button id="chat-send" class="chat-send-btn" aria-label="Send Message">
-                <svg class="w-7 h-7" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+        <!-- INPUT AREA -->
+        <div class="input-area">
+            <input type="text" id="chat-input" class="chat-input" placeholder="Message Circuit Breakers..." autocomplete="off">
+            <button id="chat-send" class="send-btn" aria-label="Send Message" disabled>
+                <i data-lucide="send" class="w-5 h-5"></i>
             </button>
         </div>
+        
     </div>
 
     <script>
+        // Initialize Lucide Icons
+        lucide.createIcons();
+
         document.addEventListener('DOMContentLoaded', () => {
-            const chatMessages = document.getElementById('chat-messages');
+            const chatArea = document.getElementById('chat-area');
             const chatInput = document.getElementById('chat-input');
             const chatSendBtn = document.getElementById('chat-send');
-            const quickActionsContainer = document.getElementById('quick-actions');
+            const quickActionsWrapper = document.getElementById('quick-actions-wrapper');
+
+            // Input Validation for Send Button
+            chatInput.addEventListener('input', () => {
+                chatSendBtn.disabled = chatInput.value.trim() === '';
+            });
 
             // ==========================================
-            // SECURE WORKER URL (API KEY IS HIDDEN IN CLOUDFLARE)
+            // SECURE WORKER URL
             // ==========================================
             const WORKER_URL = 'https://circuitbreakers-gemini-proxy.devteam-circuitbreakers.workers.dev'; 
 
-            // RAG Context + SMART ESCALATION RULE
+            // ==========================================
+            // OPTIMIZED SYSTEM PROMPT 
+            // ==========================================
             const SYSTEM_INSTRUCTION = `
             You are the official Customer Support AI for "Circuit Breakers" (teamcircuitbreakers.in).
-            Your tone should be highly helpful, professional, enthusiastic, and encouraging.
-            
-            IMPORTANT ESCALATION RULE:
-            If the user explicitly asks to speak to a human, seems frustrated, complains about an order, or asks for a highly complex custom project that requires an engineer's review, you MUST stop trying to solve the problem and instead provide this EXACT response:
-            "It sounds like you need our engineering or support team! Please click here to chat with us directly on WhatsApp: [Chat with a Human on WhatsApp](https://wa.me/919062420056?text=Hi,%20I%20need%20human%20assistance%20from%20the%20Help%20Center). Our team will take over immediately."
+            Tone: Highly helpful, professional, enthusiastic, and concise.
+
+            CRITICAL FORMATTING RULES:
+            1. NEVER output large walls of text. 
+            2. Keep responses extremely concise. Max 2-3 sentences per paragraph.
+            3. HEAVILY use bullet points for readability.
+            4. Use **bold text** to highlight key terms, prices, or names.
+            5. Always end your message with a brief follow-up question to keep the user engaged.
+
+            ESCALATION RULE (CRITICAL):
+            If the user explicitly asks for a human, is frustrated, has an order issue, or needs a complex engineer review, STOP solving and reply EXACTLY with this:
+            "It sounds like you need our engineering or support team! Please [click here to chat directly on WhatsApp](https://wa.me/919062420056?text=Hi,%20I%20need%20human%20assistance). They will take over right away!"
 
             KNOWLEDGE BASE:
-            COMPANY INFO:
-            Name: Circuit Breakers
-            Mission: A student-led initiative in India dismantling barriers to electronics/IoT innovation. We help aspiring engineers and hobbyists by providing affordable education, accessible hardware, mentorship, and a path to commercialization.
-            Location: Kolkata, West Bengal (PIN-700119)
-            Email: devteam.circuitbreakers@gmail.com
-            Phones: +91-8910652873, +91-9062420056
-
-            THE 5-PILLAR ECOSYSTEM:
-            1. Student Section: Affordable learning paths (Est. ₹500/month) for coding, embedded systems, IoT.
-            2. Teacher Section: Experienced mentors sharing expertise.
-            3. Tech Library: Hardware-as-a-Service (Est. ₹100/month). Borrow physical components like books.
-            4. Dev Section: R&D heart for branded products and community prototypes.
-            5. Main Store: E-commerce platform.
-
-            PROJECT SERVICES:
-            - "Ready-to-Use Projects": Pre-built kits.
-            - "Customize by Budget" (Most Popular): Tell us a budget and basic need, we design it.
-            - "Turn Your Idea Into Reality": Share a sketch/idea, we build it.
-
-            DELIVERY OPTIONS:
-            - DIY (Do It Yourself): Includes all raw components, free PDF manual, free setup guide. No assembling charge. Delivery extra.
-            - Ready-to-Use Assembled: Fully assembled, tested, ready to use out of the box. Includes free PDF manual. Assembling charge is exactly ₹69. Delivery extra.
-
-            POLICIES:
-            - Payment: 100% advance payment required. DO NOT make payments before a confirmation call from our team.
-            - Shipping: 4-5 days processing + 3-7 days delivery.
-            - Refunds: Advance payments are non-refundable once work begins. For DOA items, email within 48 hours.
+            - Mission: Student-led initiative in Kolkata dismantling barriers to electronics/IoT innovation.
+            - Contact: devteam.circuitbreakers@gmail.com | +91-8910652873, +91-9062420056
+            - 5 Pillars: 1) Student Section (Coding/IoT classes ~₹500/mo), 2) Teacher Section, 3) Tech Library (Hardware-as-a-Service ~₹100/mo), 4) Dev Section (R&D), 5) Main Store.
+            - Services: Ready-to-Use Kits, Customize by Budget (Most Popular), Turn Idea Into Reality.
+            - Delivery: DIY (Raw components, free manual, delivery extra). Assembled (Tested, ₹69 assembly fee, delivery extra).
+            - Policies: 100% advance required (Wait for confirmation call first). Shipping takes 4-5 days processing + 3-7 days transit. No refunds on custom advance work.
+            
+            SOCIAL MEDIA & LINKS (Provide these ONLY if asked where to find us online):
+            - Website: https://teamcircuitbreakers.in
+            - Instagram: https://www.instagram.com/circuitbreakers_official?igsh=MXdwMXd4ejNjb2htNw==
+            - YouTube: https://youtube.com/@team_circuitbreakers?si=pJjUDKRdzbAzJeCO
+            - Facebook: https://www.facebook.com/share/1CYF1SQf3h/
+            - WhatsApp Channel: https://whatsapp.com/channel/0029VbCDhkdA2pLATx0B6C3w
             `;
 
             let chatHistory = [];
 
-            // Adds an immediate static bubble (used for user messages)
-            function appendStaticMessage(text, isBot = false) {
-                const bubble = document.createElement('div');
-                bubble.className = `msg-bubble ${isBot ? 'msg-bot' : 'msg-user'}`;
-                bubble.innerHTML = isBot && typeof marked !== 'undefined' ? marked.parse(text) : text;
-                chatMessages.appendChild(bubble);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+            // Helper to scroll to bottom smoothly
+            function scrollToBottom() {
+                chatArea.scrollTo({ top: chatArea.scrollHeight, behavior: 'smooth' });
             }
 
-            // Real-life Character-by-Character Typewriter Effect handling Markdown HTML safely
-            async function typeWriterEffect(htmlText) {
-                const bubble = document.createElement('div');
-                bubble.className = 'msg-bubble msg-bot typing-cursor';
-                chatMessages.appendChild(bubble);
+            // Renders a message bubble instantly
+            function appendMessage(text, isBot = false, isHtml = false) {
+                const container = document.createElement('div');
+                container.className = `msg-container ${isBot ? 'msg-bot-wrapper' : 'msg-user-wrapper'}`;
                 
-                let i = 0;
-                let isTag = false;
-                let currentHTML = '';
-
-                // Render the character by character
-                while (i < htmlText.length) {
-                    if (htmlText.charAt(i) === '<') isTag = true;
-                    
-                    currentHTML += htmlText.charAt(i);
-                    
-                    if (htmlText.charAt(i) === '>') isTag = false;
-                    
-                    bubble.innerHTML = currentHTML;
-                    
-                    // Only pause if we are typing actual text, not parsing HTML tags
-                    if (!isTag) {
-                        // Randomize typing speed slightly for realism (10ms to 30ms)
-                        const speed = Math.floor(Math.random() * 20) + 10;
-                        await new Promise(r => setTimeout(r, speed));
-                    }
-                    
-                    i++;
-                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                const bubble = document.createElement('div');
+                bubble.className = `bubble ${isBot ? 'bubble-bot' : 'bubble-user'}`;
+                
+                if (isHtml) {
+                    // Configure marked to open links in new tabs safely
+                    const renderer = new marked.Renderer();
+                    renderer.link = function(href, title, text) {
+                        return `<a target="_blank" rel="noopener noreferrer" href="${href}" title="${title || ''}">${text}</a>`;
+                    };
+                    bubble.innerHTML = marked.parse(text, { renderer: renderer });
+                } else {
+                    bubble.textContent = text;
                 }
-                
-                // Remove cursor class when done
-                bubble.classList.remove('typing-cursor');
+
+                container.appendChild(bubble);
+                chatArea.appendChild(container);
+                scrollToBottom();
             }
 
+            // Modern Typing Indicator
             function showTypingIndicator() {
+                const container = document.createElement('div');
+                container.className = 'msg-container msg-bot-wrapper';
+                container.id = 'typing-indicator';
+                
                 const bubble = document.createElement('div');
-                bubble.className = 'msg-bubble msg-bot';
-                bubble.id = 'typing-indicator';
-                bubble.innerHTML = '<div class="typing-indicator"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>';
-                chatMessages.appendChild(bubble);
-                chatMessages.scrollTop = chatMessages.scrollHeight;
+                bubble.className = 'bubble bubble-bot';
+                bubble.innerHTML = `
+                    <div class="typing-dots">
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                        <div class="dot"></div>
+                    </div>`;
+                
+                container.appendChild(bubble);
+                chatArea.appendChild(container);
+                scrollToBottom();
             }
 
             function removeTypingIndicator() {
@@ -289,9 +436,10 @@
                 if (indicator) indicator.remove();
             }
 
-            // Exported to window so quick action buttons can call it
+            // Expose quick action function to window
             window.sendQuickAction = function(text) {
                 chatInput.value = text;
+                chatSendBtn.disabled = false;
                 sendMessage();
             }
 
@@ -299,14 +447,19 @@
                 const text = chatInput.value.trim();
                 if (!text) return;
 
-                // Hide quick actions after first message
-                quickActionsContainer.classList.add('hidden');
+                // Hide quick actions permanently after first interaction
+                if (quickActionsWrapper.style.display !== 'none') {
+                    quickActionsWrapper.style.opacity = '0';
+                    setTimeout(() => quickActionsWrapper.style.display = 'none', 300);
+                }
 
                 chatInput.value = '';
                 chatInput.disabled = true;
                 chatSendBtn.disabled = true;
-                
-                appendStaticMessage(text, false);
+                chatSendBtn.innerHTML = '<i data-lucide="loader-2" class="w-5 h-5 animate-spin"></i>'; 
+                lucide.createIcons();
+
+                appendMessage(text, false, false);
                 showTypingIndicator();
 
                 chatHistory.push({ role: "user", parts: [{ text: text }] });
@@ -317,40 +470,32 @@
                 };
 
                 try {
-                    // Fetch directly from your secure Cloudflare Worker URL
                     const response = await fetch(WORKER_URL, {
                         method: 'POST',
                         headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify(payload)
                     });
 
-                    if (!response.ok) {
-                        const errorText = await response.text(); 
-                        throw new Error(`Proxy Error ${response.status}: ${errorText || 'Unknown'}`);
-                    }
+                    if (!response.ok) throw new Error(`Network response was not ok`);
 
                     const data = await response.json();
                     const rawBotText = data.candidates[0].content.parts[0].text;
                     
-                    // Parse markdown to HTML
-                    const htmlBotText = marked.parse(rawBotText);
-
                     removeTypingIndicator();
+                    appendMessage(rawBotText, true, true);
                     
-                    // Start the real-life typing effect
-                    await typeWriterEffect(htmlBotText);
-
                     chatHistory.push({ role: "model", parts: [{ text: rawBotText }] });
 
                 } catch (error) {
+                    console.error('API Error:', error);
                     removeTypingIndicator();
-                    console.error('Fetch error:', error);
-                    appendStaticMessage(`⚠️ **System Alert:** We're having trouble connecting to the AI. Please [click here to chat with us on WhatsApp](https://wa.me/919062420056) instead!`, true);
+                    appendMessage(`⚠️ **Connection Error:** We are having trouble connecting. Please [click here to chat with us on WhatsApp](https://wa.me/919062420056) instead!`, true, true);
                     chatHistory.pop(); 
                 } finally {
                     chatInput.disabled = false;
-                    chatSendBtn.disabled = false;
-                    chatInput.focus();
+                    chatSendBtn.innerHTML = '<i data-lucide="send" class="w-5 h-5"></i>';
+                    lucide.createIcons();
+                    if (window.innerWidth > 768) chatInput.focus(); 
                 }
             }
 
@@ -359,8 +504,9 @@
                 if (e.key === 'Enter') sendMessage();
             });
             
-            // Auto focus input on load
-            chatInput.focus();
+            if (window.innerWidth > 768) {
+                chatInput.focus();
+            }
         });
     </script>
 </body>
