@@ -1,0 +1,609 @@
+<!DOCTYPE html>
+<html lang="en" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Projects - Circuit Breakers</title>
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        cream: { 50: '#FCF9F2', 100: '#F5EBD0', 200: '#F3ECDF', 300: '#E6D5A7' },
+                        brand: { orange: '#F97316', orangedark: '#EA580C' }
+                    },
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    boxShadow: {
+                        'glass': '0 8px 32px 0 rgba(31, 38, 135, 0.07)',
+                        'card-hover': '0 20px 40px -10px rgba(249, 115, 22, 0.15)',
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        :root {
+            --brand-orange: #F97316;
+            --brand-orange-dark: #EA580C;
+        }
+        body { font-family: 'Inter', sans-serif; background-color: #F5EBD0; color: #1F2937; line-height: 1.7; overflow-x: hidden; }
+        
+        /* Buttons & Cards matching main site */
+        .btn-primary { background: linear-gradient(135deg, var(--brand-orange), var(--brand-orange-dark)); color: white; transition: all 0.3s ease; position: relative; overflow: hidden; z-index: 1; }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 10px 20px -10px var(--brand-orange-dark); }
+        .glass-card { background: rgba(255, 255, 255, 0.8); backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.8); box-shadow: var(--glass); transition: all 0.3s ease; }
+        .glass-card:hover { transform: translateY(-5px); box-shadow: 0 15px 30px rgba(0,0,0,0.1); border-color: rgba(249, 115, 22, 0.3); }
+
+        /* Floating Cart */
+        .cart-fab { position: fixed; bottom: 24px; right: 24px; background: #1F2937; color: white; border-radius: 50px; display: flex; align-items: center; justify-content: center; height: 60px; padding: 0 24px; box-shadow: 0 10px 25px rgba(0,0,0,0.2); transition: all 0.3s ease; z-index: 900; cursor: pointer; }
+        .cart-fab:hover { transform: translateY(-5px); background: #111827; }
+        .cart-badge { position: absolute; top: -5px; right: -5px; background: var(--brand-orange); color: white; font-size: 12px; font-weight: bold; height: 24px; width: 24px; border-radius: 50%; display: flex; align-items: center; justify-content: center; border: 2px solid #F5EBD0; }
+
+        /* Loader */
+        .loader { border: 4px solid #f3f3f3; border-top: 4px solid var(--brand-orange); border-radius: 50%; width: 40px; height: 40px; animation: spin 1s linear infinite; margin: 0 auto; }
+        @keyframes spin { 0% { transform: rotate(0deg); } 100% { transform: rotate(360deg); } }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <header class="sticky top-0 z-50 w-full bg-cream-50/90 backdrop-blur-xl shadow-sm border-b border-white/40">
+        <nav class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
+            <div class="flex h-20 items-center justify-between">
+                <a href="/" class="flex flex-shrink-0 items-center group">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" viewBox="277.33 265.33 277.33 341.33" class="w-9 h-9 mr-3 transition-transform duration-300 group-hover:scale-110">
+                        <defs><linearGradient id="logo-gradient" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#EA580C;" /><stop offset="100%" style="stop-color:#F97316;" /></linearGradient></defs>
+                        <path fill="url(#logo-gradient)" d="M306.059814,335.034607 C340.353760,315.260315 374.340057,295.687073 408.313049,276.090851 C412.636780,273.596863 416.859650,270.927856 421.186188,268.438965 C425.866150,265.746735 428.265289,266.937836 428.288788,272.146729 C428.375854,291.464661 428.210022,310.783417 428.912750,330.096313 C429.034119,333.432617 427.610870,335.869385 424.385315,337.724762 C399.432892,352.078033 374.615967,366.666687 349.701447,381.086395 C347.070740,382.608978 345.965607,384.451599 345.972656,387.482178 C346.036896,414.977661 346.036987,442.473541 345.938568,469.968842 C345.926392,473.373535 347.152557,475.611877 350.058136,477.275513 C374.532990,491.288818 398.987610,505.337524 423.421661,519.421814 C426.164276,521.002747 428.548523,520.958557 431.342285,519.328552 C455.584045,505.184448 479.872253,491.119507 504.201660,477.126648 C507.383118,475.296906 509.096680,473.226654 508.949310,469.257385 C508.643280,461.013092 508.856873,452.749512 508.856873,443.826691 C499.369781,447.960236 491.769745,453.638245 483.572052,458.230743 C466.598724,467.739594 449.816803,477.589722 432.936340,487.264893 C428.150787,490.007782 426.040619,489.025391 426.002411,483.564087 C425.863586,463.735352 425.958496,443.904907 425.973846,424.075134 C425.976898,420.138306 428.738007,418.245880 431.682007,416.535614 C452.236481,404.594788 472.803497,392.675537 493.342834,380.708832 C494.718506,379.907349 496.609711,379.220276 496.427063,377.191711 C496.270599,375.454651 494.492676,375.145996 493.212494,374.400879 C482.003693,367.877228 470.785492,361.368073 459.658539,354.706787 C456.830261,353.013641 455.081024,350.299316 455.100891,346.844116 C455.210968,327.688416 455.296936,308.531921 455.564240,289.378174 C455.631409,284.563141 458.840637,283.166992 463.082458,285.600067 C484.266052,297.750763 505.494751,309.822876 526.664673,321.997253 C539.894043,329.605194 553.062744,337.319214 566.222229,345.047607 C568.970459,346.661591 570.359436,349.035370 570.402100,352.452728 C570.606079,368.776703 569.821411,385.109467 570.821472,401.425842 C571.114380,406.204590 568.526367,409.094757 564.569824,411.285950 C555.422668,416.351685 546.335815,421.527618 537.275391,426.747131 C536.047668,427.454346 534.524658,428.019470 533.824341,430.125000 C538.696106,434.726105 545.083862,437.252625 550.804810,440.760834 C556.182251,444.058472 561.728455,447.080200 567.184082,450.251282 C569.392090,451.534637 570.386536,453.489929 570.383179,456.060669 C570.361267,472.890930 570.328125,489.721558 570.415833,506.551453 C570.434937,510.220337 568.047302,511.875549 565.431641,513.384338 C538.664917,528.823792 511.855835,544.189880 485.099823,559.647888 C467.979248,569.539124 450.848572,579.417847 433.895874,589.591187 C429.070770,592.486755 425.054169,592.069641 420.454712,589.394592 C395.044800,574.615906 369.531464,560.015076 344.098389,545.276062 C325.715790,534.622864 307.411865,523.833923 289.051270,513.142639 C285.563995,511.112030 283.905396,508.304474 283.909576,504.171753 C283.960144,453.845520 283.950775,403.519196 283.874298,353.192993 C283.867889,348.988373 285.620667,346.431183 289.289307,344.528809 C294.879791,341.629761 300.271759,338.347870 306.059814,335.034607 z"/>
+                    </svg>
+                    <span class="text-2xl font-extrabold text-gray-900">Circuit Breakers</span>
+                </a>
+                <a href="/" class="text-gray-600 hover:text-orange-600 font-semibold transition-colors">← Back to Home</a>
+            </div>
+        </nav>
+    </header>
+
+    <main class="flex-grow container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 relative">
+        
+        <div class="mb-12 text-center md:text-left flex flex-col md:flex-row justify-between items-end">
+            <div>
+                <h1 class="text-4xl font-extrabold tracking-tight text-gray-900 sm:text-5xl" id="page-title">Available Projects</h1>
+                <p class="mt-4 text-xl text-gray-600 max-w-2xl" id="page-subtitle">Ready-to-use kits and open-source hardware designed by the community.</p>
+            </div>
+            
+            <button id="exit-admin-btn" class="hidden mt-4 md:mt-0 bg-gray-800 text-white px-6 py-2 rounded-lg font-bold hover:bg-gray-700 transition-colors">
+                Exit Admin Mode
+            </button>
+        </div>
+
+        <div id="system-message" class="w-full text-center py-20 hidden">
+            <div class="loader mb-4" id="loader-spinner"></div>
+            <h3 class="text-2xl font-bold text-gray-900" id="msg-title">Loading...</h3>
+            <p class="text-gray-600 mt-2" id="msg-desc"></p>
+        </div>
+
+        <div id="projects-grid" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            </div>
+
+        <div id="admin-panel" class="hidden bg-white p-8 rounded-3xl shadow-xl border-2 border-orange-500 max-w-3xl mx-auto mb-12">
+            <div class="flex justify-between items-center mb-6 border-b pb-4">
+                <h2 class="text-2xl font-bold text-gray-900" id="admin-form-title">Add New Project</h2>
+                <button id="cancel-edit-btn" class="hidden text-gray-500 hover:text-red-500 font-bold">Cancel Edit</button>
+            </div>
+            
+            <form id="project-form" class="space-y-5">
+                <input type="hidden" id="proj-id">
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-5">
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Project Title</label>
+                        <input type="text" id="proj-title" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" required>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-1">Price (₹)</label>
+                        <input type="number" id="proj-price" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" required>
+                    </div>
+                </div>
+
+                <div>
+                    <label class="block text-sm font-semibold text-gray-700 mb-1">Description</label>
+                    <textarea id="proj-desc" rows="3" class="w-full p-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-orange-500 outline-none" required></textarea>
+                </div>
+
+                <div class="border-2 border-dashed border-gray-300 rounded-xl p-6 text-center hover:bg-gray-50 transition-colors">
+                    <input type="file" id="proj-image" accept="image/*" class="hidden">
+                    <div id="image-preview-container" class="hidden mb-4">
+                        <img id="image-preview" src="" class="h-32 mx-auto rounded-lg object-cover">
+                        <input type="hidden" id="existing-image-url">
+                    </div>
+                    <button type="button" onclick="document.getElementById('proj-image').click()" class="text-orange-600 font-bold">
+                        <svg class="w-8 h-8 mx-auto mb-2 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                        Click to Upload Image
+                    </button>
+                    <p class="text-xs text-gray-500 mt-1">Leave blank during edit to keep existing image</p>
+                </div>
+
+                <button type="submit" id="save-project-btn" class="w-full btn-primary py-4 rounded-xl font-bold text-lg shadow-md">
+                    Save to Database
+                </button>
+            </form>
+            <p id="admin-status" class="mt-4 text-center font-bold text-sm hidden"></p>
+        </div>
+
+    </main>
+
+    <div id="cart-modal" class="fixed inset-0 bg-black/50 z-[100] hidden flex justify-end">
+        <div class="w-full max-w-md bg-white h-full shadow-2xl flex flex-col transform translate-x-full transition-transform duration-300" id="cart-drawer">
+            <div class="p-6 border-b flex justify-between items-center bg-gray-50">
+                <h2 class="text-2xl font-bold text-gray-900">Your Cart</h2>
+                <button id="close-cart" class="text-gray-500 hover:text-gray-900 text-2xl">&times;</button>
+            </div>
+            <div class="flex-grow p-6 overflow-y-auto" id="cart-items">
+                </div>
+            <div class="p-6 border-t bg-gray-50">
+                <div class="flex justify-between items-center mb-6">
+                    <span class="text-lg font-bold text-gray-700">Total:</span>
+                    <span class="text-2xl font-extrabold text-orange-600" id="cart-total">₹0</span>
+                </div>
+                <button id="checkout-btn" class="w-full btn-primary py-4 rounded-xl font-bold text-lg shadow-md flex justify-center items-center">
+                    Proceed to Checkout
+                    <svg class="w-5 h-5 ml-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                </button>
+                <p class="text-xs text-center text-gray-500 mt-3">Secure payments via Razorpay</p>
+            </div>
+        </div>
+    </div>
+
+    <div id="cart-fab" class="cart-fab">
+        <svg class="w-6 h-6 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 3h2l.4 2M7 13h10l4-8H5.4M7 13L5.4 5M7 13l-2.293 2.293c-.63.63-.184 1.707.707 1.707H17m0 0a2 2 0 100 4 2 2 0 000-4zm-8 2a2 2 0 11-4 0 2 2 0 014 0z"></path></svg>
+        <span class="font-bold">Cart</span>
+        <div id="cart-count" class="cart-badge hidden">0</div>
+    </div>
+
+    <footer id="footer" class="bg-gray-900 text-gray-400 border-t-4 border-orange-500 relative">
+        <div class="container mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-16">
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center md:text-left">
+                
+                <div>
+                    <h3 class="text-xl font-bold text-white mb-6 flex items-center justify-center md:justify-start">
+                        <svg class="w-5 h-5 mr-2 text-orange-500" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-2 0c0 .993-.241 1.929-.668 2.754l-1.524-1.525a3.997 3.997 0 00.078-2.183l1.562-1.082C15.811 8.755 16 9.356 16 10zm-5.174 3.928a3.998 3.998 0 01-3.652 0l-1.082 1.562A5.996 5.996 0 0010 16c1.196 0 2.31-.349 3.254-.942l-1.525-1.525zM4 10c0-.993.241-1.929.668-2.754L6.192 8.77a3.997 3.997 0 00-.078 2.183l-1.562 1.082C4.189 11.245 4 10.644 4 10zm5.174-3.928a3.998 3.998 0 013.652 0l1.082-1.562A5.996 5.996 0 0010 4C8.804 4 7.69 4.349 6.746 4.942l1.525 1.525z" clip-rule="evenodd"></path></svg>
+                        Contact Us
+                    </h3>
+                    <div class="space-y-4">
+                        <p class="flex flex-col items-center md:items-start">
+                            <span class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Email</span>
+                            <a href="mailto:devteam.circuitbreakers@gmail.com" class="text-white hover:text-orange-500 transition-colors font-medium text-lg">devteam.circuitbreakers@gmail.com</a>
+                        </p>
+                        <p class="flex flex-col items-center md:items-start">
+                            <span class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Phone / WhatsApp</span>
+                            <span class="text-white font-medium text-lg">8910652873 / 9062420056 / 6295000265</span>
+                        </p>
+                        <p class="flex flex-col items-center md:items-start">
+                            <span class="text-sm font-semibold text-gray-500 uppercase tracking-wide">Address</span>
+                            <span class="text-white leading-relaxed">N44, G.C.ROAD, NEAR KALYANI HIGHWAY, KARATKAL MORE, PIN-700119.</span>
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="md:px-8">
+                    <h3 class="text-xl font-bold text-white mb-6">Quick Links</h3>
+                    <ul class="space-y-3">
+                        <li><a href="#" class="group inline-flex items-center hover:text-orange-500 transition-colors"><span class="w-2 h-2 rounded-full bg-orange-500 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>About Us</a></li>
+                        <li><a href="#" class="group inline-flex items-center hover:text-orange-500 transition-colors"><span class="w-2 h-2 rounded-full bg-orange-500 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>Privacy Policy</a></li>
+                        <li><a href="#" class="group inline-flex items-center hover:text-orange-500 transition-colors"><span class="w-2 h-2 rounded-full bg-orange-500 mr-2 opacity-0 group-hover:opacity-100 transition-opacity"></span>Terms of Service</a></li>
+                    </ul>
+                </div>
+                
+                <div class="text-center md:text-left">
+                    <h3 class="text-xl font-bold text-white mb-6">Join Our Community</h3>
+                    <p class="mt-3 text-base mb-6 text-gray-300">Stay updated, learn together, and join the conversation to build the future.</p>
+                </div>
+            </div>
+            
+            <div class="mt-12 border-t border-gray-800 pt-8 text-center flex flex-col items-center relative">
+                <p class="text-base text-gray-500 font-medium tracking-wide">Built with 🖤 by students, for the community.</p>
+                <p class="mt-2 text-sm text-gray-600">&copy; 2026 Circuit Breakers. All rights reserved.</p>
+                
+                <button id="admin-trigger" class="absolute bottom-0 right-0 opacity-10 hover:opacity-100 transition-opacity p-2 text-xs" title="Team Access">🔒</button>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // --- CONFIGURATION ---
+        const CLOUDINARY_CLOUD_NAME = "dzazor3or"; 
+        const CLOUDINARY_UPLOAD_PRESET = "cb_admin_profiles"; 
+        const WORKER_URL = "YOUR_CLOUDFLARE_WORKER_URL"; // <-- PASTE YOUR WORKER URL HERE
+
+        // --- STATE ---
+        let projects = [];
+        let cart = [];
+        let isAdmin = false;
+        let adminPasskey = "";
+
+        // --- DOM ELEMENTS ---
+        const grid = document.getElementById('projects-grid');
+        const sysMsg = document.getElementById('system-message');
+        const loader = document.getElementById('loader-spinner');
+        const msgTitle = document.getElementById('msg-title');
+        const msgDesc = document.getElementById('msg-desc');
+        
+        const cartFab = document.getElementById('cart-fab');
+        const cartCount = document.getElementById('cart-count');
+        const cartModal = document.getElementById('cart-modal');
+        const cartDrawer = document.getElementById('cart-drawer');
+        const cartItemsContainer = document.getElementById('cart-items');
+        const cartTotalDisplay = document.getElementById('cart-total');
+        
+        const adminPanel = document.getElementById('admin-panel');
+        const exitAdminBtn = document.getElementById('exit-admin-btn');
+        const projectForm = document.getElementById('project-form');
+
+        // --- INITIALIZATION ---
+        async function init() {
+            showLoading("Fetching Projects...");
+            try {
+                // Fetching from root since this file is inside /projects/ folder
+                const res = await fetch(`/projects.json?t=${Date.now()}`); 
+                if(!res.ok) throw new Error("JSON not found");
+                projects = await res.json();
+                
+                if (projects.length === 0) {
+                    showEmptyState();
+                } else {
+                    hideSystemMessage();
+                    renderGrid();
+                }
+            } catch (err) {
+                console.log("No projects.json found or empty database.");
+                projects = [];
+                showEmptyState();
+            }
+        }
+
+        // --- UI RENDERING ---
+        function renderGrid() {
+            grid.innerHTML = '';
+            
+            projects.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "glass-card rounded-2xl overflow-hidden flex flex-col h-full";
+                
+                let innerHTML = `
+                    <div class="h-56 overflow-hidden relative group">
+                        <img src="${p.image}" alt="${p.title}" class="w-full h-full object-cover transition-transform duration-500 group-hover:scale-110">
+                    </div>
+                    <div class="p-6 flex flex-col flex-grow">
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">${p.title}</h3>
+                        <p class="text-gray-600 mb-6 text-sm flex-grow">${p.description}</p>
+                        <div class="flex justify-between items-center mt-auto">
+                            <span class="text-2xl font-extrabold text-orange-600">₹${p.price}</span>
+                `;
+
+                // Admin vs Customer Layout
+                if (isAdmin) {
+                    innerHTML += `
+                            <div class="flex gap-2">
+                                <button onclick="editProject('${p.id}')" class="bg-gray-100 text-gray-700 px-3 py-1 rounded hover:bg-gray-200 font-bold text-sm">Edit</button>
+                                <button onclick="deleteProject('${p.id}')" class="bg-red-50 text-red-600 px-3 py-1 rounded hover:bg-red-100 font-bold text-sm">Delete</button>
+                            </div>
+                        </div></div>`;
+                } else {
+                    innerHTML += `
+                            <button onclick="addToCart('${p.id}')" class="bg-orange-100 text-orange-700 font-bold px-4 py-2 rounded-xl hover:bg-orange-200 transition-colors flex items-center">
+                                + Add
+                            </button>
+                        </div></div>`;
+                }
+                
+                card.innerHTML = innerHTML;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- SYSTEM MESSAGES ---
+        function showLoading(text) {
+            sysMsg.classList.remove('hidden');
+            loader.classList.remove('hidden');
+            grid.classList.add('hidden');
+            msgTitle.innerText = text;
+            msgDesc.innerText = "Please wait a moment.";
+        }
+        function showEmptyState() {
+            sysMsg.classList.remove('hidden');
+            loader.classList.add('hidden');
+            grid.classList.add('hidden');
+            msgTitle.innerText = "No projects yet!";
+            if(isAdmin) {
+                msgDesc.innerText = "Use the panel above to add your first project.";
+            } else {
+                msgDesc.innerText = "We are brewing something awesome. Check back soon!";
+            }
+        }
+        function hideSystemMessage() {
+            sysMsg.classList.add('hidden');
+            grid.classList.remove('hidden');
+        }
+
+        // --- CART LOGIC (Customer View) ---
+        function addToCart(id) {
+            const proj = projects.find(p => p.id === id);
+            if (proj) {
+                cart.push(proj);
+                updateCartUI();
+                
+                cartFab.classList.add('scale-110', 'bg-orange-600');
+                setTimeout(() => cartFab.classList.remove('scale-110', 'bg-orange-600'), 200);
+            }
+        }
+
+        function removeFromCart(index) {
+            cart.splice(index, 1);
+            updateCartUI();
+        }
+
+        function updateCartUI() {
+            if (cart.length > 0) {
+                cartCount.innerText = cart.length;
+                cartCount.classList.remove('hidden');
+            } else {
+                cartCount.classList.add('hidden');
+            }
+
+            cartItemsContainer.innerHTML = '';
+            let total = 0;
+            
+            if(cart.length === 0) {
+                cartItemsContainer.innerHTML = '<p class="text-center text-gray-500 mt-10">Your cart is empty.</p>';
+            } else {
+                cart.forEach((item, index) => {
+                    total += parseInt(item.price);
+                    cartItemsContainer.innerHTML += `
+                        <div class="flex items-center gap-4 mb-4 bg-white p-3 rounded-xl border">
+                            <img src="${item.image}" class="w-16 h-16 object-cover rounded-lg">
+                            <div class="flex-grow">
+                                <h4 class="font-bold text-gray-800 text-sm line-clamp-1">${item.title}</h4>
+                                <span class="text-orange-600 font-extrabold">₹${item.price}</span>
+                            </div>
+                            <button onclick="removeFromCart(${index})" class="text-red-400 hover:text-red-600 p-2">&times;</button>
+                        </div>
+                    `;
+                });
+            }
+            cartTotalDisplay.innerText = `₹${total}`;
+        }
+
+        cartFab.onclick = () => {
+            cartModal.classList.remove('hidden');
+            setTimeout(() => cartDrawer.classList.remove('translate-x-full'), 10);
+        };
+        document.getElementById('close-cart').onclick = closeCart;
+        cartModal.onclick = (e) => { if(e.target === cartModal) closeCart(); };
+        
+        function closeCart() {
+            cartDrawer.classList.add('translate-x-full');
+            setTimeout(() => cartModal.classList.add('hidden'), 300);
+        }
+
+        // Redirect to isolated Checkout Process
+        document.getElementById('checkout-btn').onclick = () => {
+            if(cart.length === 0) return alert("Your cart is empty!");
+            
+            // Save cart to local storage so checkout page can retrieve it
+            localStorage.setItem('cb_cart', JSON.stringify(cart));
+            
+            // Redirect to the checkout page
+            window.location.href = '/checkout'; // Update this to match your checkout page path later
+        };
+
+
+        // --- ADMIN AUTH LOGIC ---
+        document.getElementById('admin-trigger').onclick = () => {
+            if(isAdmin) return;
+            const key = prompt("Enter Team Passkey:");
+            if (key) {
+                adminPasskey = key;
+                isAdmin = true;
+                
+                document.getElementById('page-title').innerText = "Admin Dashboard";
+                document.getElementById('page-subtitle').innerText = "Manage your database directly via GitHub.";
+                adminPanel.classList.remove('hidden');
+                exitAdminBtn.classList.remove('hidden');
+                cartFab.classList.add('hidden');
+                
+                if(projects.length > 0) renderGrid();
+                else showEmptyState();
+            }
+        };
+
+        exitAdminBtn.onclick = () => {
+            isAdmin = false;
+            adminPasskey = "";
+            document.getElementById('page-title').innerText = "Available Projects";
+            document.getElementById('page-subtitle').innerText = "Ready-to-use kits and open-source hardware designed by the community.";
+            adminPanel.classList.add('hidden');
+            exitAdminBtn.classList.add('hidden');
+            cartFab.classList.remove('hidden');
+            
+            if(projects.length > 0) renderGrid();
+            else showEmptyState();
+        };
+
+
+        // --- ADMIN DATABASE LOGIC (Add/Edit/Delete) ---
+
+        document.getElementById('proj-image').onchange = (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('image-preview').src = URL.createObjectURL(file);
+                document.getElementById('image-preview-container').classList.remove('hidden');
+            }
+        };
+
+        // Form Submit (Add or Update)
+        projectForm.onsubmit = async (e) => {
+            e.preventDefault();
+            const saveBtn = document.getElementById('save-project-btn');
+            const statusBox = document.getElementById('admin-status');
+            saveBtn.disabled = true;
+            saveBtn.innerText = "Processing...";
+            statusBox.classList.remove('hidden', 'text-green-600', 'text-red-600');
+            statusBox.classList.add('text-orange-600');
+            statusBox.innerText = "Preparing data...";
+
+            if(WORKER_URL === "YOUR_CLOUDFLARE_WORKER_URL") {
+                statusBox.className = "mt-4 text-center font-bold text-sm text-red-600";
+                statusBox.innerText = "Error: Please paste your Cloudflare Worker URL in the script first!";
+                saveBtn.disabled = false;
+                saveBtn.innerText = "Save to Database";
+                return;
+            }
+
+            try {
+                const isEdit = document.getElementById('proj-id').value !== "";
+                let imageUrl = document.getElementById('existing-image-url').value;
+                const fileInput = document.getElementById('proj-image');
+
+                // 1. Upload new image if selected
+                if (fileInput.files.length > 0) {
+                    statusBox.innerText = "Uploading image to Cloudinary...";
+                    const formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+                    
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, { method: 'POST', body: formData });
+                    if(!res.ok) throw new Error("Image upload failed.");
+                    const data = await res.json();
+                    imageUrl = data.secure_url;
+                } else if (!isEdit) {
+                    throw new Error("Please select an image for the new project.");
+                }
+
+                // 2. Build Project Object
+                const projectData = {
+                    id: isEdit ? document.getElementById('proj-id').value : "proj_" + Date.now(),
+                    title: document.getElementById('proj-title').value,
+                    price: document.getElementById('proj-price').value,
+                    description: document.getElementById('proj-desc').value,
+                    image: imageUrl
+                };
+
+                // 3. Update Local Array Memory
+                if (isEdit) {
+                    const index = projects.findIndex(p => p.id === projectData.id);
+                    projects[index] = projectData;
+                } else {
+                    projects.push(projectData);
+                }
+
+                // 4. Send Entire Array to Cloudflare Worker
+                statusBox.innerText = "Committing to GitHub via Worker...";
+                
+                const workerRes = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        passkey: adminPasskey,
+                        action: 'update_db',
+                        data: projects
+                    })
+                });
+                
+                if(!workerRes.ok) {
+                    const errResult = await workerRes.json();
+                    throw new Error(errResult.error || "Worker rejected the commit. Check your passkey.");
+                }
+
+                // Success
+                statusBox.className = "mt-4 text-center font-bold text-sm text-green-600";
+                statusBox.innerText = "Success! Render is deploying to GitHub. Live shortly.";
+                
+                resetForm();
+                hideSystemMessage();
+                renderGrid();
+
+            } catch(err) {
+                statusBox.className = "mt-4 text-center font-bold text-sm text-red-600";
+                statusBox.innerText = err.message;
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerText = "Save to Database";
+            }
+        };
+
+        // Populate Form for Editing
+        window.editProject = (id) => {
+            const p = projects.find(proj => proj.id === id);
+            if(!p) return;
+            
+            document.getElementById('admin-form-title').innerText = "Edit Project";
+            document.getElementById('cancel-edit-btn').classList.remove('hidden');
+            
+            document.getElementById('proj-id').value = p.id;
+            document.getElementById('proj-title').value = p.title;
+            document.getElementById('proj-price').value = p.price;
+            document.getElementById('proj-desc').value = p.description;
+            
+            document.getElementById('existing-image-url').value = p.image;
+            document.getElementById('image-preview').src = p.image;
+            document.getElementById('image-preview-container').classList.remove('hidden');
+            
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        };
+
+        // Cancel Edit
+        document.getElementById('cancel-edit-btn').onclick = resetForm;
+
+        function resetForm() {
+            projectForm.reset();
+            document.getElementById('proj-id').value = "";
+            document.getElementById('existing-image-url').value = "";
+            document.getElementById('admin-form-title').innerText = "Add New Project";
+            document.getElementById('cancel-edit-btn').classList.add('hidden');
+            document.getElementById('image-preview-container').classList.add('hidden');
+        }
+
+        // Delete Logic
+        window.deleteProject = async (id) => {
+            if(!confirm("Are you sure you want to delete this project?")) return;
+            
+            // Back up original array in case deletion fails
+            const originalProjects = [...projects];
+            
+            // Remove from array locally
+            projects = projects.filter(p => p.id !== id);
+            
+            // Re-render locally instantly
+            if(projects.length === 0) showEmptyState();
+            else renderGrid();
+
+            try {
+                // Send updated array to Worker
+                const workerRes = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        passkey: adminPasskey,
+                        action: 'update_db',
+                        data: projects
+                    })
+                });
+                
+                if(!workerRes.ok) throw new Error("Database deletion failed.");
+                alert("Project permanently deleted.");
+            } catch(err) {
+                // Revert to original if network fails
+                projects = originalProjects;
+                renderGrid();
+                alert(err.message + " Check your passkey.");
+            }
+        };
+
+        // Start App
+        init();
+    </script>
+</body>
+</html>
