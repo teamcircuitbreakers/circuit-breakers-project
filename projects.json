@@ -7,5 +7,13 @@
     "type": "diy",
     "description": "A compact IoT-based system that monitors real-time room temperature and humidity using the ESP32. The data is displayed locally and can also be accessed remotely via Wi-Fi, making it ideal for smart homes, storage rooms, and environmental monitoring.\nComponents Used:\nESP32 Development Board\nDHT11 / DHT22 Temperature & Humidity Sensor\nOLED / LCD Display (optional)\nJumper Wires\nPower Supply (USB / Battery)",
     "image": "https://res.cloudinary.com/dzazor3or/image/upload/v1774162865/qsqpcuvl4qnu5wpazekf.png"
+  },
+  {
+    "id": "proj_1774174654746",
+    "title": "Gas Leak Detector Using ESP32",
+    "basePrice": 499,
+    "price": 499,
+    "description": "A smart IoT-based system that detects harmful gases like LPG, methane, and smoke using the ESP32. The system provides instant alerts through buzzer and LED, and can also send real-time notifications via Wi-Fi for remote safety monitoring in homes and industries.\n\nComponents Used:\nESP32 Development Board\nMQ-2 / MQ-135 Gas Sensor\nBuzzer Module\nLED Indicator\nJumper Wires\nPower Supply (USB / Battery)",
+    "image": "https://res.cloudinary.com/dzazor3or/image/upload/v1774174654/crjqcwzbsie05skufvyb.jpg"
   }
 ]
