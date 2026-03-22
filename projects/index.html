@@ -419,6 +419,84 @@
             color: var(--orange-light);
         }
 
+        /* Rent Checkbox */
+        .rent-option {
+            margin-bottom: 1rem;
+            padding: 0.75rem 1rem;
+            background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.2);
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            cursor: pointer;
+            transition: all 0.3s var(--transition-smooth);
+        }
+
+        .rent-option:hover {
+            background: rgba(34, 197, 94, 0.12);
+            border-color: rgba(34, 197, 94, 0.4);
+        }
+
+        .rent-option.active {
+            background: rgba(34, 197, 94, 0.15);
+            border-color: #22c55e;
+        }
+
+        .rent-checkbox {
+            width: 20px;
+            height: 20px;
+            border: 2px solid #22c55e;
+            border-radius: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            flex-shrink: 0;
+            transition: all 0.2s var(--transition-smooth);
+        }
+
+        .rent-option.active .rent-checkbox {
+            background: #22c55e;
+        }
+
+        .rent-option.active .rent-checkbox::after {
+            content: '✓';
+            color: var(--black);
+            font-size: 12px;
+            font-weight: 700;
+        }
+
+        .rent-label {
+            flex: 1;
+        }
+
+        .rent-label-title {
+            font-size: 0.85rem;
+            font-weight: 600;
+            color: #22c55e;
+            margin-bottom: 0.15rem;
+        }
+
+        .rent-label-desc {
+            font-size: 0.7rem;
+            color: var(--grey-subtle);
+        }
+
+        .rent-badge-cart {
+            display: inline-block;
+            padding: 0.2rem 0.5rem;
+            background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: #22c55e;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem;
+            font-weight: 600;
+            border-radius: 4px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-left: 0.5rem;
+        }
+
         .product-actions {
             display: flex;
             gap: 0.75rem;
@@ -1710,9 +1788,9 @@
                 <svg class="logo-icon" viewBox="277 265 278 342" xmlns="http://www.w3.org/2000/svg">
                     <path d="M306.06 335.03c34.29-19.77 68.28-39.35 102.25-58.94 4.32-2.5 8.55-5.16 12.87-7.65 4.68-2.69 7.08-1.5 7.11 3.71.09 19.32-.08 38.64.61 57.95.12 3.34-1.3 5.77-4.53 7.63-24.95 14.35-49.77 28.94-74.68 43.36-2.63 1.52-3.74 3.37-3.73 6.4.06 27.49.07 54.98-.03 82.47-.01 3.41 1.21 5.64 4.12 7.31 24.47 14.01 48.93 28.06 73.36 42.15 2.74 1.58 5.13 1.54 7.92-0.09 24.24-14.14 48.53-28.21 72.86-42.2 3.18-1.83 4.9-3.9 4.75-7.87-.31-8.24.1-16.51.1-25.43-9.49 4.13-17.09 9.81-25.28 14.4-16.97 9.51-33.76 19.36-50.64 28.97-4.79 2.74-6.9 1.76-6.93-3.7-.14-19.83-.05-39.66-.03-59.49.01-3.94 2.77-5.83 5.71-7.54 20.55-11.94 41.12-23.86 61.66-35.83 1.38-0.8 3.27-1.49 3.09-3.52-.16-1.74-1.93-2.04-3.22-2.79-11.21-6.52-22.42-13.04-33.55-19.7-2.83-1.69-4.58-4.41-4.56-7.86.11-19.16.2-38.31.46-57.46.07-4.82 3.28-6.21 7.52-3.78 21.18 12.15 42.41 24.22 63.58 36.4 13.23 7.61 26.4 15.32 39.56 23.05 2.75 1.61 4.14 3.99 4.18 7.41.2 16.32-.58 32.66.41 48.97.29 4.78-2.29 7.67-6.25 9.86-9.15 5.07-18.23 10.24-27.29 15.46-1.23 0.71-2.75 1.27-3.45 3.38 4.87 4.6 11.26 7.13 16.98 10.63 5.38 3.3 10.92 6.32 16.38 9.49 2.21 1.28 3.2 3.24 3.2 5.81-.02 16.83-.05 33.66.08 50.49.02 3.67-2.38 5.32-4.99 6.83-26.77 15.44-53.58 30.8-80.33 46.26-17.12 9.89-34.25 19.77-51.2 29.95-4.83 2.89-8.84 2.48-13.44-0.2-25.41-14.78-50.92-29.38-76.36-44.12-18.38-10.65-36.69-21.44-55.05-32.13-3.49-2.03-5.15-4.84-5.14-8.97.05-50.33.04-100.65.12-150.98.01-4.2 1.76-6.76 5.43-8.66 5.59-2.9 10.98-6.18 16.77-9.5z"/>
                 </svg>
-                <div>
+                <div style="display: flex; flex-direction: column;">
                     <span class="logo-text">Circuit<span>Breakers</span></span>
-                    <span class="logo-tagline">Rewriting the future</span>
+                    <span class="logo-tagline" style="margin-top: 2px; font-size: 0.85em;">Rewriting the future</span>
                 </div>
             </a>
             <a href="/" class="back-link">
@@ -1975,10 +2053,10 @@
                     <svg class="logo-icon" viewBox="277 265 278 342" xmlns="http://www.w3.org/2000/svg">
                         <path d="M306.06 335.03c34.29-19.77 68.28-39.35 102.25-58.94 4.32-2.5 8.55-5.16 12.87-7.65 4.68-2.69 7.08-1.5 7.11 3.71.09 19.32-.08 38.64.61 57.95.12 3.34-1.3 5.77-4.53 7.63-24.95 14.35-49.77 28.94-74.68 43.36-2.63 1.52-3.74 3.37-3.73 6.4.06 27.49.07 54.98-.03 82.47-.01 3.41 1.21 5.64 4.12 7.31 24.47 14.01 48.93 28.06 73.36 42.15 2.74 1.58 5.13 1.54 7.92-0.09 24.24-14.14 48.53-28.21 72.86-42.2 3.18-1.83 4.9-3.9 4.75-7.87-.31-8.24.1-16.51.1-25.43-9.49 4.13-17.09 9.81-25.28 14.4-16.97 9.51-33.76 19.36-50.64 28.97-4.79 2.74-6.9 1.76-6.93-3.7-.14-19.83-.05-39.66-.03-59.49.01-3.94 2.77-5.83 5.71-7.54 20.55-11.94 41.12-23.86 61.66-35.83 1.38-0.8 3.27-1.49 3.09-3.52-.16-1.74-1.93-2.04-3.22-2.79-11.21-6.52-22.42-13.04-33.55-19.7-2.83-1.69-4.58-4.41-4.56-7.86.11-19.16.2-38.31.46-57.46.07-4.82 3.28-6.21 7.52-3.78 21.18 12.15 42.41 24.22 63.58 36.4 13.23 7.61 26.4 15.32 39.56 23.05 2.75 1.61 4.14 3.99 4.18 7.41.2 16.32-.58 32.66.41 48.97.29 4.78-2.29 7.67-6.25 9.86-9.15 5.07-18.23 10.24-27.29 15.46-1.23 0.71-2.75 1.27-3.45 3.38 4.87 4.6 11.26 7.13 16.98 10.63 5.38 3.3 10.92 6.32 16.38 9.49 2.21 1.28 3.2 3.24 3.2 5.81-.02 16.83-.05 33.66.08 50.49.02 3.67-2.38 5.32-4.99 6.83-26.77 15.44-53.58 30.8-80.33 46.26-17.12 9.89-34.25 19.77-51.2 29.95-4.83 2.89-8.84 2.48-13.44-0.2-25.41-14.78-50.92-29.38-76.36-44.12-18.38-10.65-36.69-21.44-55.05-32.13-3.49-2.03-5.15-4.84-5.14-8.97.05-50.33.04-100.65.12-150.98.01-4.2 1.76-6.76 5.43-8.66 5.59-2.9 10.98-6.18 16.77-9.5z"/>
                     </svg>
-                    <div>
-                        <span class="logo-text">Circuit<span>Breakers</span></span>
-                        <span class="logo-tagline">Rewriting the future</span>
-                    </div>
+                    <div style="display: flex; flex-direction: column;">
+                    <span class="logo-text">Circuit<span>Breakers</span></span>
+                    <span class="logo-tagline" style="margin-top: 2px; font-size: 0.85em;">Rewriting the future</span>
+                </div>
                 </a>
                 <p>Built with 🖤 by students, for the community. We're democratizing electronics innovation across India.</p>
                 <div class="footer-social">
@@ -2067,6 +2145,7 @@
         let currentDetailProduct = null;
         let selectedType = 'diy';
         let selectedTypes = {}; // Track selected type per product card { productId: 'diy' | 'ready' }
+        let rentEnabled = {}; // Track rent enabled per product { productId: true/false }
 
         // ==========================================
         // DOM ELEMENTS
@@ -2325,12 +2404,13 @@
         // ==========================================
         // HELPER FUNCTIONS
         // ==========================================
-        function getDisplayPrice(project, type = 'diy') {
+        function getDisplayPrice(project, type = 'diy', rent = false) {
             const basePrice = parseInt(project.basePrice || project.price);
-            if (type === 'ready') {
-                return basePrice + ASSEMBLY_FEE;
+            let price = type === 'ready' ? basePrice + ASSEMBLY_FEE : basePrice;
+            if (rent) {
+                price = getRentPrice(price);
             }
-            return basePrice;
+            return price;
         }
 
         function getTypeLabel(type) {
@@ -2345,6 +2425,11 @@
             }
         }
 
+        function getRentPrice(price) {
+            const halfPrice = price / 2;
+            return Math.ceil(halfPrice); // Round up for odd numbers (249.5 → 250)
+        }
+
         // ==========================================
         // UI RENDERING - PRODUCTS
         // ==========================================
@@ -2354,14 +2439,20 @@
             projects.forEach(p => {
                 const basePrice = parseInt(p.basePrice || p.price);
                 
-                // Get selected type for this product (default: diy)
+                // Get selected type and rent status for this product
                 const currentType = selectedTypes[p.id] || 'diy';
-                const displayPrice = getDisplayPrice(p, currentType);
+                const isRentEnabled = rentEnabled[p.id] || false;
+                const displayPrice = getDisplayPrice(p, currentType, isRentEnabled);
                 
-                // Check cart for both types
-                const diyInCart = cart.find(item => item.id === p.id && item.type === 'diy');
-                const readyInCart = cart.find(item => item.id === p.id && item.type === 'ready');
-                const totalInCart = (diyInCart ? diyInCart.quantity : 0) + (readyInCart ? readyInCart.quantity : 0);
+                // Check cart for all combinations
+                const diyInCart = cart.find(item => item.id === p.id && item.type === 'diy' && !item.rent);
+                const readyInCart = cart.find(item => item.id === p.id && item.type === 'ready' && !item.rent);
+                const diyRentInCart = cart.find(item => item.id === p.id && item.type === 'diy' && item.rent);
+                const readyRentInCart = cart.find(item => item.id === p.id && item.type === 'ready' && item.rent);
+                const totalInCart = (diyInCart ? diyInCart.quantity : 0) + 
+                                   (readyInCart ? readyInCart.quantity : 0) + 
+                                   (diyRentInCart ? diyRentInCart.quantity : 0) + 
+                                   (readyRentInCart ? readyRentInCart.quantity : 0);
                 
                 const card = document.createElement('div');
                 card.className = 'product-card';
@@ -2389,16 +2480,18 @@
                         </div>
                     `;
                 } else {
-                    // Check if selected type is in cart
-                    const selectedItemInCart = currentType === 'diy' ? diyInCart : readyInCart;
-                    const qty = selectedItemInCart ? selectedItemInCart.quantity : 0;
+                    // Check if current combination is in cart
+                    const currentCartItem = isRentEnabled 
+                        ? (currentType === 'diy' ? diyRentInCart : readyRentInCart)
+                        : (currentType === 'diy' ? diyInCart : readyInCart);
+                    const qty = currentCartItem ? currentCartItem.quantity : 0;
                     
                     if (qty > 0) {
                         actionsHTML = `
                             <div class="quantity-controls">
-                                <button class="qty-btn" onclick="decrementQty('${p.id}', '${currentType}')">−</button>
+                                <button class="qty-btn" onclick="decrementQty('${p.id}', '${currentType}', ${isRentEnabled})">−</button>
                                 <span class="qty-value">${qty}</span>
-                                <button class="qty-btn" onclick="incrementQty('${p.id}', '${currentType}')">+</button>
+                                <button class="qty-btn" onclick="incrementQty('${p.id}', '${currentType}', ${isRentEnabled})">+</button>
                             </div>
                             <button class="btn btn-secondary" onclick="openDetail('${p.id}')">
                                 <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2428,6 +2521,7 @@
                 }
                 
                 const selectedTypeClass = currentType === 'diy' ? 'diy' : '';
+                const rentClass = isRentEnabled ? 'active' : '';
                 
                 card.innerHTML = `
                     <div class="product-image-container">
@@ -2437,14 +2531,14 @@
                     <div class="product-content">
                         <h3 class="product-title">${p.title}</h3>
                         <p class="product-description">${p.description}</p>
-                        <div class="product-price" id="price-${p.id}">₹${displayPrice}</div>
+                        <div class="product-price" id="price-${p.id}">₹${displayPrice}${isRentEnabled ? ' <span style="font-size:0.7rem;color:#22c55e;">(Rent)</span>' : ''}</div>
                         
                         ${!isAdmin ? `
                         <div class="type-select-wrapper">
                             <label class="type-select-label" for="type-select-${p.id}">Select Type</label>
                             <select class="type-select" id="type-select-${p.id}" onchange="onTypeChange('${p.id}')">
-                                <option value="diy" ${currentType === 'diy' ? 'selected' : ''}>DIY KIT - ₹${basePrice}</option>
-                                <option value="ready" ${currentType === 'ready' ? 'selected' : ''}>READY TO USE - ₹${basePrice + ASSEMBLY_FEE}</option>
+                                <option value="diy" ${currentType === 'diy' ? 'selected' : ''}>DIY KIT - ₹${isRentEnabled ? getRentPrice(basePrice) : basePrice}</option>
+                                <option value="ready" ${currentType === 'ready' ? 'selected' : ''}>READY TO USE - ₹${isRentEnabled ? getRentPrice(basePrice + ASSEMBLY_FEE) : basePrice + ASSEMBLY_FEE}</option>
                             </select>
                         </div>
                         <div class="selected-type-display ${selectedTypeClass}" id="selected-display-${p.id}">
@@ -2452,6 +2546,15 @@
                         </div>
                         <div class="type-tip-card" id="tip-${p.id}">
                             ${getTipText(currentType)}
+                        </div>
+                        
+                        <!-- Rent Option -->
+                        <div class="rent-option ${rentClass}" id="rent-option-${p.id}" onclick="onRentChange('${p.id}')">
+                            <div class="rent-checkbox"></div>
+                            <div class="rent-label">
+                                <div class="rent-label-title">Rent This Project (Saves 50%)</div>
+                                <div class="rent-label-desc">Return in 7 days • 50% refundable deposit</div>
+                            </div>
                         </div>
                         ` : ''}
                         
@@ -2478,11 +2581,12 @@
             const product = projects.find(p => p.id === productId);
             if (!product) return;
             
+            const isRentEnabled = rentEnabled[productId] || false;
             const basePrice = parseInt(product.basePrice || product.price);
-            const displayPrice = getDisplayPrice(product, newType);
+            const displayPrice = getDisplayPrice(product, newType, isRentEnabled);
             
             // Update price display
-            document.getElementById(`price-${productId}`).textContent = `₹${displayPrice}`;
+            document.getElementById(`price-${productId}`).innerHTML = `₹${displayPrice}${isRentEnabled ? ' <span style="font-size:0.7rem;color:#22c55e;">(Rent)</span>' : ''}`;
             
             // Update selected type display
             const selectedDisplay = document.getElementById(`selected-display-${productId}`);
@@ -2497,24 +2601,71 @@
         }
 
         // ==========================================
-        // ADD TO CART FROM CARD (uses selected type)
+        // RENT CHANGE HANDLER FOR PRODUCT CARDS
+        // ==========================================
+        function onRentChange(productId) {
+            // Toggle rent status
+            rentEnabled[productId] = !rentEnabled[productId];
+            
+            const product = projects.find(p => p.id === productId);
+            if (!product) return;
+            
+            const currentType = selectedTypes[productId] || 'diy';
+            const isRentEnabled = rentEnabled[productId];
+            const basePrice = parseInt(product.basePrice || product.price);
+            const displayPrice = getDisplayPrice(product, currentType, isRentEnabled);
+            
+            // Update price display
+            document.getElementById(`price-${productId}`).innerHTML = `₹${displayPrice}${isRentEnabled ? ' <span style="font-size:0.7rem;color:#22c55e;">(Rent)</span>' : ''}`;
+            
+            // Update rent option visual
+            const rentOption = document.getElementById(`rent-option-${productId}`);
+            if (isRentEnabled) {
+                rentOption.classList.add('active');
+            } else {
+                rentOption.classList.remove('active');
+            }
+            
+            // Update select dropdown prices
+            const select = document.getElementById(`type-select-${productId}`);
+            const readyPrice = basePrice + ASSEMBLY_FEE;
+            if (isRentEnabled) {
+                select.innerHTML = `
+                    <option value="diy" ${currentType === 'diy' ? 'selected' : ''}>DIY KIT - ₹${getRentPrice(basePrice)}</option>
+                    <option value="ready" ${currentType === 'ready' ? 'selected' : ''}>READY TO USE - ₹${getRentPrice(readyPrice)}</option>
+                `;
+            } else {
+                select.innerHTML = `
+                    <option value="diy" ${currentType === 'diy' ? 'selected' : ''}>DIY KIT - ₹${basePrice}</option>
+                    <option value="ready" ${currentType === 'ready' ? 'selected' : ''}>READY TO USE - ₹${readyPrice}</option>
+                `;
+            }
+            
+            // Re-render to update cart controls
+            renderProducts();
+        }
+
+        // ==========================================
+        // ADD TO CART FROM CARD (uses selected type and rent)
         // ==========================================
         function addToCartFromCard(id) {
             const type = selectedTypes[id] || 'diy';
-            addToCart(id, type);
+            const rent = rentEnabled[id] || false;
+            addToCart(id, type, rent);
         }
 
         // ==========================================
         // CART LOGIC - QUANTITY BASED
         // ==========================================
-        function addToCart(id, type = 'diy') {
+        function addToCart(id, type = 'diy', rent = false) {
             const product = projects.find(p => p.id === id);
             if (!product) return;
             
-            const cartItemId = `${id}_${type}`;
-            const existingItem = cart.find(item => item.id === id && item.type === type);
+            const cartItemId = `${id}_${type}_${rent ? 'rent' : 'buy'}`;
+            const existingItem = cart.find(item => item.id === id && item.type === type && item.rent === rent);
             
-            const displayPrice = getDisplayPrice(product, type);
+            const displayPrice = getDisplayPrice(product, type, rent);
+            const basePrice = parseInt(product.basePrice || product.price);
             
             if (existingItem) {
                 existingItem.quantity++;
@@ -2523,9 +2674,10 @@
                     id: product.id,
                     cartItemId: cartItemId,
                     title: product.title,
-                    basePrice: product.basePrice || product.price,
+                    basePrice: basePrice,
                     price: displayPrice,
                     type: type,
+                    rent: rent,
                     image: product.image,
                     quantity: 1
                 });
@@ -2533,14 +2685,14 @@
             
             updateCartUI();
             renderProducts();
-            showToast(`${product.title} (${getTypeLabel(type)}) added to cart!`);
+            showToast(`${product.title} (${getTypeLabel(type)}${rent ? ' - RENT' : ''}) added to cart!`);
             
             cartFab.classList.add('pulse');
             setTimeout(() => cartFab.classList.remove('pulse'), 300);
         }
 
-        function incrementQty(id, type = 'diy') {
-            const item = cart.find(item => item.id === id && item.type === type);
+        function incrementQty(id, type = 'diy', rent = false) {
+            const item = cart.find(item => item.id === id && item.type === type && item.rent === rent);
             if (item) {
                 item.quantity++;
                 updateCartUI();
@@ -2548,20 +2700,20 @@
             }
         }
 
-        function decrementQty(id, type = 'diy') {
-            const item = cart.find(item => item.id === id && item.type === type);
+        function decrementQty(id, type = 'diy', rent = false) {
+            const item = cart.find(item => item.id === id && item.type === type && item.rent === rent);
             if (item) {
                 item.quantity--;
                 if (item.quantity <= 0) {
-                    cart = cart.filter(i => !(i.id === id && i.type === type));
+                    cart = cart.filter(i => !(i.id === id && i.type === type && i.rent === rent));
                 }
                 updateCartUI();
                 renderProducts();
             }
         }
 
-        function removeFromCart(id, type) {
-            cart = cart.filter(item => !(item.id === id && item.type === type));
+        function removeFromCart(id, type, rent) {
+            cart = cart.filter(item => !(item.id === id && item.type === type && item.rent === rent));
             updateCartUI();
             renderProducts();
         }
@@ -2597,16 +2749,16 @@
                             <img src="${item.image}" alt="${item.title}">
                         </div>
                         <div class="cart-item-details">
-                            <span class="cart-item-type ${item.type}">${getTypeLabel(item.type)}</span>
+                            <span class="cart-item-type ${item.type}">${getTypeLabel(item.type)}${item.rent ? '<span class="rent-badge-cart">RENT - 50% off Applied!</span>' : ''}</span>
                             <h4 class="cart-item-title">${item.title}</h4>
-                            <span class="cart-item-price">₹${item.price} each</span>
+                            <span class="cart-item-price">₹${item.price} each${item.rent ? ' (rental)' : ''}</span>
                             <div class="cart-item-controls">
                                 <div class="cart-item-qty">
-                                    <button class="qty-btn" onclick="decrementQty('${item.id}', '${item.type}')">−</button>
+                                    <button class="qty-btn" onclick="decrementQty('${item.id}', '${item.type}', ${item.rent})">−</button>
                                     <span class="qty-value">${item.quantity}</span>
-                                    <button class="qty-btn" onclick="incrementQty('${item.id}', '${item.type}')">+</button>
+                                    <button class="qty-btn" onclick="incrementQty('${item.id}', '${item.type}', ${item.rent})">+</button>
                                 </div>
-                                <button class="cart-item-remove" onclick="removeFromCart('${item.id}', '${item.type}')">
+                                <button class="cart-item-remove" onclick="removeFromCart('${item.id}', '${item.type}', ${item.rent})">
                                     <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2">
                                         <polyline points="3 6 5 6 21 6"/>
                                         <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
@@ -2747,7 +2899,9 @@
             if (currentDetailProduct) {
                 // Sync the selection to the card
                 selectedTypes[currentDetailProduct.id] = selectedType;
-                addToCart(currentDetailProduct.id, selectedType);
+                // Note: rent status is managed on the card, not in detail modal
+                const rent = rentEnabled[currentDetailProduct.id] || false;
+                addToCart(currentDetailProduct.id, selectedType, rent);
                 closeDetail();
             }
         });
