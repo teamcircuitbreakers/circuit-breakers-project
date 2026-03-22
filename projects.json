@@ -2,7 +2,9 @@
   {
     "id": "proj_1774162865821",
     "title": "Room Temperature & Humidity Monitor Using ESP32",
-    "price": "350",
+    "basePrice": 750,
+    "price": 750,
+    "type": "diy",
     "description": "A compact IoT-based system that monitors real-time room temperature and humidity using the ESP32. The data is displayed locally and can also be accessed remotely via Wi-Fi, making it ideal for smart homes, storage rooms, and environmental monitoring.\nComponents Used:\nESP32 Development Board\nDHT11 / DHT22 Temperature & Humidity Sensor\nOLED / LCD Display (optional)\nJumper Wires\nPower Supply (USB / Battery)",
     "image": "https://res.cloudinary.com/dzazor3or/image/upload/v1774162865/qsqpcuvl4qnu5wpazekf.png"
   }
