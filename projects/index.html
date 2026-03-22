@@ -2270,9 +2270,18 @@
         async function init() {
             showLoading("Fetching Projects...");
             try {
-                const res = await fetch(`/projects.json?t=${Date.now()}`);
-                if (!res.ok) throw new Error("JSON not found");
-                projects = await res.json();
+                // Fetch securely through your Cloudflare Worker (No API keys exposed!)
+                const res = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ action: 'fetch_db' })
+                });
+                
+                if (!res.ok) throw new Error("Database fetch failed");
+                const responseData = await res.json();
+                
+                // The worker sends the array back inside the 'data' property
+                projects = responseData.data || []; 
                 
                 if (projects.length === 0) {
                     showEmptyState();
