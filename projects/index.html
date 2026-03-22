@@ -292,14 +292,6 @@
             letter-spacing: 0.5px;
         }
 
-        .product-badge.ready {
-            background: var(--gradient-orange);
-        }
-
-        .product-badge.diy {
-            background: linear-gradient(135deg, var(--blue-accent) 0%, var(--blue-light) 100%);
-        }
-
         .product-badge.qty-badge {
             right: 1rem;
             left: auto;
@@ -312,19 +304,6 @@
             display: flex;
             flex-direction: column;
             flex: 1;
-        }
-
-        .product-type-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--orange-light);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-        }
-
-        .product-type-label.diy {
-            color: var(--blue-accent);
         }
 
         .product-title {
@@ -351,13 +330,86 @@
             font-size: 1.75rem;
             font-weight: 700;
             color: var(--orange-primary);
-            margin-bottom: 0.25rem;
+            margin-bottom: 0.5rem;
         }
 
-        .product-price-note {
+        /* Type Selector in Card */
+        .type-select-wrapper {
+            margin-bottom: 0.75rem;
+        }
+
+        .type-select-label {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.7rem;
+            color: var(--grey-subtle);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .type-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            background: var(--grey-dark);
+            border: 1px solid var(--glass-border);
+            border-radius: 10px;
+            color: var(--white);
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            cursor: pointer;
+            transition: all 0.3s var(--transition-smooth);
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8a95' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 1rem center;
+        }
+
+        .type-select:hover {
+            border-color: rgba(255, 107, 44, 0.5);
+        }
+
+        .type-select:focus {
+            outline: none;
+            border-color: var(--orange-primary);
+            box-shadow: 0 0 0 3px var(--orange-glow);
+        }
+
+        .type-select option {
+            background: var(--grey-dark);
+            color: var(--white);
+        }
+
+        .selected-type-display {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.8rem;
+            color: var(--orange-light);
+            margin-bottom: 0.5rem;
+            padding: 0.5rem 0.75rem;
+            background: rgba(255, 107, 44, 0.1);
+            border-radius: 6px;
+            border-left: 3px solid var(--orange-primary);
+        }
+
+        .selected-type-display.diy {
+            color: var(--blue-accent);
+            background: rgba(78, 168, 222, 0.1);
+            border-left-color: var(--blue-accent);
+        }
+
+        .type-tip-card {
             font-size: 0.75rem;
             color: var(--grey-subtle);
             margin-bottom: 1rem;
+            padding: 0.6rem 0.75rem;
+            background: rgba(255, 255, 255, 0.03);
+            border-radius: 6px;
+            line-height: 1.5;
+            border-left: 2px solid var(--grey-light);
+        }
+
+        .type-tip-card strong {
+            color: var(--orange-light);
         }
 
         .product-actions {
@@ -953,6 +1005,11 @@
             background: rgba(255, 107, 44, 0.05);
         }
 
+        .type-option.selected.diy-option {
+            border-color: var(--blue-accent);
+            background: rgba(78, 168, 222, 0.05);
+        }
+
         .type-option-radio {
             width: 20px;
             height: 20px;
@@ -971,12 +1028,20 @@
             border-color: var(--orange-primary);
         }
 
+        .type-option.selected.diy-option .type-option-radio {
+            border-color: var(--blue-accent);
+        }
+
         .type-option.selected .type-option-radio::after {
             content: '';
             width: 10px;
             height: 10px;
             border-radius: 50%;
             background: var(--orange-primary);
+        }
+
+        .type-option.selected.diy-option .type-option-radio::after {
+            background: var(--blue-accent);
         }
 
         .type-option-content {
@@ -1155,20 +1220,6 @@
         .form-group textarea {
             resize: vertical;
             min-height: 100px;
-        }
-
-        .form-group select {
-            cursor: pointer;
-            appearance: none;
-            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8a95' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
-            padding-right: 2.5rem;
-        }
-
-        .form-group select option {
-            background: var(--grey-dark);
-            color: var(--white);
         }
 
         .price-preview {
@@ -1703,26 +1754,18 @@
                         <input type="text" id="proj-title" placeholder="Enter project name" required>
                     </div>
                     <div class="form-group">
-                        <label for="proj-type">Project Type</label>
-                        <select id="proj-type" required>
-                            <option value="diy">DIY Project Kit</option>
-                            <option value="ready">Ready to Use Project</option>
-                        </select>
-                    </div>
-                </div>
-
-                <div class="admin-form-row">
-                    <div class="form-group">
                         <label for="proj-base-price">Base Price (₹)</label>
                         <input type="number" id="proj-base-price" placeholder="299" required>
                         <div id="price-preview" class="price-preview">
-                            Customer pays: <strong>₹<span id="final-price">299</span></strong>
+                            <div><strong>DIY Kit:</strong> ₹<span id="price-diy-preview">299</span></div>
+                            <div><strong>Ready to Use:</strong> ₹<span id="price-ready-preview">348</span> (includes ₹49 assembly)</div>
                         </div>
                     </div>
-                    <div class="form-group">
-                        <label for="proj-desc">Description</label>
-                        <textarea id="proj-desc" rows="3" placeholder="Describe your project..." required></textarea>
-                    </div>
+                </div>
+
+                <div class="form-group">
+                    <label for="proj-desc">Description</label>
+                    <textarea id="proj-desc" rows="3" placeholder="Describe your project..." required></textarea>
                 </div>
 
                 <div class="form-group">
@@ -1804,7 +1847,7 @@
                     <img id="detail-image" class="detail-image" src="" alt="">
                 </div>
                 <div class="detail-info-section">
-                    <span id="detail-badge" class="detail-badge">DIY Project Kit</span>
+                    <span id="detail-badge" class="detail-badge diy">DIY Project Kit</span>
                     <h2 id="detail-title" class="detail-title"></h2>
                     <div id="detail-price" class="detail-price"></div>
                     <div id="detail-price-note" class="detail-price-note"></div>
@@ -1814,7 +1857,7 @@
                     <div class="type-selector">
                         <span class="type-selector-label">Choose Your Option</span>
                         <div class="type-options">
-                            <div class="type-option selected" data-type="diy" id="option-diy">
+                            <div class="type-option selected diy-option" data-type="diy" id="option-diy">
                                 <div class="type-option-radio"></div>
                                 <div class="type-option-content">
                                     <div class="type-option-title">DIY Project Kit</div>
@@ -1836,7 +1879,7 @@
                                 <circle cx="12" cy="12" r="10"/>
                                 <path d="M12 16v-4M12 8h.01"/>
                             </svg>
-                            <span id="tip-text">Tip: Choose READY TO USE PROJECT for instant out of the box working, at only ₹49 extra!</span>
+                            <span id="tip-text">Tip: Choose READY TO USE for rapid testing & using it out of the box, at only ₹49 extra additional charges!</span>
                         </div>
                     </div>
                     
@@ -2016,6 +2059,7 @@
         let adminPasskey = "";
         let currentDetailProduct = null;
         let selectedType = 'diy';
+        let selectedTypes = {}; // Track selected type per product card { productId: 'diy' | 'ready' }
 
         // ==========================================
         // DOM ELEMENTS
@@ -2274,7 +2318,15 @@
         }
 
         function getTypeLabel(type) {
-            return type === 'ready' ? 'Ready to Use' : 'DIY Kit';
+            return type === 'ready' ? 'READY TO USE' : 'DIY KIT';
+        }
+
+        function getTipText(type) {
+            if (type === 'diy') {
+                return "Tip: Choose READY TO USE for rapid testing & using it out of the box, at only ₹49 extra additional charges!";
+            } else {
+                return "Tip: Choose DIY KIT for core hands on learning with our documentation & guides, free of cost!";
+            }
         }
 
         // ==========================================
@@ -2284,15 +2336,20 @@
             productsGrid.innerHTML = '';
             
             projects.forEach(p => {
-                const projectType = p.type || 'diy';
                 const basePrice = parseInt(p.basePrice || p.price);
-                const displayPrice = basePrice;
                 
-                const cartItem = cart.find(item => item.id === p.id && item.type === projectType);
-                const qty = cartItem ? cartItem.quantity : 0;
+                // Get selected type for this product (default: diy)
+                const currentType = selectedTypes[p.id] || 'diy';
+                const displayPrice = getDisplayPrice(p, currentType);
+                
+                // Check cart for both types
+                const diyInCart = cart.find(item => item.id === p.id && item.type === 'diy');
+                const readyInCart = cart.find(item => item.id === p.id && item.type === 'ready');
+                const totalInCart = (diyInCart ? diyInCart.quantity : 0) + (readyInCart ? readyInCart.quantity : 0);
                 
                 const card = document.createElement('div');
                 card.className = 'product-card';
+                card.id = `product-card-${p.id}`;
                 
                 let actionsHTML = '';
                 
@@ -2316,12 +2373,16 @@
                         </div>
                     `;
                 } else {
+                    // Check if selected type is in cart
+                    const selectedItemInCart = currentType === 'diy' ? diyInCart : readyInCart;
+                    const qty = selectedItemInCart ? selectedItemInCart.quantity : 0;
+                    
                     if (qty > 0) {
                         actionsHTML = `
                             <div class="quantity-controls">
-                                <button class="qty-btn" onclick="decrementQty('${p.id}', '${projectType}')">−</button>
+                                <button class="qty-btn" onclick="decrementQty('${p.id}', '${currentType}')">−</button>
                                 <span class="qty-value">${qty}</span>
-                                <button class="qty-btn" onclick="incrementQty('${p.id}', '${projectType}')">+</button>
+                                <button class="qty-btn" onclick="incrementQty('${p.id}', '${currentType}')">+</button>
                             </div>
                             <button class="btn btn-secondary" onclick="openDetail('${p.id}')">
                                 <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
@@ -2333,7 +2394,7 @@
                         `;
                     } else {
                         actionsHTML = `
-                            <button class="btn btn-primary" onclick="addToCart('${p.id}', '${projectType}')" style="flex: 1;">
+                            <button class="btn btn-primary" onclick="addToCartFromCard('${p.id}')" style="flex: 1;">
                                 <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                                     <line x1="12" y1="5" x2="12" y2="19"/>
                                     <line x1="5" y1="12" x2="19" y2="12"/>
@@ -2350,20 +2411,34 @@
                     }
                 }
                 
-                const badgeClass = projectType === 'ready' ? 'ready' : 'diy';
+                const selectedTypeClass = currentType === 'diy' ? 'diy' : '';
                 
                 card.innerHTML = `
                     <div class="product-image-container">
                         <img src="${p.image}" alt="${p.title}" class="product-image">
-                        <span class="product-badge ${badgeClass}">${getTypeLabel(projectType)}</span>
-                        ${qty > 0 && !isAdmin ? `<span class="product-badge qty-badge">${qty} in cart</span>` : ''}
+                        ${totalInCart > 0 && !isAdmin ? `<span class="product-badge qty-badge">${totalInCart} in cart</span>` : ''}
                     </div>
                     <div class="product-content">
-                        <span class="product-type-label ${badgeClass}">${getTypeLabel(projectType)}</span>
                         <h3 class="product-title">${p.title}</h3>
                         <p class="product-description">${p.description}</p>
-                        <div class="product-price">₹${displayPrice}</div>
-                        <div class="product-price-note">${projectType === 'ready' ? 'Includes ₹49 assembly fee' : 'DIY Kit - Assemble yourself'}</div>
+                        <div class="product-price" id="price-${p.id}">₹${displayPrice}</div>
+                        
+                        ${!isAdmin ? `
+                        <div class="type-select-wrapper">
+                            <label class="type-select-label" for="type-select-${p.id}">Select Type</label>
+                            <select class="type-select" id="type-select-${p.id}" onchange="onTypeChange('${p.id}')">
+                                <option value="diy" ${currentType === 'diy' ? 'selected' : ''}>DIY KIT - ₹${basePrice}</option>
+                                <option value="ready" ${currentType === 'ready' ? 'selected' : ''}>READY TO USE - ₹${basePrice + ASSEMBLY_FEE}</option>
+                            </select>
+                        </div>
+                        <div class="selected-type-display ${selectedTypeClass}" id="selected-display-${p.id}">
+                            Selected: ${getTypeLabel(currentType)}
+                        </div>
+                        <div class="type-tip-card" id="tip-${p.id}">
+                            ${getTipText(currentType)}
+                        </div>
+                        ` : ''}
+                        
                         <div class="product-actions">
                             ${actionsHTML}
                         </div>
@@ -2372,6 +2447,45 @@
                 
                 productsGrid.appendChild(card);
             });
+        }
+
+        // ==========================================
+        // TYPE CHANGE HANDLER FOR PRODUCT CARDS
+        // ==========================================
+        function onTypeChange(productId) {
+            const select = document.getElementById(`type-select-${productId}`);
+            const newType = select.value;
+            
+            // Update state
+            selectedTypes[productId] = newType;
+            
+            const product = projects.find(p => p.id === productId);
+            if (!product) return;
+            
+            const basePrice = parseInt(product.basePrice || product.price);
+            const displayPrice = getDisplayPrice(product, newType);
+            
+            // Update price display
+            document.getElementById(`price-${productId}`).textContent = `₹${displayPrice}`;
+            
+            // Update selected type display
+            const selectedDisplay = document.getElementById(`selected-display-${productId}`);
+            selectedDisplay.textContent = `Selected: ${getTypeLabel(newType)}`;
+            selectedDisplay.className = `selected-type-display ${newType === 'diy' ? 'diy' : ''}`;
+            
+            // Update tip text
+            document.getElementById(`tip-${productId}`).textContent = getTipText(newType);
+            
+            // Re-render to update cart controls for the new type
+            renderProducts();
+        }
+
+        // ==========================================
+        // ADD TO CART FROM CARD (uses selected type)
+        // ==========================================
+        function addToCartFromCard(id) {
+            const type = selectedTypes[id] || 'diy';
+            addToCart(id, type);
         }
 
         // ==========================================
@@ -2524,7 +2638,8 @@
             if (!product) return;
             
             currentDetailProduct = product;
-            selectedType = product.type || 'diy';
+            // Use the card's selected type, or default to stored selection, or 'diy'
+            selectedType = selectedTypes[id] || 'diy';
             
             const basePrice = parseInt(product.basePrice || product.price);
             const readyPrice = basePrice + ASSEMBLY_FEE;
@@ -2549,32 +2664,34 @@
         }
 
         function updateDetailPriceDisplay(type, basePrice) {
+            const tipText = document.getElementById('tip-text');
+            
             if (type === 'ready') {
                 detailPrice.textContent = `₹${basePrice + ASSEMBLY_FEE}`;
                 detailPriceNote.textContent = 'Includes ₹49 assembly fee';
                 detailBadge.textContent = 'Ready to Use Project';
                 detailBadge.classList.remove('diy');
+                tipText.textContent = 'Tip: Choose DIY KIT for core hands on learning with our documentation & guides, free of cost!';
             } else {
                 detailPrice.textContent = `₹${basePrice}`;
                 detailPriceNote.textContent = 'DIY Kit - Assemble it yourself';
                 detailBadge.textContent = 'DIY Project Kit';
                 detailBadge.classList.add('diy');
+                tipText.textContent = 'Tip: Choose READY TO USE for rapid testing & using it out of the box, at only ₹49 extra additional charges!';
             }
         }
 
         function updateTypeSelectionUI(type) {
             const diyOption = document.getElementById('option-diy');
             const readyOption = document.getElementById('option-ready');
-            const tipText = document.getElementById('tip-text');
             
             if (type === 'diy') {
                 diyOption.classList.add('selected');
+                diyOption.classList.add('diy-option');
                 readyOption.classList.remove('selected');
-                tipText.textContent = 'Tip: Choose READY TO USE PROJECT for instant out of the box working, at only ₹49 extra!';
             } else {
                 diyOption.classList.remove('selected');
                 readyOption.classList.add('selected');
-                tipText.textContent = 'Tip: Choose DIY PROJECT KIT for hands-on learning & save ₹49!';
             }
             
             selectedType = type;
@@ -2612,6 +2729,8 @@
 
         document.getElementById('detail-add-cart').addEventListener('click', () => {
             if (currentDetailProduct) {
+                // Sync the selection to the card
+                selectedTypes[currentDetailProduct.id] = selectedType;
                 addToCart(currentDetailProduct.id, selectedType);
                 closeDetail();
             }
@@ -2732,24 +2851,18 @@
         });
 
         // ==========================================
-        // ADMIN FORM - TYPE & PRICE HANDLING
+        // ADMIN FORM - PRICE HANDLING
         // ==========================================
-        const projTypeSelect = document.getElementById('proj-type');
         const projBasePriceInput = document.getElementById('proj-base-price');
-        const finalPriceSpan = document.getElementById('final-price');
+        const priceDiyPreview = document.getElementById('price-diy-preview');
+        const priceReadyPreview = document.getElementById('price-ready-preview');
 
         function updatePricePreview() {
             const basePrice = parseInt(projBasePriceInput.value) || 0;
-            const type = projTypeSelect.value;
-            
-            if (type === 'ready') {
-                finalPriceSpan.textContent = basePrice + ASSEMBLY_FEE;
-            } else {
-                finalPriceSpan.textContent = basePrice;
-            }
+            priceDiyPreview.textContent = basePrice;
+            priceReadyPreview.textContent = basePrice + ASSEMBLY_FEE;
         }
 
-        projTypeSelect.addEventListener('change', updatePricePreview);
         projBasePriceInput.addEventListener('input', updatePricePreview);
 
         // ==========================================
@@ -2786,7 +2899,6 @@
                 let imageUrl = document.getElementById('existing-image-url').value;
                 const fileInput = document.getElementById('proj-image');
                 const basePrice = parseInt(document.getElementById('proj-base-price').value);
-                const projectType = document.getElementById('proj-type').value;
 
                 if (fileInput.files.length > 0) {
                     statusBox.textContent = "Uploading image to Cloudinary...";
@@ -2810,8 +2922,7 @@
                     id: isEdit ? document.getElementById('proj-id').value : "proj_" + Date.now(),
                     title: document.getElementById('proj-title').value,
                     basePrice: basePrice,
-                    price: projectType === 'ready' ? basePrice + ASSEMBLY_FEE : basePrice,
-                    type: projectType,
+                    price: basePrice, // Keep for backwards compatibility
                     description: document.getElementById('proj-desc').value,
                     image: imageUrl
                 };
@@ -2873,7 +2984,6 @@
             document.getElementById('proj-id').value = p.id;
             document.getElementById('proj-title').value = p.title;
             document.getElementById('proj-base-price').value = p.basePrice || p.price;
-            document.getElementById('proj-type').value = p.type || 'diy';
             document.getElementById('proj-desc').value = p.description;
             
             document.getElementById('existing-image-url').value = p.image;
@@ -2895,7 +3005,8 @@
             document.getElementById('cancel-edit-btn').style.display = 'none';
             document.getElementById('image-preview-container').style.display = 'none';
             document.getElementById('admin-status').style.display = 'none';
-            document.getElementById('final-price').textContent = '299';
+            document.getElementById('price-diy-preview').textContent = '299';
+            document.getElementById('price-ready-preview').textContent = '348';
         }
 
         window.deleteProject = async (id) => {
