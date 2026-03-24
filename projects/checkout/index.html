@@ -781,7 +781,6 @@
         // ==========================================
         const CONFIG = {
             WORKER_URL: 'https://cb-backend.devteam-circuitbreakers.workers.dev',
-            RAZORPAY_KEY_ID: 'rzp_test_XXXXXXXXXXXXX', // REPLACE THIS
             APPS_SCRIPT_URL: 'https://script.google.com/macros/s/AKfycbxpV555W_aGqAPPCzTwyk_PBWQr8oWuYLa7FI1gcYNQ5zeNDHgjZDIeAOofh6ApLNtW/exec',
             CURRENCY: 'INR'
         };
@@ -907,7 +906,6 @@
                     document.getElementById('otp-section').style.display = 'block';
                     document.getElementById('btn-send-otp').style.display = 'none';
                     startOTPTimer(300);
-                    // Show success toast or message
                 } else {
                     showError(data.error || "Failed to send code.");
                 }
@@ -1111,20 +1109,24 @@
                 
                 const orderData = await orderRes.json();
 
-                if (!orderData.id) {
+                if (!orderRes.ok || !orderData.id) {
                     throw new Error(orderData.error || "Failed to create payment order.");
                 }
 
+                if (!orderData.keyId) {
+                    throw new Error("Key ID not received from server.");
+                }
+
                 const options = {
-                    key: CONFIG.RAZORPAY_KEY_ID,
-                    amount: amountInPaise,
+                    key: orderData.keyId,
+                    amount: orderData.amount,
                     currency: CONFIG.CURRENCY,
                     name: 'Circuit Breakers',
                     description: 'Project Purchase',
                     order_id: orderData.id,
                     
-                    handler: async function (response){
-                        await verifyAndSaveOrder(response, orderData.id, amountInPaise);
+                    handler: async function (response) {
+                        await verifyAndSaveOrder(response, orderData.id, orderData.amount);
                     },
                     
                     prefill: {
@@ -1136,7 +1138,7 @@
                         color: '#ff6b2c'
                     },
                     modal: {
-                        ondismiss: function(){
+                        ondismiss: function() {
                             setLoading('btn-pay-now', false, "Pay Securely with Razorpay");
                         }
                     }
@@ -1146,7 +1148,7 @@
                 rzp.open();
 
             } catch (err) {
-                showError(err.message);
+                showError("Payment Error: " + err.message);
                 setLoading('btn-pay-now', false, "Pay Securely with Razorpay");
             }
         }
