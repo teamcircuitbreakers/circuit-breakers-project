@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>My Orders | Circuit Breakers</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Track your Circuit Breakers orders securely.">
+    <link rel="icon" type="image/png" href="../favicon.png">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <style>
+        /* ==========================================
+           CSS VARIABLES & RESET
+           ========================================== */
+        :root {
+            --orange-primary: #ff6b2c;
+            --orange-light: #ff8f5a;
+            --orange-dark: #e55a1f;
+            --orange-glow: rgba(255, 107, 44, 0.4);
+            --blue-accent: #4ea8de;
+            --green-accent: #22c55e;
+            --grey-dark: #1a1a1f;
+            --grey-mid: #2d2d35;
+            --grey-light: #4a4a55;
+            --grey-subtle: #8a8a95;
+            --white: #ffffff;
+            --white-muted: #f5f5f7;
+            --black: #0a0a0c;
+            --glass-bg: rgba(26, 26, 31, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        html {
+            scroll-behavior: smooth;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            line-height: 1.6;
+        }
+
+        ::-webkit-scrollbar { width: 6px; }
+        ::-webkit-scrollbar-track { background: var(--grey-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--grey-mid); border-radius: 3px; }
+
+        /* ==========================================
+           HEADER
+           ========================================== */
+        .checkout-header {
+            padding: 1.25rem 2rem;
+            background: var(--glass-bg);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            text-decoration: none;
+            color: var(--white);
+        }
+
+        .logo-icon {
+            width: 32px;
+            height: 40px;
+            fill: var(--orange-primary);
+        }
+
+        .logo-text {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.25rem;
+            font-weight: 700;
+        }
+
+        .logo-text span { color: var(--orange-primary); }
+
+        .secure-badge {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--grey-subtle);
+            font-size: 0.85rem;
+            font-family: 'JetBrains Mono', monospace;
+        }
+
+        .secure-badge svg {
+            color: var(--orange-primary);
+        }
+
+        /* ==========================================
+           MAIN LAYOUT
+           ========================================== */
+        .checkout-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            padding: 2rem;
+            width: 100%;
+        }
+
+        .checkout-box {
+            width: 100%;
+            max-width: 550px;
+            background: linear-gradient(135deg, var(--grey-mid) 0%, var(--grey-dark) 100%);
+            border: 1px solid var(--glass-border);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 20px 50px rgba(0,0,0,0.3);
+            transition: max-width 0.4s ease;
+        }
+
+        .checkout-box.expanded {
+            max-width: 800px;
+        }
+
+        .box-title {
+            font-family: 'Space Grotesk', sans-serif;
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .box-subtitle {
+            color: var(--grey-subtle);
+            font-size: 0.9rem;
+            margin-bottom: 2rem;
+        }
+
+        /* Message Box */
+        #message-box {
+            display: none;
+            padding: 1rem;
+            border-radius: 8px;
+            margin-bottom: 1.5rem;
+            font-size: 0.85rem;
+            font-weight: 500;
+        }
+        #message-box.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            color: #ef4444;
+        }
+        #message-box.success {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            color: var(--green-accent);
+        }
+
+        /* Form Inputs */
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem;
+            color: var(--grey-subtle);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 0.5rem;
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 1rem;
+            background: var(--grey-dark);
+            border: 1px solid var(--grey-light);
+            border-radius: 10px;
+            color: var(--white);
+            font-size: 1rem;
+            transition: all 0.3s var(--transition-smooth);
+        }
+
+        .form-input:focus {
+            outline: none;
+            border-color: var(--orange-primary);
+            box-shadow: 0 0 0 3px var(--orange-glow);
+        }
+
+        .form-input::placeholder { color: var(--grey-subtle); opacity: 0.7; }
+
+        /* OTP Input Group */
+        .otp-input-group {
+            display: flex;
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .otp-input-group input {
+            flex: 1;
+        }
+
+        .otp-timer {
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.85rem;
+            color: var(--orange-light);
+            text-align: right;
+            margin-top: -1rem;
+            margin-bottom: 1rem;
+        }
+
+        /* Buttons */
+        .btn {
+            width: 100%;
+            padding: 1rem;
+            border-radius: 10px;
+            font-family: 'JetBrains Mono', monospace;
+            font-size: 0.95rem;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s var(--transition-smooth);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+            border: none;
+        }
+
+        .btn-primary {
+            background: var(--orange-primary);
+            color: var(--black);
+            box-shadow: 0 4px 15px var(--orange-glow);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--orange-light);
+            transform: translateY(-2px);
+            box-shadow: 0 8px 25px var(--orange-glow);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-secondary {
+            background: transparent;
+            color: var(--grey-subtle);
+            border: 1px solid var(--grey-light);
+        }
+
+        .btn-secondary:hover {
+            background: rgba(255,255,255,0.05);
+            color: var(--white);
+        }
+
+        /* Loading Spinner */
+        .spinner {
+            width: 20px;
+            height: 20px;
+            border: 2px solid transparent;
+            border-top-color: currentColor;
+            border-radius: 50%;
+            animation: spin 0.8s linear infinite;
+        }
+
+        @keyframes spin {
+            to { transform: rotate(360deg); }
+        }
+
+        /* Step Sections Visibility */
+        .step-section { display: none; }
+        .step-section.active {
+            display: block;
+            animation: fadeIn 0.4s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* Orders List (Step 2) */
+        .orders-container {
+            max-height: 60vh;
+            overflow-y: auto;
+            padding-right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .order-card {
+            background: var(--black);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            transition: all 0.3s;
+        }
+
+        .order-card:hover {
+            border-color: var(--grey-light);
+            background: rgba(0,0,0,0.4);
+        }
+
+        .order-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 1rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px dashed var(--grey-mid);
+        }
+
+        .order-id {
+            font-family: 'JetBrains Mono', monospace;
+            color: var(--orange-primary);
+            font-size: 1rem;
+            font-weight: 600;
+        }
+
+        .order-date {
+            font-size: 0.8rem;
+            color: var(--grey-subtle);
+            margin-top: 0.25rem;
+        }
+
+        .order-status {
+            background: rgba(34, 197, 94, 0.15);
+            color: var(--green-accent);
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .order-items {
+            margin-bottom: 1rem;
+        }
+
+        .order-item {
+            display: flex;
+            justify-content: space-between;
+            font-size: 0.9rem;
+            margin-bottom: 0.5rem;
+            color: var(--white-muted);
+        }
+
+        .order-item-title span {
+            color: var(--grey-subtle);
+            font-size: 0.8rem;
+            margin-left: 0.5rem;
+        }
+
+        .order-footer {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            background: rgba(255, 255, 255, 0.03);
+            padding: 1rem;
+            border-radius: 8px;
+        }
+
+        .order-total-label {
+            font-size: 0.85rem;
+            color: var(--grey-subtle);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .order-total-amount {
+            font-size: 1.25rem;
+            font-weight: 700;
+            color: var(--white);
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 3rem 1rem;
+            color: var(--grey-subtle);
+        }
+
+        .empty-state svg {
+            width: 48px;
+            height: 48px;
+            margin-bottom: 1rem;
+            opacity: 0.5;
+        }
+
+        .footer-note {
+            text-align: center;
+            margin-top: 1.5rem;
+            font-size: 0.75rem;
+            color: var(--grey-subtle);
+        }
+
+        @media (max-width: 768px) {
+            .checkout-container { padding: 1rem; }
+            .checkout-box { padding: 1.5rem; }
+            .order-header { flex-direction: column; gap: 0.5rem; }
+        }
+    </style>
+</head>
+<body>
+
+    <!-- Header -->
+    <header class="checkout-header">
+        <div class="header-content">
+            <a href="/" class="logo">
+                <svg class="logo-icon" viewBox="277 265 278 342" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M306.06 335.03c34.29-19.77 68.28-39.35 102.25-58.94 4.32-2.5 8.55-5.16 12.87-7.65 4.68-2.69 7.08-1.5 7.11 3.71.09 19.32-.08 38.64.61 57.95.12 3.34-1.3 5.77-4.53 7.63-24.95 14.35-49.77 28.94-74.68 43.36-2.63 1.52-3.74 3.37-3.73 6.4.06 27.49.07 54.98-.03 82.47-.01 3.41 1.21 5.64 4.12 7.31 24.47 14.01 48.93 28.06 73.36 42.15 2.74 1.58 5.13 1.54 7.92-0.09 24.24-14.14 48.53-28.21 72.86-42.2 3.18-1.83 4.9-3.9 4.75-7.87-.31-8.24.1-16.51.1-25.43-9.49 4.13-17.09 9.81-25.28 14.4-16.97 9.51-33.76 19.36-50.64 28.97-4.79 2.74-6.9 1.76-6.93-3.7-.14-19.83-.05-39.66-.03-59.49.01-3.94 2.77-5.83 5.71-7.54 20.55-11.94 41.12-23.86 61.66-35.83 1.38-0.8 3.27-1.49 3.09-3.52-.16-1.74-1.93-2.04-3.22-2.79-11.21-6.52-22.42-13.04-33.55-19.7-2.83-1.69-4.58-4.41-4.56-7.86.11-19.16.2-38.31.46-57.46.07-4.82 3.28-6.21 7.52-3.78 21.18 12.15 42.41 24.22 63.58 36.4 13.23 7.61 26.4 15.32 39.56 23.05 2.75 1.61 4.14 3.99 4.18 7.41.2 16.32-.58 32.66.41 48.97.29 4.78-2.29 7.67-6.25 9.86-9.15 5.07-18.23 10.24-27.29 15.46-1.23 0.71-2.75 1.27-3.45 3.38 4.87 4.6 11.26 7.13 16.98 10.63 5.38 3.3 10.92 6.32 16.38 9.49 2.21 1.28 3.2 3.24 3.2 5.81-.02 16.83-.05 33.66.08 50.49.02 3.67-2.38 5.32-4.99 6.83-26.77 15.44-53.58 30.8-80.33 46.26-17.12 9.89-34.25 19.77-51.2 29.95-4.83 2.89-8.84 2.48-13.44-0.2-25.41-14.78-50.92-29.38-76.36-44.12-18.38-10.65-36.69-21.44-55.05-32.13-3.49-2.03-5.15-4.84-5.14-8.97.05-50.33.04-100.65.12-150.98.01-4.2 1.76-6.76 5.43-8.66 5.59-2.9 10.98-6.18 16.77-9.5z"/>
+                </svg>
+                <span class="logo-text">Circuit<span>Breakers</span></span>
+            </a>
+            <div class="secure-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"></path>
+                    <polyline points="22 4 12 14.01 9 11.01"></polyline>
+                </svg>
+                Order Tracker
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Content -->
+    <div class="checkout-container">
+        
+        <div class="checkout-box" id="main-box">
+            
+            <div id="message-box"></div>
+
+            <!-- STEP 1: VERIFY IDENTITY -->
+            <div id="section-1" class="step-section active">
+                <h2 class="box-title">Access Your Orders</h2>
+                <p class="box-subtitle">We need to verify your email to locate your history.</p>
+
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" class="form-input" placeholder="you@example.com" autocomplete="email">
+                </div>
+
+                <button id="btn-send-otp" class="btn btn-primary">
+                    Send Verification Code
+                </button>
+
+                <div id="otp-section" style="display: none; margin-top: 2rem;">
+                    <div class="form-group">
+                        <label for="otp-code">Enter Verification Code</label>
+                        <div class="otp-input-group">
+                            <input type="text" id="otp-code" class="form-input" placeholder="6-digit code" maxlength="6" style="letter-spacing: 0.5em; text-align: center;">
+                            <button id="btn-resend-otp" class="btn btn-secondary" style="width: auto; padding: 0 1rem; font-size: 0.8rem;">Resend</button>
+                        </div>
+                        <div id="otp-timer" class="otp-timer"></div>
+                    </div>
+                    
+                    <button id="btn-verify-otp" class="btn btn-primary">
+                        Verify & Access Orders
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 2: ORDERS LIST -->
+            <div id="section-2" class="step-section">
+                <div style="display: flex; justify-content: space-between; align-items: baseline; margin-bottom: 2rem;">
+                    <div>
+                        <h2 class="box-title">Order History</h2>
+                        <p class="box-subtitle" id="user-email-display">Tracking orders for ...</p>
+                    </div>
+                    <button onclick="logout()" class="btn btn-secondary" style="width: auto; padding: 0.5rem 1rem; font-size: 0.8rem;">Log Out</button>
+                </div>
+
+                <div id="orders-loading" style="text-align: center; padding: 3rem 0;">
+                    <span class="spinner" style="display: inline-block; width: 30px; height: 30px; border-width: 3px; color: var(--orange-primary);"></span>
+                    <p style="margin-top: 1rem; color: var(--grey-subtle);">Fetching your orders securely...</p>
+                </div>
+
+                <div class="orders-container" id="orders-list" style="display: none;">
+                    <!-- Orders will be injected here -->
+                </div>
+            </div>
+
+        </div>
+
+        <div class="footer-note">
+            Secured by 256-bit SSL encryption. Powered by Circuit Breakers.
+        </div>
+    </div>
+
+    <script>
+        // ==========================================
+        // CONFIGURATION
+        // ==========================================
+        const CONFIG = {
+            WORKER_URL: 'https://cb-backend.devteam-circuitbreakers.workers.dev'
+        };
+
+        // ==========================================
+        // STATE MANAGEMENT
+        // ==========================================
+        let verificationEmail = "";
+        let otpTimerInterval = null;
+
+        // DOM Elements
+        const messageBox = document.getElementById('message-box');
+        const section1 = document.getElementById('section-1');
+        const section2 = document.getElementById('section-2');
+        const mainBox = document.getElementById('main-box');
+
+        // ==========================================
+        // UI UTILITIES
+        // ==========================================
+        function showMessage(message, isError = true) {
+            messageBox.textContent = message;
+            messageBox.className = isError ? 'error' : 'success';
+            messageBox.style.display = 'block';
+            
+            // Auto hide success messages
+            if (!isError) {
+                setTimeout(() => { messageBox.style.display = 'none'; }, 5000);
+            }
+        }
+
+        function hideMessage() {
+            messageBox.style.display = 'none';
+        }
+
+        function setLoading(btnId, isLoading, text) {
+            const btn = document.getElementById(btnId);
+            if (!btn) return;
+            if (isLoading) {
+                btn.disabled = true;
+                btn.innerHTML = `<span class="spinner"></span> ${text}`;
+            } else {
+                btn.disabled = false;
+                btn.innerHTML = text;
+            }
+        }
+
+        function validateEmail(email) {
+            const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+            return re.test(email);
+        }
+
+        function formatDate(isoString) {
+            const options = { year: 'numeric', month: 'long', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+            return new Date(isoString).toLocaleDateString('en-IN', options);
+        }
+
+        // ==========================================
+        // STEP 1: OTP HANDLING
+        // ==========================================
+        async function sendOTP() {
+            hideMessage();
+            const emailInput = document.getElementById('email');
+            const email = emailInput.value.trim();
+            
+            if (!validateEmail(email)) {
+                showMessage("Please enter a valid email address.");
+                return;
+            }
+
+            verificationEmail = email;
+            setLoading('btn-send-otp', true, "Sending...");
+
+            try {
+                const res = await fetch(`${CONFIG.WORKER_URL}/otp/send`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: email,
+                        purpose: 'track_orders' // Tells Apps Script to use Order Tracker template
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.success) {
+                    document.getElementById('otp-section').style.display = 'block';
+                    document.getElementById('btn-send-otp').style.display = 'none';
+                    showMessage("Verification code sent successfully!", false);
+                    startOTPTimer(300);
+                } else {
+                    showMessage(data.error || "Failed to send code.");
+                }
+            } catch (err) {
+                showMessage("Network error. Please check your connection.");
+            } finally {
+                setLoading('btn-send-otp', false, "Send Verification Code");
+            }
+        }
+
+        async function verifyOTP() {
+            hideMessage();
+            const otp = document.getElementById('otp-code').value.trim();
+            
+            if (otp.length !== 6) {
+                showMessage("Please enter a valid 6-digit code.");
+                return;
+            }
+
+            setLoading('btn-verify-otp', true, "Verifying...");
+
+            try {
+                const res = await fetch(`${CONFIG.WORKER_URL}/otp/verify`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ 
+                        email: verificationEmail, 
+                        otp: otp 
+                    })
+                });
+
+                const data = await res.json();
+
+                if (data.valid) {
+                    clearInterval(otpTimerInterval);
+                    transitionToOrders();
+                } else {
+                    showMessage("Invalid or expired code.");
+                }
+            } catch (err) {
+                showMessage("Verification failed. Please try again.");
+            } finally {
+                setLoading('btn-verify-otp', false, "Verify & Access Orders");
+            }
+        }
+
+        function startOTPTimer(duration) {
+            let timer = duration, minutes, seconds;
+            const display = document.getElementById('otp-timer');
+            
+            if(otpTimerInterval) clearInterval(otpTimerInterval);
+            
+            otpTimerInterval = setInterval(function () {
+                minutes = parseInt(timer / 60, 10);
+                seconds = parseInt(timer % 60, 10);
+
+                minutes = minutes < 10 ? "0" + minutes : minutes;
+                seconds = seconds < 10 ? "0" + seconds : seconds;
+
+                display.textContent = `Code expires in ${minutes}:${seconds}`;
+
+                if (--timer < 0) {
+                    clearInterval(otpTimerInterval);
+                    display.textContent = "Code expired. Please resend.";
+                }
+            }, 1000);
+        }
+
+        // ==========================================
+        // STEP 2: FETCH & RENDER ORDERS
+        // ==========================================
+        function transitionToOrders() {
+            section1.classList.remove('active');
+            section2.classList.add('active');
+            mainBox.classList.add('expanded'); // Widens the box for the list
+            document.getElementById('user-email-display').textContent = `Showing secure records for ${verificationEmail}`;
+            
+            fetchOrders();
+        }
+
+        async function fetchOrders() {
+            try {
+                const res = await fetch(`${CONFIG.WORKER_URL}/orders/list`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ email: verificationEmail })
+                });
+
+                const data = await res.json();
+
+                document.getElementById('orders-loading').style.display = 'none';
+                const listContainer = document.getElementById('orders-list');
+                listContainer.style.display = 'flex';
+
+                if (data.success) {
+                    if (data.orders.length === 0) {
+                        listContainer.innerHTML = `
+                            <div class="empty-state">
+                                <svg fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4"></path>
+                                </svg>
+                                <h3>No Orders Found</h3>
+                                <p style="font-size: 0.9rem; margin-top: 0.5rem;">We couldn't find any order history linked to this email address.</p>
+                            </div>
+                        `;
+                    } else {
+                        renderOrders(data.orders, listContainer);
+                    }
+                } else {
+                    showMessage(data.error || "Failed to load orders");
+                }
+            } catch (err) {
+                document.getElementById('orders-loading').innerHTML = `<p style="color: #ef4444;">Network error while fetching orders.</p>`;
+            }
+        }
+
+        function renderOrders(orders, container) {
+            let html = '';
+            
+            orders.forEach(order => {
+                let itemsHtml = '';
+                order.items.forEach(item => {
+                    itemsHtml += `
+                        <div class="order-item">
+                            <div class="order-item-title">
+                                ${item.title} 
+                                ${item.rent ? '<span style="color: var(--green-accent); border: 1px solid var(--green-accent); padding: 2px 4px; border-radius: 4px; font-size: 0.6rem;">RENTAL</span>' : ''}
+                                <span>(Qty: ${item.quantity})</span>
+                            </div>
+                            <div class="order-item-price">₹${item.price * item.quantity * (item.rent ? 2 : 1)}</div>
+                        </div>
+                    `;
+                });
+
+                html += `
+                    <div class="order-card">
+                        <div class="order-header">
+                            <div>
+                                <div class="order-id">${order.orderId}</div>
+                                <div class="order-date">Placed on ${formatDate(order.createdAt)}</div>
+                            </div>
+                            <div class="order-status">${order.status}</div>
+                        </div>
+                        
+                        <div class="order-items">
+                            ${itemsHtml}
+                        </div>
+                        
+                        <div class="order-footer">
+                            <div class="order-total-label">Total Amount Paid</div>
+                            <div class="order-total-amount">₹${order.totalAmount}</div>
+                        </div>
+                    </div>
+                `;
+            });
+
+            container.innerHTML = html;
+        }
+
+        function logout() {
+            verificationEmail = "";
+            section2.classList.remove('active');
+            section1.classList.add('active');
+            mainBox.classList.remove('expanded');
+            
+            document.getElementById('email').value = '';
+            document.getElementById('otp-code').value = '';
+            document.getElementById('otp-section').style.display = 'none';
+            document.getElementById('btn-send-otp').style.display = 'flex';
+            document.getElementById('orders-list').style.display = 'none';
+            document.getElementById('orders-loading').style.display = 'block';
+            hideMessage();
+            if(otpTimerInterval) clearInterval(otpTimerInterval);
+        }
+
+        // ==========================================
+        // EVENT LISTENERS
+        // ==========================================
+        document.getElementById('btn-send-otp').addEventListener('click', sendOTP);
+        document.getElementById('btn-verify-otp').addEventListener('click', verifyOTP);
+        
+        document.getElementById('btn-resend-otp').addEventListener('click', () => {
+            document.getElementById('otp-section').style.display = 'none';
+            document.getElementById('btn-send-otp').style.display = 'flex';
+            clearInterval(otpTimerInterval);
+            document.getElementById('otp-timer').textContent = "";
+            hideMessage();
+        });
+
+    </script>
+</body>
+</html>
