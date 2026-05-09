@@ -14,14 +14,22 @@
     <meta property="og:title" content="Circuit Breakers | Projects">
     <meta property="og:description" content="Having trouble for projects related IoT? Get custom projects, DIY kits, or rent hardware at 50% price.">
     <meta property="og:image" content="https://res.cloudinary.com/dzazor3or/image/upload/v1774199355/dev-section_anhoyq_zfsvqj.png">
+    
     <link rel="manifest" href="/manifest.json">
     <meta name="theme-color" content="#000000">
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="apple-touch-icon" href="../favicon.png">
+    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     
+    <!-- Link to the Global PWA Router -->
+    <script src="/common.js" defer></script>
+</head>
+<body>
+<div id="app">
+    <!-- CSS moved INSIDE #app so the PWA router loads it dynamically -->
     <style>
         :root {
             --orange-primary: #ff6b2c;
@@ -1780,10 +1788,7 @@
             }
         }
     </style>
-</head>
-    <script src="/common.js"></script>
-<body>
-<div id="app">
+    
     <!-- Header -->
     <header class="header">
         <div class="header-inner">
@@ -1791,19 +1796,41 @@
                 <svg class="logo-icon" viewBox="277 265 278 342" xmlns="http://www.w3.org/2000/svg">
                     <path d="M306.06 335.03c34.29-19.77 68.28-39.35 102.25-58.94 4.32-2.5 8.55-5.16 12.87-7.65 4.68-2.69 7.08-1.5 7.11 3.71.09 19.32-.08 38.64.61 57.95.12 3.34-1.3 5.77-4.53 7.63-24.95 14.35-49.77 28.94-74.68 43.36-2.63 1.52-3.74 3.37-3.73 6.4.06 27.49.07 54.98-.03 82.47-.01 3.41 1.21 5.64 4.12 7.31 24.47 14.01 48.93 28.06 73.36 42.15 2.74 1.58 5.13 1.54 7.92-0.09 24.24-14.14 48.53-28.21 72.86-42.2 3.18-1.83 4.9-3.9 4.75-7.87-.31-8.24.1-16.51.1-25.43-9.49 4.13-17.09 9.81-25.28 14.4-16.97 9.51-33.76 19.36-50.64 28.97-4.79 2.74-6.9 1.76-6.93-3.7-.14-19.83-.05-39.66-.03-59.49.01-3.94 2.77-5.83 5.71-7.54 20.55-11.94 41.12-23.86 61.66-35.83 1.38-0.8 3.27-1.49 3.09-3.52-.16-1.74-1.93-2.04-3.22-2.79-11.21-6.52-22.42-13.04-33.55-19.7-2.83-1.69-4.58-4.41-4.56-7.86.11-19.16.2-38.31.46-57.46.07-4.82 3.28-6.21 7.52-3.78 21.18 12.15 42.41 24.22 63.58 36.4 13.23 7.61 26.4 15.32 39.56 23.05 2.75 1.61 4.14 3.99 4.18 7.41.2 16.32-.58 32.66.41 48.97.29 4.78-2.29 7.67-6.25 9.86-9.15 5.07-18.23 10.24-27.29 15.46-1.23 0.71-2.75 1.27-3.45 3.38 4.87 4.6 11.26 7.13 16.98 10.63 5.38 3.3 10.92 6.32 16.38 9.49 2.21 1.28 3.2 3.24 3.2 5.81-.02 16.83-.05 33.66.08 50.49.02 3.67-2.38 5.32-4.99 6.83-26.77 15.44-53.58 30.8-80.33 46.26-17.12 9.89-34.25 19.77-51.2 29.95-4.83 2.89-8.84 2.48-13.44-0.2-25.41-14.78-50.92-29.38-76.36-44.12-18.38-10.65-36.69-21.44-55.05-32.13-3.49-2.03-5.15-4.84-5.14-8.97.05-50.33.04-100.65.12-150.98.01-4.2 1.76-6.76 5.43-8.66 5.59-2.9 10.98-6.18 16.77-9.5z"/>
                 </svg>
+                
                 <div style="display: flex; flex-direction: column;">
                     <span class="logo-text">Circuit<span>Breakers</span></span>
                     <span class="logo-tagline" style="margin-top: 2px; font-size: 0.85em;">Rewriting the future</span>
                 </div>
+                
             </a>
-            <a href="/" class="back-link">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M19 12H5M12 19l-7-7 7-7"/>
-                </svg>
-                Back to Home
-            </a>
+            
+            <nav class="nav">
+                <!-- Changed to point to the root page sections -->
+                <a href="/#mission" class="nav-link">// Mission</a>
+                <a href="/#services" class="nav-link">// Services</a>
+                <a href="/#process" class="nav-link">// Process</a>
+                <a href="/#contact" class="nav-link">// Contact</a>
+                <a href="/#contact" class="nav-cta">Get Started</a>
+            </nav>
+            
+            <div class="mobile-toggle" id="mobileToggle">
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
         </div>
     </header>
+
+    <!-- Mobile Menu -->
+    <div class="mobile-menu" id="mobileMenu">
+        <nav class="mobile-menu-nav">
+            <a href="/#mission">Mission</a>
+            <a href="/#services">Services</a>
+            <a href="/#process">Process</a>
+            <a href="/#contact">Contact</a>
+            <a href="/#contact" class="btn btn-primary" style="width: fit-content; margin-top: 1rem;">Get Started</a>
+        </nav>
+    </div>
 
     <!-- Main Content -->
     <main class="main-content">
@@ -1914,13 +1941,14 @@
                     <span class="cart-total-label">Total</span>
                     <span id="cart-total" class="cart-total-value">₹0</span>
                 </div>
-                <button id="checkout-btn" class="btn btn-primary cart-checkout-btn">
+                <!-- Native path loading used here to route to checkout inside the SPA -->
+                <a href="/projects/checkout/" id="checkout-btn" class="btn btn-primary cart-checkout-btn">
                     <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                         <rect x="1" y="4" width="22" height="16" rx="2"/>
                         <line x1="1" y1="10" x2="23" y2="10"/>
                     </svg>
                     Proceed to Checkout
-                </button>
+                </a>
                 <p class="cart-footer-note">Secure payments via Razorpay</p>
             </div>
         </div>
@@ -2055,17 +2083,18 @@
                 <a href="/" class="logo">
                     <svg class="logo-icon" viewBox="277 265 278 342" xmlns="http://www.w3.org/2000/svg">
                         <path d="M306.06 335.03c34.29-19.77 68.28-39.35 102.25-58.94 4.32-2.5 8.55-5.16 12.87-7.65 4.68-2.69 7.08-1.5 7.11 3.71.09 19.32-.08 38.64.61 57.95.12 3.34-1.3 5.77-4.53 7.63-24.95 14.35-49.77 28.94-74.68 43.36-2.63 1.52-3.74 3.37-3.73 6.4.06 27.49.07 54.98-.03 82.47-.01 3.41 1.21 5.64 4.12 7.31 24.47 14.01 48.93 28.06 73.36 42.15 2.74 1.58 5.13 1.54 7.92-0.09 24.24-14.14 48.53-28.21 72.86-42.2 3.18-1.83 4.9-3.9 4.75-7.87-.31-8.24.1-16.51.1-25.43-9.49 4.13-17.09 9.81-25.28 14.4-16.97 9.51-33.76 19.36-50.64 28.97-4.79 2.74-6.9 1.76-6.93-3.7-.14-19.83-.05-39.66-.03-59.49.01-3.94 2.77-5.83 5.71-7.54 20.55-11.94 41.12-23.86 61.66-35.83 1.38-0.8 3.27-1.49 3.09-3.52-.16-1.74-1.93-2.04-3.22-2.79-11.21-6.52-22.42-13.04-33.55-19.7-2.83-1.69-4.58-4.41-4.56-7.86.11-19.16.2-38.31.46-57.46.07-4.82 3.28-6.21 7.52-3.78 21.18 12.15 42.41 24.22 63.58 36.4 13.23 7.61 26.4 15.32 39.56 23.05 2.75 1.61 4.14 3.99 4.18 7.41.2 16.32-.58 32.66.41 48.97.29 4.78-2.29 7.67-6.25 9.86-9.15 5.07-18.23 10.24-27.29 15.46-1.23 0.71-2.75 1.27-3.45 3.38 4.87 4.6 11.26 7.13 16.98 10.63 5.38 3.3 10.92 6.32 16.38 9.49 2.21 1.28 3.2 3.24 3.2 5.81-.02 16.83-.05 33.66.08 50.49.02 3.67-2.38 5.32-4.99 6.83-26.77 15.44-53.58 30.8-80.33 46.26-17.12 9.89-34.25 19.77-51.2 29.95-4.83 2.89-8.84 2.48-13.44-0.2-25.41-14.78-50.92-29.38-76.36-44.12-18.38-10.65-36.69-21.44-55.05-32.13-3.49-2.03-5.15-4.84-5.14-8.97.05-50.33.04-100.65.12-150.98.01-4.2 1.76-6.76 5.43-8.66 5.59-2.9 10.98-6.18 16.77-9.5z"/>
-                    </svg>
-                    <div style="display: flex; flex-direction: column;">
-                    <span class="logo-text">Circuit<span>Breakers</span></span>
-                    <span class="logo-tagline" style="margin-top: 2px; font-size: 0.85em;">Rewriting the future</span>
-                </div>
-                </a>
-                <p>Built with 🖤 by students, for the community. We're democratizing electronics innovation across India.</p>
-                <div class="footer-social">
-                    <a href="https://wa.me/919062420056?text=HI!%20I'm%20Interested%20on%20your%20startup%20-%20Circuit%20Breakers" target="_blank" aria-label="WhatsApp">
-                        <svg viewBox="0 0 30.667 30.667" fill="currentColor">
-                            <path d="M30.667,14.939c0,8.25-6.74,14.938-15.056,14.938c-2.639,0-5.118-0.675-7.276-1.857L0,30.667l2.717-8.017c-1.37-2.25-2.159-4.892-2.159-7.712C0.559,6.688,7.297,0,15.613,0C23.928,0.002,30.667,6.689,30.667,14.939z M15.61,2.382c-6.979,0-12.656,5.634-12.656,12.56c0,2.748,0.896,5.292,2.411,7.362l-1.58,4.663l4.862-1.545c2,1.312,4.393,2.076,6.963,2.076c6.979,0,12.658-5.633,12.658-12.559C28.27,8.016,22.59,2.382,15.61,2.382z M23.214,18.38c-0.094-0.151-0.34-0.243-0.708-0.427c-0.367-0.184-2.184-1.069-2.521-1.189c-0.34-0.123-0.586-0.185-0.832,0.182c-0.243,0.367-0.951,1.191-1.168,1.437c-0.215,0.245-0.43,0.276-0.799,0.095c-0.369-0.186-1.559-0.57-2.969-1.817c-1.097-0.972-1.838-2.169-2.052-2.536c-0.217-0.366-0.022-0.564,0.161-0.746c0.165-0.165,0.369-0.428,0.554-0.643c0.185-0.213,0.246-0.364,0.369-0.609c0.121-0.245,0.06-0.458-0.031-0.643c-0.092-0.184-0.829-1.984-1.138-2.717c-0.307-0.732-0.614-0.611-0.83-0.611c-0.215,0-0.461-0.03-0.707-0.03S9.897,8.215,9.56,8.582s-1.291,1.252-1.291,3.054c0,1.804,1.321,3.543,1.506,3.787c0.186,0.243,2.554,4.062,6.305,5.528c3.753,1.465,3.753,0.976,4.429,0.914c0.678-0.062,2.184-0.885,2.49-1.739C23.307,19.268,23.307,18.533,23.214,18.38z"/>
+                        </svg>
+                        
+                        <div style="display: flex; flex-direction: column;">
+                            <span class="logo-text">Circuit<span>Breakers</span></span>
+                            <span class="logo-tagline" style="margin-top: 2px; font-size: 0.85em;">Rewriting the future</span>
+                        </div>
+                    </a>
+                    <p>Built with 🖤 by students, for the community. We're democratizing electronics innovation across India.</p>
+                    <div class="footer-social">
+                        <a href="https://wa.me/919062420056?text=HI!%20I'm%20Interested%20on%20your%20startup%20-%20Circuit%20Breakers" target="_blank" aria-label="WhatsApp">
+                            <svg viewBox="0 0 30.667 30.667" fill="currentColor">
+                                <path d="M30.667,14.939c0,8.25-6.74,14.938-15.056,14.938c-2.639,0-5.118-0.675-7.276-1.857L0,30.667l2.717-8.017c-1.37-2.25-2.159-4.892-2.159-7.712C0.559,6.688,7.297,0,15.613,0C23.928,0.002,30.667,6.689,30.667,14.939z M15.61,2.382c-6.979,0-12.656,5.634-12.656,12.56c0,2.748,0.896,5.292,2.411,7.362l-1.58,4.663l4.862-1.545c2,1.312,4.393,2.076,6.963,2.076c6.979,0,12.658-5.633,12.658-12.559C28.27,8.016,22.59,2.382,15.61,2.382z M23.214,18.38c-0.094-0.151-0.34-0.243-0.708-0.427c-0.367-0.184-2.184-1.069-2.521-1.189c-0.34-0.123-0.586-0.185-0.832,0.182c-0.243,0.367-0.951,1.191-1.168,1.437c-0.215,0.245-0.43,0.276-0.799,0.095c-0.369-0.186-1.559-0.57-2.969-1.817c-1.097-0.972-1.838-2.169-2.052-2.536c-0.217-0.366-0.022-0.564,0.161-0.746c0.165-0.165,0.369-0.428,0.554-0.643c0.185-0.213,0.246-0.364,0.369-0.609c0.121-0.245,0.06-0.458-0.031-0.643c-0.092-0.184-0.829-1.984-1.138-2.717c-0.307-0.732-0.614-0.611-0.83-0.611c-0.215,0-0.461-0.03-0.707-0.03S9.897,8.215,9.56,8.582s-1.291,1.252-1.291,3.054c0,1.804,1.321,3.543,1.506,3.787c0.186,0.243,2.554,4.062,6.305,5.528c3.753,1.465,3.753,0.976,4.429,0.914c0.678-0.062,2.184-0.885,2.49-1.739C23.307,19.268,23.307,18.533,23.214,18.38z"/>
                         </svg>
                     </a>
                     <a href="https://www.facebook.com/share/1aFMAAapqx/" target="_blank" aria-label="Facebook">
@@ -2651,11 +2680,11 @@
         // ==========================================
         // ADD TO CART FROM CARD (uses selected type and rent)
         // ==========================================
-        function addToCartFromCard(id) {
+        window.addToCartFromCard = function(id) {
             const type = selectedTypes[id] || 'diy';
             const rent = rentEnabled[id] || false;
             addToCart(id, type, rent);
-        }
+        };
 
         // ==========================================
         // CART LOGIC - QUANTITY BASED
@@ -2694,16 +2723,16 @@
             setTimeout(() => cartFab.classList.remove('pulse'), 300);
         }
 
-        function incrementQty(id, type = 'diy', rent = false) {
+        window.incrementQty = function(id, type = 'diy', rent = false) {
             const item = cart.find(item => item.id === id && item.type === type && item.rent === rent);
             if (item) {
                 item.quantity++;
                 updateCartUI();
                 renderProducts();
             }
-        }
+        };
 
-        function decrementQty(id, type = 'diy', rent = false) {
+        window.decrementQty = function(id, type = 'diy', rent = false) {
             const item = cart.find(item => item.id === id && item.type === type && item.rent === rent);
             if (item) {
                 item.quantity--;
@@ -2713,13 +2742,13 @@
                 updateCartUI();
                 renderProducts();
             }
-        }
+        };
 
-        function removeFromCart(id, type, rent) {
+        window.removeFromCart = function(id, type, rent) {
             cart = cart.filter(item => !(item.id === id && item.type === type && item.rent === rent));
             updateCartUI();
             renderProducts();
-        }
+        };
 
         function updateCartUI() {
             const totalItems = cart.reduce((sum, item) => sum + item.quantity, 0);
@@ -2792,19 +2821,20 @@
             }
         });
 
-        document.getElementById('checkout-btn').addEventListener('click', () => {
+        document.getElementById('checkout-btn').addEventListener('click', (e) => {
             if (cart.length === 0) {
+                e.preventDefault();
                 showToast('Your cart is empty!');
                 return;
             }
             localStorage.setItem('cb_cart', JSON.stringify(cart));
-            window.location.href = '/projects/checkout/';
+            // Let the link's native href handle the routing to checkout.
         });
 
         // ==========================================
         // PRODUCT DETAIL MODAL
         // ==========================================
-        function openDetail(id) {
+        window.openDetail = function(id) {
             const product = projects.find(p => p.id === id);
             if (!product) return;
             
@@ -2832,7 +2862,7 @@
             
             detailOverlay.classList.add('open');
             document.body.style.overflow = 'hidden';
-        }
+        };
 
         function updateDetailPriceDisplay(type, basePrice) {
             const tipText = document.getElementById('tip-text');
@@ -3210,39 +3240,6 @@
                 showToast(err.message + " Check your passkey.");
             }
         };
-
-        // ==========================================
-        // POLICY MODAL
-        // ==========================================
-        const policyModalOverlay = document.getElementById('policy-modal-overlay');
-        const policyModalTitle = document.getElementById('policy-modal-title');
-        const policyModalBody = document.getElementById('policy-modal-body');
-        const policyModalClose = document.getElementById('policy-modal-close');
-
-        document.querySelectorAll('.policy-link').forEach(link => {
-            link.addEventListener('click', (e) => {
-                e.preventDefault();
-                const policy = e.target.getAttribute('data-policy');
-                if (policyContent[policy]) {
-                    policyModalTitle.textContent = policy;
-                    policyModalBody.innerHTML = policyContent[policy];
-                    policyModalOverlay.classList.add('is-open');
-                    document.body.style.overflow = 'hidden';
-                }
-            });
-        });
-
-        policyModalClose.addEventListener('click', () => {
-            policyModalOverlay.classList.remove('is-open');
-            document.body.style.overflow = '';
-        });
-
-        policyModalOverlay.addEventListener('click', (e) => {
-            if (e.target === policyModalOverlay) {
-                policyModalOverlay.classList.remove('is-open');
-                document.body.style.overflow = '';
-            }
-        });
 
         // ==========================================
         // KEYBOARD SHORTCUTS
