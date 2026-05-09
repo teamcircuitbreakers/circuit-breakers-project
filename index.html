@@ -25,7 +25,9 @@
     
     <!-- Link to the Global PWA Router -->
     <script src="/common.js" defer></script>
-    
+</head>
+<body>
+<div id="app">
     <style>
         :root {
             --orange-primary: #ff6b2c;
@@ -1212,9 +1214,6 @@
             }
         }
     </style>
-</head>
-<body>
-    <div id="app">
     <header class="header" id="header">
         <div class="header-inner">
             <a href="#" class="logo">
@@ -1417,7 +1416,6 @@
                         <span class="amount">₹299</span>
                         <span class="note">starting price</span>
                     </div>
-                    <!-- Using relative path -->
                     <a href="/projects/" class="btn btn-primary service-cta">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="9" cy="21" r="1"/>
@@ -1457,7 +1455,6 @@
                         <span class="amount">50%</span>
                         <span class="note">savings guaranteed</span>
                     </div>
-                    <!-- Using relative path -->
                     <a href="/projects/" class="btn btn-primary service-cta">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="1" y="4" width="22" height="16" rx="2"/>
@@ -1706,10 +1703,10 @@
             <div>
                 <h4 class="footer-title">Services</h4>
                 <ul class="footer-links">
-                    <li><a href="#services">DIY Kits</a></li>
-                    <li><a href="#services">50% Rental</a></li>
-                    <li><a href="#services">Custom Development</a></li>
-                    <li><a href="#contact">Get Quote</a></li>
+                    <li><a href="/#services">DIY Kits</a></li>
+                    <li><a href="/#services">50% Rental</a></li>
+                    <li><a href="/#services">Custom Development</a></li>
+                    <li><a href="/#contact">Get Quote</a></li>
                     <!-- Fixed URL here! -->
                     <li><a href="/my-orders/">My Orders</a></li>
                 </ul>
@@ -2093,6 +2090,6 @@
             }
         });
     </script>
-    </div>
+</div>
 </body>
 </html>
