@@ -25,10 +25,88 @@ if ("serviceWorker" in navigator) {
 
 
 
+
 // ------------------------------
-// INTERNAL LINK HANDLER
-// Keeps navigation inside PWA
-// Supports / and ../ links
+// APP-LIKE INTERNAL NAVIGATION
+// ------------------------------
+
+async function loadPage(url, addToHistory = true) {
+
+  try {
+
+    const response = await fetch(url);
+
+    const html = await response.text();
+
+    const parser = new DOMParser();
+
+    const doc = parser.parseFromString(html, "text/html");
+
+    const newApp = doc.querySelector("#app");
+
+
+
+    // Fallback if wrapper missing
+    if (!newApp) {
+
+      window.location.href = url;
+      return;
+
+    }
+
+
+
+    // Replace ONLY app contents
+    const currentApp = document.querySelector("#app");
+
+    currentApp.innerHTML = newApp.innerHTML;
+
+
+
+    // Update page title
+    document.title = doc.title;
+
+
+
+    // Update browser history
+    if (addToHistory) {
+
+      history.pushState(
+        { page: url },
+        "",
+        url
+      );
+
+    }
+
+
+
+    // Scroll to top
+    window.scrollTo({
+      top: 0,
+      behavior: "instant"
+    });
+
+
+
+    console.log("Navigated:", url);
+
+  } catch (err) {
+
+    console.log("Navigation Error:", err);
+
+    // Safe fallback
+    window.location.href = url;
+
+  }
+
+}
+
+
+
+
+// ------------------------------
+// INTERCEPT INTERNAL LINKS
 // ------------------------------
 document.addEventListener("click", (e) => {
 
@@ -39,6 +117,7 @@ document.addEventListener("click", (e) => {
   const href = link.getAttribute("href");
 
   if (!href) return;
+
 
 
   // Ignore external/system links
@@ -53,47 +132,30 @@ document.addEventListener("click", (e) => {
   }
 
 
-  // Force same-window navigation
+
+  // Prevent full reload
   e.preventDefault();
 
-  window.location.assign(href);
+
+
+  // Load page dynamically
+  loadPage(href);
 
 });
 
 
 
 
+
 // ------------------------------
-// SMART APP-LIKE BACK HANDLING
+// BACK/FORWARD BUTTON HANDLING
 // ------------------------------
-window.addEventListener("load", () => {
+window.addEventListener("popstate", () => {
 
-  // Ensure app history exists
-  if (!history.state) {
-    history.replaceState({ app: true }, "");
-  }
-
-
-  window.addEventListener("popstate", () => {
-
-    // If navigated internally
-    if (
-      document.referrer &&
-      document.referrer.includes(location.origin)
-    ) {
-
-      window.history.back();
-
-    } else {
-
-      // Prevent instant app exit
-      history.pushState({ app: true }, "");
-
-    }
-
-  });
+  loadPage(location.pathname, false);
 
 });
+
 
 
 
