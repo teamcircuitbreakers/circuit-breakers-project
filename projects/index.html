@@ -14,6 +14,8 @@
     <meta property="og:title" content="Circuit Breakers | Projects">
     <meta property="og:description" content="Having trouble for projects related IoT? Get custom projects, DIY kits, or rent hardware at 50% price.">
     <meta property="og:image" content="https://res.cloudinary.com/dzazor3or/image/upload/v1774199355/dev-section_anhoyq_zfsvqj.png">
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">
     <link rel="icon" type="image/png" href="../favicon.png">
     <link rel="apple-touch-icon" href="../favicon.png">
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -1779,6 +1781,12 @@
         }
     </style>
 </head>
+    <script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js")
+    .then(() => console.log("Service Worker Registered"));
+}
+</script>
 <body>
 
     <!-- Header -->
