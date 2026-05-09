@@ -3,11 +3,14 @@
 // ==============================
 
 
+
 // ------------------------------
 // SERVICE WORKER
 // ------------------------------
 if ("serviceWorker" in navigator) {
+
   window.addEventListener("load", () => {
+
     navigator.serviceWorker.register("/sw.js")
       .then(() => {
         console.log("SW Registered");
@@ -15,13 +18,17 @@ if ("serviceWorker" in navigator) {
       .catch((err) => {
         console.log("SW Error:", err);
       });
+
   });
+
 }
 
 
+
 // ------------------------------
-// INTERNAL LINK FIXER
+// INTERNAL LINK HANDLER
 // Keeps navigation inside PWA
+// Supports / and ../ links
 // ------------------------------
 document.addEventListener("click", (e) => {
 
@@ -33,37 +40,55 @@ document.addEventListener("click", (e) => {
 
   if (!href) return;
 
-  // Ignore external links
+
+  // Ignore external/system links
   if (
     href.startsWith("http") ||
     href.startsWith("mailto:") ||
     href.startsWith("tel:") ||
-    href.startsWith("#")
+    href.startsWith("#") ||
+    link.target === "_blank"
   ) {
     return;
   }
 
+
   // Force same-window navigation
   e.preventDefault();
 
-  window.location.href = href;
+  window.location.assign(href);
 
 });
 
 
+
+
 // ------------------------------
-// BETTER BACK BUTTON HANDLING
+// SMART APP-LIKE BACK HANDLING
 // ------------------------------
 window.addEventListener("load", () => {
 
-  history.pushState({ page: 1 }, "", "");
+  // Ensure app history exists
+  if (!history.state) {
+    history.replaceState({ app: true }, "");
+  }
+
 
   window.addEventListener("popstate", () => {
 
-    if (document.referrer.includes(location.origin)) {
-      history.back();
+    // If navigated internally
+    if (
+      document.referrer &&
+      document.referrer.includes(location.origin)
+    ) {
+
+      window.history.back();
+
     } else {
-      history.pushState({ page: 1 }, "", "");
+
+      // Prevent instant app exit
+      history.pushState({ app: true }, "");
+
     }
 
   });
@@ -71,9 +96,15 @@ window.addEventListener("load", () => {
 });
 
 
+
+
 // ------------------------------
 // PWA MODE DETECTION
 // ------------------------------
-if (window.matchMedia('(display-mode: standalone)').matches) {
+if (window.matchMedia("(display-mode: standalone)").matches) {
+
   console.log("Running as installed PWA");
+
+  document.documentElement.classList.add("pwa-mode");
+
 }
