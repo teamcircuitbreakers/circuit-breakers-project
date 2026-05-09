@@ -1,9 +1,10 @@
 {
   "name": "Circuit Breakers",
-  "short_name": "Circuit",
-  "start_url": "/index.html",
+  "short_name": "Circuit Breakers",
+  "start_url": "/?source=pwa",
   "scope": "/",
   "display": "standalone",
+  "display_override": ["standalone", "window-controls-overlay"],
   "background_color": "#000000",
   "theme_color": "#000000",
   "orientation": "portrait",
