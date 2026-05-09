@@ -16,7 +16,9 @@
     <meta property="og:title" content="Circuit Breakers - India's Innovation Ecosystem">
     <meta property="og:description" content="Join India's innovation ecosystem. Get custom projects, DIY kits, or rent hardware at 50% price.">
     <meta property="og:image" content="https://res.cloudinary.com/dpoubdg6d/image/upload/v1762020836/hero1_ahglwg.webp">
-    
+
+	<link rel="manifest" href="/manifest.json">
+	<meta name="theme-color" content="#000000">	
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1208,6 +1210,12 @@
         }
     </style>
 </head>
+	<script>
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("/sw.js")
+    .then(() => console.log("Service Worker Registered"));
+}
+</script>
 <body>
     <header class="header" id="header">
         <div class="header-inner">
