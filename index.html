@@ -17,8 +17,8 @@
     <meta property="og:description" content="Join India's innovation ecosystem. Get custom projects, DIY kits, or rent hardware at 50% price.">
     <meta property="og:image" content="https://res.cloudinary.com/dpoubdg6d/image/upload/v1762020836/hero1_ahglwg.webp">
 
-	<link rel="manifest" href="/manifest.json">
-	<meta name="theme-color" content="#000000">	
+    <link rel="manifest" href="/manifest.json">
+    <meta name="theme-color" content="#000000">    
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
@@ -1210,9 +1210,10 @@
         }
     </style>
 </head>
-	<script src="/common.js"></script>
 <body>
-	<div id="app">
+    <!-- The script was pulled directly into the HTML to prevent file resolution issues,
+         but you can safely extract the JS at the bottom back into common.js -->
+    <div id="app">
     <header class="header" id="header">
         <div class="header-inner">
             <a href="#" class="logo">
@@ -1318,7 +1319,7 @@
                     <span class="stat-value">100%</span>
                     <span class="stat-label">Consultation First</span>
                 </div>
-		<div class="stat-item">
+        <div class="stat-item">
                     <span class="stat-value">FREE</span>
                     <span class="stat-label">Consultation & Guides</span>
                 </div>
@@ -1415,7 +1416,8 @@
                         <span class="amount">₹299</span>
                         <span class="note">starting price</span>
                     </div>
-                    <a href="https://www.teamcircuitbreakers.in/projects/" target="_blank" class="btn btn-primary service-cta">
+                    <!-- FIX: Removed absolute URL and target="_blank" -->
+                    <a href="/projects/" class="btn btn-primary service-cta">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <circle cx="9" cy="21" r="1"/>
                             <circle cx="20" cy="21" r="1"/>
@@ -1454,7 +1456,8 @@
                         <span class="amount">50%</span>
                         <span class="note">savings guaranteed</span>
                     </div>
-                    <a href="https://www.teamcircuitbreakers.in/projects/" target="_blank" class="btn btn-primary service-cta">
+                    <!-- FIX: Removed absolute URL and target="_blank" -->
+                    <a href="/projects/" class="btn btn-primary service-cta">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="1" y="4" width="22" height="16" rx="2"/>
                             <path d="M1 10h22"/>
@@ -1492,7 +1495,7 @@
                         <span class="amount">Custom</span>
                         <span class="note">based on requirements</span>
                     </div>
-                    <a href="#contact" target="_blank" class="btn btn-primary service-cta">
+                    <a href="#contact" class="btn btn-primary service-cta">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 2L2 7l10 5 10-5-10-5z"/>
                             <path d="M2 17l10 5 10-5"/>
@@ -1704,7 +1707,8 @@
                     <li><a href="#services">50% Rental</a></li>
                     <li><a href="#services">Custom Development</a></li>
                     <li><a href="#contact">Get Quote</a></li>
-					<li><a href="https://www.teamcircuitbreakers.in/my-orders/">My Orders</a></li>
+                    <!-- FIX: Removed absolute URL -->
+                    <li><a href="/my-orders/">My Orders</a></li>
                 </ul>
             </div>
         </div>
@@ -1726,7 +1730,102 @@
         </div>
     </div>
 
+    <!-- PWA Routing Script merged for stability -->
     <script>
+        // ==============================
+        // Circuit Breakers Global System
+        // ==============================
+
+        // ------------------------------
+        // SERVICE WORKER
+        // ------------------------------
+        if ("serviceWorker" in navigator) {
+          window.addEventListener("load", () => {
+            navigator.serviceWorker.register("/sw.js")
+              .then(() => console.log("SW Registered"))
+              .catch((err) => console.log("SW Error:", err));
+          });
+        }
+
+        // ------------------------------
+        // APP-LIKE INTERNAL NAVIGATION
+        // ------------------------------
+        async function loadPage(url, addToHistory = true) {
+          try {
+            const response = await fetch(url);
+            const html = await response.text();
+            const parser = new DOMParser();
+            const doc = parser.parseFromString(html, "text/html");
+            const newApp = doc.querySelector("#app");
+
+            if (!newApp) {
+              window.location.href = url;
+              return;
+            }
+
+            const currentApp = document.querySelector("#app");
+            currentApp.innerHTML = newApp.innerHTML;
+            document.title = doc.title;
+
+            if (addToHistory) {
+              history.pushState({ page: url }, "", url);
+            }
+
+            window.scrollTo({ top: 0, behavior: "instant" });
+          } catch (err) {
+            window.location.href = url;
+          }
+        }
+
+        // ------------------------------
+        // INTERCEPT INTERNAL LINKS
+        // ------------------------------
+        document.addEventListener("click", (e) => {
+          const link = e.target.closest("a");
+          if (!link) return;
+          const href = link.getAttribute("href");
+          if (!href) return;
+
+          // 1. Ignore hash links on the same page
+          if (href.startsWith("#")) return;
+
+          try {
+            // 2. Properly parse the URL to compare origins
+            const url = new URL(link.href, window.location.href);
+
+            // 3. Ignore external domains, emails, and tel links so they open normally
+            if (
+              url.origin !== window.location.origin || 
+              url.protocol === "mailto:" || 
+              url.protocol === "tel:"
+            ) {
+              return; 
+            }
+
+            // At this point, we KNOW it's an internal link on the same domain.
+            e.preventDefault();
+            loadPage(url.pathname + url.search + url.hash);
+
+          } catch (err) {
+            // If URL parse fails, fallback to default behavior
+          }
+        });
+
+        // ------------------------------
+        // BACK/FORWARD BUTTON HANDLING
+        // ------------------------------
+        window.addEventListener("popstate", () => {
+          loadPage(location.pathname, false);
+        });
+
+        // ------------------------------
+        // PWA MODE DETECTION
+        // ------------------------------
+        if (window.matchMedia("(display-mode: standalone)").matches) {
+          console.log("Running as installed PWA");
+          document.documentElement.classList.add("pwa-mode");
+        }
+
         // Typing Effect
         const typingPhrases = [
             'Rewriting The Future.',
@@ -1741,8 +1840,11 @@
         let typingSpeed = 100;
         
         function typeEffect() {
-            const currentPhrase = typingPhrases[phraseIndex];
             const typingElement = document.getElementById('heroTyping');
+            // Check if element exists before typing (important for single-page routing)
+            if (!typingElement) return;
+
+            const currentPhrase = typingPhrases[phraseIndex];
             
             if (isDeleting) {
                 typingElement.textContent = currentPhrase.substring(0, charIndex - 1);
@@ -1772,9 +1874,9 @@
         const header = document.getElementById('header');
         window.addEventListener('scroll', () => {
             if (window.pageYOffset > 50) {
-                header.classList.add('scrolled');
+                header?.classList.add('scrolled');
             } else {
-                header.classList.remove('scrolled');
+                header?.classList.remove('scrolled');
             }
         });
         
@@ -1782,7 +1884,7 @@
         const mobileToggle = document.getElementById('mobileToggle');
         const mobileMenu = document.getElementById('mobileMenu');
         
-        mobileToggle.addEventListener('click', () => {
+        mobileToggle?.addEventListener('click', () => {
             mobileMenu.classList.toggle('active');
         });
         
@@ -1808,6 +1910,7 @@
         const particlesContainer = document.getElementById('particles');
         
         function createParticle() {
+            if (!particlesContainer) return;
             const particle = document.createElement('div');
             particle.classList.add('particle');
             particle.style.left = Math.random() * 100 + '%';
@@ -1832,7 +1935,7 @@
     const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz7mSDx9Lc3q4SYTBUNTr0KJqi5gM2GZBgfeBltr9F8eKPAKBEIYGVQQrdbMhytt6AD/exec';
 
     // Form Submission Handler
-    document.getElementById('contactForm').addEventListener('submit', async (e) => {
+    document.getElementById('contactForm')?.addEventListener('submit', async (e) => {
         e.preventDefault();
         
         const form = e.target;
@@ -2065,11 +2168,11 @@
             });
         });
         
-        modalClose.addEventListener('click', () => {
+        modalClose?.addEventListener('click', () => {
             policyModal.classList.remove('is-open');
         });
         
-        policyModal.addEventListener('click', (e) => {
+        policyModal?.addEventListener('click', (e) => {
             if (e.target === policyModal) {
                 policyModal.classList.remove('is-open');
             }
@@ -2077,10 +2180,10 @@
         
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                policyModal.classList.remove('is-open');
+                policyModal?.classList.remove('is-open');
             }
         });
     </script>
-	</div>
+    </div>
 </body>
 </html>
