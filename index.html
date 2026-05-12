@@ -757,9 +757,9 @@
         }
         .admin-login-error.show { display: block; }
 
-        /* ========================================= */
-        /* ADMIN DASHBOARD SPECIFIC STYLES           */
-        /* ========================================= */
+        /* =========================================
+           NEW ADMIN DASHBOARD ARCHITECTURE STYLES
+           ========================================= */
         #admin-dashboard {
             padding: 8rem 2rem 4rem; max-width: 1400px; margin: 0 auto; min-height: 100vh;
         }
@@ -772,18 +772,6 @@
         }
         .admin-dash-title p { color: var(--grey-subtle); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
         
-        .admin-status { text-align: center; font-size: 0.9rem; font-weight: 600; margin-top: 1rem; }
-        .admin-status.success { color: #22c55e; }
-        .admin-status.error { color: #ef4444; }
-        .admin-status.processing { color: var(--orange-primary); }
-
-        .loader {
-            width: 48px; height: 48px; border: 3px solid var(--grey-mid); border-top-color: var(--orange-primary);
-            border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1.5rem;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
-
-        /* Admin Layout Structure */
         .admin-view-section { 
             display: none; 
             animation: fadeIn 0.4s var(--transition-smooth); 
@@ -885,7 +873,6 @@
             color: var(--grey-subtle); 
         }
 
-        /* Admin Form & Upload */
         .admin-panel {
             background: linear-gradient(135deg, var(--grey-mid) 0%, var(--grey-dark) 100%);
             border: 1px solid var(--glass-border); border-radius: 20px; padding: 2rem;
@@ -935,6 +922,11 @@
         .btn-edit:hover { background: rgba(78, 168, 222, 0.2); }
         .btn-delete { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); flex: 1;}
         .btn-delete:hover { background: rgba(239, 68, 68, 0.2); }
+
+        .admin-status { text-align: center; font-size: 0.9rem; font-weight: 600; margin-top: 1rem; }
+        .admin-status.success { color: #22c55e; }
+        .admin-status.error { color: #ef4444; }
+        .admin-status.processing { color: var(--orange-primary); }
 
         .footer { background: var(--black); border-top: 1px solid var(--glass-border); padding: 4rem 2rem 2rem; }
         .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; }
@@ -988,6 +980,7 @@
                 <svg class="logo-icon" viewBox="277 265 278 342" xmlns="http://www.w3.org/2000/svg">
                     <path d="M306.06 335.03c34.29-19.77 68.28-39.35 102.25-58.94 4.32-2.5 8.55-5.16 12.87-7.65 4.68-2.69 7.08-1.5 7.11 3.71.09 19.32-.08 38.64.61 57.95.12 3.34-1.3 5.77-4.53 7.63-24.95 14.35-49.77 28.94-74.68 43.36-2.63 1.52-3.74 3.37-3.73 6.4.06 27.49.07 54.98-.03 82.47-.01 3.41 1.21 5.64 4.12 7.31 24.47 14.01 48.93 28.06 73.36 42.15 2.74 1.58 5.13 1.54 7.92-0.09 24.24-14.14 48.53-28.21 72.86-42.2 3.18-1.83 4.9-3.9 4.75-7.87-.31-8.24.1-16.51.1-25.43-9.49 4.13-17.09 9.81-25.28 14.4-16.97 9.51-33.76 19.36-50.64 28.97-4.79 2.74-6.9 1.76-6.93-3.7-.14-19.83-.05-39.66-.03-59.49.01-3.94 2.77-5.83 5.71-7.54 20.55-11.94 41.12-23.86 61.66-35.83 1.38-0.8 3.27-1.49 3.09-3.52-.16-1.74-1.93-2.04-3.22-2.79-11.21-6.52-22.42-13.04-33.55-19.7-2.83-1.69-4.58-4.41-4.56-7.86.11-19.16.2-38.31.46-57.46.07-4.82 3.28-6.21 7.52-3.78 21.18 12.15 42.41 24.22 63.58 36.4 13.23 7.61 26.4 15.32 39.56 23.05 2.75 1.61 4.14 3.99 4.18 7.41.2 16.32-.58 32.66.41 48.97.29 4.78-2.29 7.67-6.25 9.86-9.15 5.07-18.23 10.24-27.29 15.46-1.23 0.71-2.75 1.27-3.45 3.38 4.87 4.6 11.26 7.13 16.98 10.63 5.38 3.3 10.92 6.32 16.38 9.49 2.21 1.28 3.2 3.24 3.2 5.81-.02 16.83-.05 33.66.08 50.49.02 3.67-2.38 5.32-4.99 6.83-26.77 15.44-53.58 30.8-80.33 46.26-17.12 9.89-34.25 19.77-51.2 29.95-4.83 2.89-8.84 2.48-13.44-0.2-25.41-14.78-50.92-29.38-76.36-44.12-18.38-10.65-36.69-21.44-55.05-32.13-3.49-2.03-5.15-4.84-5.14-8.97.05-50.33.04-100.65.12-150.98.01-4.2 1.76-6.76 5.43-8.66 5.59-2.9 10.98-6.18 16.77-9.5z"/>
                 </svg>
+                
                 <div style="display: flex; flex-direction: column;">
                     <span class="logo-text">Circuit<span>Breakers</span></span>
                     <span class="logo-tagline" style="margin-top: 2px; font-size: 0.85em;">Rewriting the future</span>
@@ -1022,7 +1015,7 @@
         </nav>
     </div>
 
-    <!-- EVERYTHING PUBLIC GOES INSIDE THIS WRAPPER -->
+    <!-- PUBLIC VIEW WRAPPER -->
     <div id="public-view">
         <section class="hero">
             <div class="hero-grid"></div>
@@ -1089,7 +1082,6 @@
             </div>
         </section>
 
-        <!-- Mission -->
         <section class="section section-dark" id="mission">
             <div class="container">
                 <div class="section-header">
@@ -1123,7 +1115,6 @@
             </div>
         </section>
 
-        <!-- Services -->
         <section class="section section-gradient" id="services">
             <div class="container">
                 <div class="section-header">
@@ -1187,7 +1178,6 @@
             </div>
         </section>
 
-        <!-- Process -->
         <section class="section section-dark" id="process">
             <div class="container">
                 <div class="section-header">
@@ -1228,7 +1218,6 @@
             </div>
         </section>
 
-        <!-- Contact Form -->
         <section class="section section-gradient" id="contact">
             <div class="container">
                 <div class="contact-grid">
@@ -1284,7 +1273,6 @@
             </div>
         </section>
 
-        <!-- Footer -->
         <footer class="footer">
             <div class="footer-grid">
                 <div class="footer-brand">
@@ -1326,8 +1314,9 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>© 2024 Circuit Breakers. Rewriting the future.</p>
+                <p>© 2025 Circuit Breakers. Rewriting the future.</p>
                 <p>Made with <span>♥</span> in Kolkata, India</p>
+                <span id="admin-trigger" class="admin-trigger" title="Team Access">🔒</span>
             </div>
         </footer>
     </div> <!-- End Public View Wrapper -->
@@ -1339,7 +1328,7 @@
         <div class="admin-dash-header">
             <div class="admin-dash-title">
                 <h2>Admin Dashboard</h2>
-                <p>Manage your product database directly.</p>
+                <p>Manage your ecosystem directly.</p>
             </div>
             <button id="exit-admin-btn" class="btn btn-secondary">
                 <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
@@ -1362,7 +1351,6 @@
                     <h3>Products & Stock Management</h3>
                     <p>Add new kits, components, update pricing, or remove outdated stock.</p>
                 </div>
-                <!-- Future modules like 'Customer Orders' can be added here easily -->
             </div>
         </div>
 
@@ -1400,78 +1388,69 @@
             </button>
             
             <div class="admin-mini-tabs">
-                <button class="admin-tab-btn active" id="tab-btn-add-projects" onclick="switchAdminTab('add', 'projects')">Projects</button>
-                <button class="admin-tab-btn" id="tab-btn-add-products" onclick="switchAdminTab('add', 'products')">Products</button>
+                <button class="admin-tab-btn active" id="tab-btn-add-projects" onclick="switchAdminTab('add', 'projects')">Projects (Kits)</button>
+                <button class="admin-tab-btn" id="tab-btn-add-products" onclick="switchAdminTab('add', 'products')">Products (Hardware)</button>
             </div>
 
-            <!-- Add Projects Form -->
-            <div id="content-add-projects" class="tab-content-add">
-                <div class="admin-panel" id="admin-panel">
-                    <div class="admin-panel-header">
-                        <h3 id="admin-form-title">Add New Project</h3>
-                        <button id="cancel-edit-btn" class="admin-cancel-btn" style="display: none;">Cancel Edit</button>
-                    </div>
-                    
-                    <form id="project-form" class="admin-form">
-                        <input type="hidden" id="proj-id">
-                        <div class="admin-form-row">
-                            <div class="form-group">
-                                <label for="proj-title">Project Title</label>
-                                <input type="text" id="proj-title" placeholder="Enter project name" required>
-                            </div>
-                            <div class="form-group">
-                                <label for="proj-base-price">Base Price (₹)</label>
-                                <input type="number" id="proj-base-price" placeholder="299" required>
-                                <div id="price-preview" style="margin-top:0.5rem; padding:0.75rem; background:rgba(255,107,44,0.1); border-radius:8px; font-size:0.85rem;">
-                                    <div><strong>DIY Kit:</strong> ₹<span id="price-diy-preview">299</span></div>
-                                    <div><strong>Ready to Use:</strong> ₹<span id="price-ready-preview">348</span> <span style="color:var(--grey-subtle);">(+₹49 assembly)</span></div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <div class="form-group">
-                            <label for="proj-desc">Description</label>
-                            <textarea id="proj-desc" placeholder="Describe your project..." required></textarea>
-                        </div>
-
-                        <div class="form-group">
-                            <label>Project Image</label>
-                            <div class="image-upload" onclick="document.getElementById('proj-image').click()">
-                                <input type="file" id="proj-image" accept="image/*" style="display: none;">
-                                <div id="image-preview-container" class="image-preview" style="display: none;">
-                                    <img id="image-preview" src="">
-                                    <input type="hidden" id="existing-image-url">
-                                </div>
-                                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <rect x="3" y="3" width="18" height="18" rx="2"/>
-                                    <circle cx="8.5" cy="8.5" r="1.5"/>
-                                    <path d="M21 15l-5-5L5 21"/>
-                                </svg>
-                                <p>Click to Upload Image</p>
-                                <small>Leave blank during edit to keep existing image</small>
-                            </div>
-                        </div>
-
-                        <button type="submit" id="save-project-btn" class="btn btn-primary" style="justify-content: center;">
-                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-                                <polyline points="17 21 17 13 7 13 7 21"/>
-                                <polyline points="7 3 7 8 15 8"/>
-                            </svg>
-                            Save to Database
-                        </button>
-                    </form>
-                    <p id="admin-status" class="admin-status" style="display: none;"></p>
+            <!-- Single Reusable Form for both Projects and Products -->
+            <div class="admin-panel" id="admin-panel">
+                <div class="admin-panel-header">
+                    <h3 id="admin-form-title">Add New Project</h3>
+                    <button id="cancel-edit-btn" class="admin-cancel-btn" style="display: none;">Cancel Edit</button>
                 </div>
-            </div>
+                
+                <form id="project-form" class="admin-form">
+                    <input type="hidden" id="proj-id">
+                    <div class="admin-form-row">
+                        <div class="form-group">
+                            <label for="proj-title">Title</label>
+                            <input type="text" id="proj-title" placeholder="Enter name" required>
+                        </div>
+                        <div class="form-group">
+                            <label id="price-label" for="proj-base-price">Base Price (₹)</label>
+                            <input type="number" id="proj-base-price" placeholder="299" required>
+                            
+                            <!-- Price Preview (Dynamically hidden/shown via JS) -->
+                            <div id="price-preview" style="margin-top:0.5rem; padding:0.75rem; background:rgba(255,107,44,0.1); border-radius:8px; font-size:0.85rem;">
+                                <div><strong>DIY Kit:</strong> ₹<span id="price-diy-preview">299</span></div>
+                                <div><strong>Ready to Use:</strong> ₹<span id="price-ready-preview">348</span> <span style="color:var(--grey-subtle);">(+₹49 assembly)</span></div>
+                            </div>
+                        </div>
+                    </div>
 
-            <!-- Add Products Placeholder -->
-            <div id="content-add-products" class="tab-content-add empty-placeholder" style="display: none;">
-                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 1rem; opacity: 0.5;">
-                    <circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>
-                </svg>
-                <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--white);">Products Database Not Configured</h3>
-                <p>No individual Product added yet! We will configure this database structure soon.</p>
+                    <div class="form-group">
+                        <label for="proj-desc">Description</label>
+                        <textarea id="proj-desc" placeholder="Describe your item..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Item Image</label>
+                        <div class="image-upload" onclick="document.getElementById('proj-image').click()">
+                            <input type="file" id="proj-image" accept="image/*" style="display: none;">
+                            <div id="image-preview-container" class="image-preview" style="display: none;">
+                                <img id="image-preview" src="">
+                                <input type="hidden" id="existing-image-url">
+                            </div>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/>
+                                <circle cx="8.5" cy="8.5" r="1.5"/>
+                                <path d="M21 15l-5-5L5 21"/>
+                            </svg>
+                            <p>Click to Upload Image</p>
+                            <small>Leave blank during edit to keep existing image</small>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="save-project-btn" class="btn btn-primary" style="justify-content: center;">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/>
+                            <polyline points="7 3 7 8 15 8"/>
+                        </svg>
+                        Save to Database
+                    </button>
+                </form>
+                <p id="admin-status" class="admin-status" style="display: none;"></p>
             </div>
         </div>
 
@@ -1483,29 +1462,19 @@
             </button>
             
             <div class="admin-mini-tabs">
-                <button class="admin-tab-btn active" id="tab-btn-manage-projects" onclick="switchAdminTab('manage', 'projects')">Projects</button>
-                <button class="admin-tab-btn" id="tab-btn-manage-products" onclick="switchAdminTab('manage', 'products')">Products</button>
+                <button class="admin-tab-btn active" id="tab-btn-manage-projects" onclick="switchAdminTab('manage', 'projects')">Projects (Kits)</button>
+                <button class="admin-tab-btn" id="tab-btn-manage-products" onclick="switchAdminTab('manage', 'products')">Products (Hardware)</button>
             </div>
 
-            <!-- Manage Projects Grid -->
-            <div id="content-manage-projects" class="tab-content-manage">
-                <div id="system-message" style="display:none; text-align:center; padding: 2rem;">
-                    <div class="loader" id="loader-spinner"></div>
-                    <h3 id="msg-title" style="font-family: 'Space Grotesk', sans-serif;">Loading...</h3>
-                    <p id="msg-desc" style="color: var(--grey-subtle);">Please wait a moment.</p>
-                </div>
-                <div class="scrollable-list" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
-                    <div id="admin-products-grid" class="products-grid"></div>
-                </div>
+            <!-- Single Grid Container dynamically populated by JS -->
+            <div id="manage-system-message" style="display:none; text-align:center; padding: 2rem;">
+                <div class="loader" id="manage-loader-spinner"></div>
+                <h3 id="manage-msg-title" style="font-family: 'Space Grotesk', sans-serif;">Loading...</h3>
+                <p id="manage-msg-desc" style="color: var(--grey-subtle);">Please wait a moment.</p>
             </div>
-
-            <!-- Manage Products Placeholder -->
-            <div id="content-manage-products" class="tab-content-manage empty-placeholder" style="display: none;">
-                <svg viewBox="0 0 24 24" width="48" height="48" fill="none" stroke="currentColor" stroke-width="1.5" style="margin: 0 auto 1rem; opacity: 0.5;">
-                    <rect x="3" y="3" width="18" height="18" rx="2" ry="2"/><line x1="3" y1="9" x2="21" y2="9"/><line x1="9" y1="21" x2="9" y2="9"/>
-                </svg>
-                <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--white);">No Products Found</h3>
-                <p>No individual Product added yet! We will configure this database structure soon.</p>
+            
+            <div class="scrollable-list" id="manage-grid-container" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+                <div id="admin-products-grid" class="products-grid"></div>
             </div>
         </div>
     </div> <!-- End Admin Dashboard Wrapper -->
@@ -1530,6 +1499,7 @@
                     <div class="password-wrapper">
                         <input type="password" id="admin-passkey-input" placeholder="Enter team passkey" required>
                         <button type="button" id="togglePasskey" class="password-toggle" title="Toggle Visibility">
+                            <!-- Eye icon -->
                             <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                                 <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
                                 <circle cx="12" cy="12" r="3"></circle>
@@ -1761,9 +1731,11 @@
         const ASSEMBLY_FEE = 49;
 
         let projects = [];
+        let products = [];
         let isAdmin = false;
         let adminPasskey = "";
         let projectToDeleteId = null;
+        let currentAdminTab = 'projects';
 
         // Navigation for Admin Levels
         window.goToAdminLevel = function(level) {
@@ -1774,16 +1746,26 @@
 
         // Navigation for Mini Tabs (Projects vs Products)
         window.switchAdminTab = function(view, tabName) {
-            // view = 'add' or 'manage'
-            // tabName = 'projects' or 'products'
+            currentAdminTab = tabName;
             
-            // Toggle active state on buttons
             document.querySelectorAll(`#admin-lvl-3-${view} .admin-tab-btn`).forEach(btn => btn.classList.remove('active'));
             document.getElementById(`tab-btn-${view}-${tabName}`).classList.add('active');
             
-            // Toggle active state on content
-            document.querySelectorAll(`.tab-content-${view}`).forEach(el => el.style.display = 'none');
-            document.getElementById(`content-${view}-${tabName}`).style.display = 'block';
+            if (view === 'add') {
+                resetForm();
+                document.getElementById('admin-form-title').textContent = tabName === 'projects' ? "Add New Project" : "Add New Product";
+                if (tabName === 'projects') {
+                    document.getElementById('proj-base-price').placeholder = "299";
+                    document.getElementById('price-label').textContent = "Base Price (₹)";
+                    document.getElementById('price-preview').style.display = 'block';
+                } else {
+                    document.getElementById('proj-base-price').placeholder = "e.g. 599";
+                    document.getElementById('price-label').textContent = "Price (₹)";
+                    document.getElementById('price-preview').style.display = 'none';
+                }
+            } else if (view === 'manage') {
+                renderAdminProducts();
+            }
         };
 
         // DOM Elements
@@ -1795,10 +1777,10 @@
         const adminLoginError = document.getElementById('admin-login-error');
         const exitAdminBtn = document.getElementById('exit-admin-btn');
         
-        const systemMessage = document.getElementById('system-message');
-        const msgTitle = document.getElementById('msg-title');
-        const msgDesc = document.getElementById('msg-desc');
-        const loader = document.getElementById('loader-spinner');
+        const systemMessage = document.getElementById('manage-system-message');
+        const msgTitle = document.getElementById('manage-msg-title');
+        const msgDesc = document.getElementById('manage-msg-desc');
+        const loader = document.getElementById('manage-loader-spinner');
         const adminProductsGrid = document.getElementById('admin-products-grid');
         
         const projectForm = document.getElementById('project-form');
@@ -1810,10 +1792,8 @@
             adminPasskeyInput.type = type;
             const eyeIcon = document.getElementById('eye-icon');
             if(type === 'text') {
-                // Eye-off SVG
                 eyeIcon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
             } else {
-                // Eye SVG
                 eyeIcon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
             }
         });
@@ -1873,7 +1853,6 @@
                     adminLoginError.classList.remove('show');
                     adminPasskeyInput.type = 'password';
                     
-                    // Hide Public View, Show Admin Dashboard Layer 1
                     publicView.style.display = 'none';
                     adminDashboard.style.display = 'block';
                     goToAdminLevel('1');
@@ -1908,48 +1887,59 @@
             showToast('Safely logged out of Admin Dashboard.');
         });
 
-        // Fetch Projects
+        // Fetch Both Projects and Products
         async function fetchAndRenderAdminProjects() {
             systemMessage.style.display = 'block';
             loader.style.display = 'block';
-            msgTitle.textContent = "Fetching Projects...";
+            msgTitle.textContent = "Fetching Inventory...";
             msgDesc.textContent = "Please wait a moment.";
             adminProductsGrid.style.display = 'none';
+            document.getElementById('manage-grid-container').style.display = 'none';
             
             try {
-                const res = await fetch(WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ action: 'fetch_db' })
-                });
-                if (!res.ok) throw new Error("Database fetch failed");
-                const responseData = await res.json();
+                const [projRes, prodRes] = await Promise.all([
+                    fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'fetch_db' }) }),
+                    fetch(WORKER_URL, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ action: 'fetch_products_db' }) })
+                ]);
                 
-                projects = responseData.data || [];
+                if (!projRes.ok || !prodRes.ok) throw new Error("Database fetch failed");
                 
-                if (projects.length === 0) {
-                    loader.style.display = 'none';
-                    msgTitle.textContent = "No projects yet!";
-                    msgDesc.textContent = "Use the 'Add New Project' option to get started.";
-                } else {
-                    systemMessage.style.display = 'none';
-                    renderAdminProducts();
-                }
+                const projData = await projRes.json();
+                const prodData = await prodRes.json();
+                
+                projects = (projData.data || []).filter(p => p.id !== 'system_placeholder');
+                products = (prodData.data || []).filter(p => p.id !== 'system_placeholder');
+                
+                renderAdminProducts();
             } catch (err) {
                 console.log("Empty or missing DB.");
                 projects = [];
-                loader.style.display = 'none';
-                msgTitle.textContent = "No projects yet!";
-                msgDesc.textContent = "Use the 'Add New Project' option to get started.";
+                products = [];
+                renderAdminProducts();
             }
         }
 
         // Render Admin Cards
         function renderAdminProducts() {
             adminProductsGrid.innerHTML = '';
+            
+            const targetArray = currentAdminTab === 'projects' ? projects : products;
+            
+            if (targetArray.length === 0) {
+                adminProductsGrid.style.display = 'none';
+                document.getElementById('manage-grid-container').style.display = 'none';
+                systemMessage.style.display = 'block';
+                loader.style.display = 'none';
+                msgTitle.textContent = currentAdminTab === 'projects' ? "No Projects yet!" : "No Products have been added yet!";
+                msgDesc.textContent = "Use the 'Add New Item' option to get started.";
+                return;
+            }
+
+            systemMessage.style.display = 'none';
+            document.getElementById('manage-grid-container').style.display = 'block';
             adminProductsGrid.style.display = 'grid';
             
-            projects.forEach(p => {
+            targetArray.forEach(p => {
                 const basePrice = parseInt(p.basePrice || p.price);
                 const card = document.createElement('div');
                 card.className = 'admin-product-card';
@@ -1984,9 +1974,11 @@
         const priceReadyPreview = document.getElementById('price-ready-preview');
 
         function updatePricePreview() {
-            const basePrice = parseInt(projBasePriceInput.value) || 0;
-            priceDiyPreview.textContent = basePrice;
-            priceReadyPreview.textContent = basePrice + ASSEMBLY_FEE;
+            if(currentAdminTab === 'projects') {
+                const basePrice = parseInt(projBasePriceInput.value) || 0;
+                priceDiyPreview.textContent = basePrice;
+                priceReadyPreview.textContent = basePrice + ASSEMBLY_FEE;
+            }
         }
         projBasePriceInput.addEventListener('input', updatePricePreview);
 
@@ -2030,50 +2022,65 @@
                     const data = await res.json();
                     imageUrl = data.secure_url;
                 } else if (!isEdit) {
-                    throw new Error("Please select an image for the new project.");
+                    throw new Error("Please select an image for the new item.");
                 }
 
+                const isProject = currentAdminTab === 'projects';
+                const prefix = isProject ? "proj_" : "prod_";
+
                 const projectData = {
-                    id: isEdit ? document.getElementById('proj-id').value : "proj_" + Date.now(),
+                    id: isEdit ? document.getElementById('proj-id').value : prefix + Date.now(),
                     title: document.getElementById('proj-title').value,
-                    basePrice: basePrice,
-                    price: basePrice, // legacy support
                     description: document.getElementById('proj-desc').value,
                     image: imageUrl
                 };
 
-                if (isEdit) {
-                    const index = projects.findIndex(p => p.id === projectData.id);
-                    projects[index] = projectData;
+                if (isProject) {
+                    projectData.basePrice = basePrice;
+                    projectData.price = basePrice; // legacy support
                 } else {
-                    projects.push(projectData);
+                    projectData.price = basePrice;
+                }
+
+                const targetArray = isProject ? projects : products;
+
+                if (isEdit) {
+                    const index = targetArray.findIndex(p => p.id === projectData.id);
+                    if (index !== -1) targetArray[index] = projectData;
+                } else {
+                    targetArray.push(projectData);
                 }
 
                 statusBox.textContent = "Saving to Database...";
+                const actionName = isProject ? 'update_db' : 'update_products_db';
+                const payloadData = [
+                    { id: "system_placeholder", title: "System Placeholder", price: 0, description: "Do not delete", image: "", type: "system_placeholder" },
+                    ...targetArray
+                ];
+
                 const workerRes = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ passkey: adminPasskey, action: 'update_db', data: projects })
+                    body: JSON.stringify({ passkey: adminPasskey, action: actionName, data: payloadData })
                 });
                 
-                if (!workerRes.ok) throw new Error("Worker rejected the update. Check passkey.");
+                if (!workerRes.ok) {
+                    const errResult = await workerRes.json();
+                    throw new Error(errResult.error || "Worker rejected the update.");
+                }
 
                 statusBox.className = 'admin-status success';
-                statusBox.textContent = "Success! Product saved.";
-                showToast("Product successfully saved.", "success");
+                statusBox.textContent = "Success! Saved.";
+                showToast("Successfully saved.", "success");
                 
                 resetForm();
-                if(projects.length > 0) {
-                    systemMessage.style.display = 'none';
-                    renderAdminProducts();
-                    // Redirect back to manage view
-                    goToAdminLevel('3-manage');
-                    switchAdminTab('manage', 'projects');
-                }
+                renderAdminProducts();
+                goToAdminLevel('3-manage');
+
             } catch (err) {
                 statusBox.className = 'admin-status error';
                 statusBox.textContent = err.message;
-                showToast("Failed to save product.", "error");
+                showToast("Failed to save.", "error");
             } finally {
                 saveBtn.disabled = false;
                 saveBtn.innerHTML = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save to Database`;
@@ -2082,14 +2089,15 @@
 
         // Edit Action
         window.editProject = (id) => {
-            const p = projects.find(proj => proj.id === id);
+            const isProject = currentAdminTab === 'projects';
+            const targetArray = isProject ? projects : products;
+            const p = targetArray.find(proj => proj.id === id);
             if (!p) return;
             
-            // Navigate to Add/Edit View
             goToAdminLevel('3-add');
-            switchAdminTab('add', 'projects');
+            switchAdminTab('add', currentAdminTab);
 
-            document.getElementById('admin-form-title').textContent = "Edit Project";
+            document.getElementById('admin-form-title').textContent = isProject ? "Edit Project" : "Edit Product";
             document.getElementById('cancel-edit-btn').style.display = 'block';
             
             document.getElementById('proj-id').value = p.id;
@@ -2101,7 +2109,8 @@
             document.getElementById('image-preview').src = p.image;
             document.getElementById('image-preview-container').style.display = 'block';
             
-            updatePricePreview();
+            if(isProject) updatePricePreview();
+            document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
         };
 
         // Reset Form
@@ -2109,15 +2118,16 @@
             projectForm.reset();
             document.getElementById('proj-id').value = "";
             document.getElementById('existing-image-url').value = "";
-            document.getElementById('admin-form-title').textContent = "Add New Project";
+            document.getElementById('admin-form-title').textContent = currentAdminTab === 'projects' ? "Add New Project" : "Add New Product";
             document.getElementById('cancel-edit-btn').style.display = 'none';
             document.getElementById('image-preview-container').style.display = 'none';
             document.getElementById('admin-status').style.display = 'none';
-            document.getElementById('price-diy-preview').textContent = '299';
-            document.getElementById('price-ready-preview').textContent = '348';
+            priceDiyPreview.textContent = '299';
+            priceReadyPreview.textContent = '348';
         }
         
-        document.getElementById('cancel-edit-btn').addEventListener('click', () => {
+        document.getElementById('cancel-edit-btn').addEventListener('click', (e) => {
+            e.preventDefault();
             resetForm();
             goToAdminLevel('3-manage'); 
         });
@@ -2138,29 +2148,38 @@
             const id = projectToDeleteId;
             confirmModal.classList.remove('is-open');
             
-            const originalProjects = [...projects];
-            projects = projects.filter(p => p.id !== id);
+            const isProject = currentAdminTab === 'projects';
+            const actionName = isProject ? 'update_db' : 'update_products_db';
             
-            if (projects.length === 0) {
-                adminProductsGrid.style.display = 'none';
-                systemMessage.style.display = 'block';
-                loader.style.display = 'none';
-                msgTitle.textContent = "No projects yet!";
-                msgDesc.textContent = "Use the 'Add New Project' option to get started.";
+            let originalArray;
+            if (isProject) {
+                originalArray = [...projects];
+                projects = projects.filter(p => p.id !== id);
             } else {
-                renderAdminProducts();
+                originalArray = [...products];
+                products = products.filter(p => p.id !== id);
             }
+            
+            const targetArray = isProject ? projects : products;
+            renderAdminProducts(); 
 
             try {
+                const payloadData = [
+                    { id: "system_placeholder", title: "System Placeholder", price: 0, description: "Do not delete", image: "", type: "system_placeholder" },
+                    ...targetArray
+                ];
+
                 const workerRes = await fetch(WORKER_URL, {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({ passkey: adminPasskey, action: 'update_db', data: projects })
+                    body: JSON.stringify({ passkey: adminPasskey, action: actionName, data: payloadData })
                 });
+                
                 if (!workerRes.ok) throw new Error("Database deletion failed.");
-                showToast("Project permanently deleted.");
+                showToast("Item permanently deleted.");
             } catch (err) {
-                projects = originalProjects;
+                if (isProject) projects = originalArray;
+                else products = originalArray;
                 renderAdminProducts();
                 showToast("Deletion failed. Check your passkey.", "error");
             } finally {
