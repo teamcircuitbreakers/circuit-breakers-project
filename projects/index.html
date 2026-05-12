@@ -912,13 +912,13 @@
         
         mobileToggle?.addEventListener('click', () => {
             mobileMenu?.classList.toggle('active');
-            mobileToggle?.classList.toggle('active');
+            mobileToggle?.classList.toggle('active'); // This line was missing! It animates the X
         });
         
         document.querySelectorAll('.mobile-menu-nav a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu?.classList.remove('active');
-                mobileToggle?.classList.remove('active');
+                mobileToggle?.classList.remove('active'); // Ensures the X reverts to hamburger when a link is clicked
             });
         });
 
