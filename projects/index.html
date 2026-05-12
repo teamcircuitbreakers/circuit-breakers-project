@@ -72,18 +72,11 @@
             flex-direction: column;
         }
 
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: var(--grey-dark);
-        }
-        ::-webkit-scrollbar-thumb {
-            background: var(--orange-primary);
-            border-radius: 4px;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--grey-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--orange-primary); border-radius: 4px; }
 
-        /* Header */
+        /* Header Matches Homepage */
         .header {
             position: sticky;
             top: 0;
@@ -93,6 +86,11 @@
             backdrop-filter: blur(20px);
             -webkit-backdrop-filter: blur(20px);
             border-bottom: 1px solid var(--glass-border);
+            transition: all 0.4s var(--transition-smooth);
+        }
+
+        .header.scrolled {
+            padding: 0.75rem 2rem;
         }
 
         .header-inner {
@@ -118,9 +116,7 @@
             transition: transform 0.3s var(--transition-smooth);
         }
 
-        .logo:hover .logo-icon {
-            transform: scale(1.1);
-        }
+        .logo:hover .logo-icon { transform: scale(1.1); }
 
         .logo-text {
             font-family: 'Space Grotesk', sans-serif;
@@ -129,9 +125,7 @@
             letter-spacing: -0.5px;
         }
 
-        .logo-text span {
-            color: var(--orange-primary);
-        }
+        .logo-text span { color: var(--orange-primary); }
 
         .logo-tagline {
             font-size: 0.65rem;
@@ -142,7 +136,6 @@
             margin-top: -4px;
         }
 
-        /* Missing Navigation CSS Restored */
         .nav {
             display: flex;
             align-items: center;
@@ -171,13 +164,8 @@
             transition: width 0.3s var(--transition-smooth);
         }
 
-        .nav-link:hover {
-            color: var(--white);
-        }
-
-        .nav-link:hover::after {
-            width: 100%;
-        }
+        .nav-link:hover { color: var(--white); }
+        .nav-link:hover::after { width: 100%; }
 
         .nav-cta {
             font-family: 'JetBrains Mono', monospace;
@@ -199,12 +187,14 @@
             box-shadow: 0 8px 30px var(--orange-glow);
         }
 
+        /* Mobile Menu Setup & Animations */
         .mobile-toggle {
             display: none;
             flex-direction: column;
             gap: 5px;
             cursor: pointer;
             padding: 5px;
+            z-index: 1001;
         }
 
         .mobile-toggle span {
@@ -212,7 +202,12 @@
             height: 2px;
             background: var(--white);
             transition: all 0.3s var(--transition-smooth);
+            transform-origin: center;
         }
+
+        .mobile-toggle.active span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+        .mobile-toggle.active span:nth-child(2) { opacity: 0; }
+        .mobile-toggle.active span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
 
         .mobile-menu {
             display: none;
@@ -239,19 +234,19 @@
             display: flex;
             flex-direction: column;
             gap: 1.5rem;
+            align-items: center;
         }
 
         .mobile-menu-nav a {
             font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
+            font-size: 1.5rem; /* Optimized size */
             color: var(--white);
             text-decoration: none;
             transition: color 0.3s var(--transition-smooth);
+            text-align: center;
         }
 
-        .mobile-menu-nav a:hover {
-            color: var(--orange-primary);
-        }
+        .mobile-menu-nav a:hover { color: var(--orange-primary); }
 
         /* Main Content */
         .main-content {
@@ -262,82 +257,27 @@
             width: 100%;
         }
 
-        .page-header {
-            text-align: center;
-            margin-bottom: 3rem;
-        }
-
+        .page-header { text-align: center; margin-bottom: 3rem; }
         .page-tag {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--orange-primary);
-            text-transform: uppercase;
-            letter-spacing: 2px;
-            margin-bottom: 1rem;
-            display: block;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem;
+            color: var(--orange-primary); text-transform: uppercase; letter-spacing: 2px;
+            margin-bottom: 1rem; display: block;
         }
-
         .page-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: clamp(2rem, 5vw, 3.5rem);
-            font-weight: 700;
-            letter-spacing: -1px;
-            margin-bottom: 1rem;
+            font-family: 'Space Grotesk', sans-serif; font-size: clamp(2rem, 5vw, 3.5rem);
+            font-weight: 700; letter-spacing: -1px; margin-bottom: 1rem;
         }
-
-        .page-subtitle {
-            font-size: 1.1rem;
-            color: var(--grey-subtle);
-            max-width: 600px;
-            margin: 0 auto;
-        }
-
-        /* Admin Button */
-        .admin-exit-btn {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            padding: 0.75rem 1.5rem;
-            background: var(--grey-mid);
-            color: var(--white);
-            border: 1px solid var(--glass-border);
-            border-radius: 8px;
-            cursor: pointer;
-            transition: all 0.3s var(--transition-smooth);
-        }
-
-        .admin-exit-btn:hover {
-            background: var(--grey-light);
-        }
+        .page-subtitle { font-size: 1.1rem; color: var(--grey-subtle); max-width: 600px; margin: 0 auto; }
 
         /* System Message */
-        .system-message {
-            text-align: center;
-            padding: 4rem 2rem;
-        }
-
+        .system-message { text-align: center; padding: 4rem 2rem; }
         .loader {
-            width: 48px;
-            height: 48px;
-            border: 3px solid var(--grey-mid);
-            border-top-color: var(--orange-primary);
-            border-radius: 50%;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 1.5rem;
+            width: 48px; height: 48px; border: 3px solid var(--grey-mid); border-top-color: var(--orange-primary);
+            border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1.5rem;
         }
-
-        @keyframes spin {
-            to { transform: rotate(360deg); }
-        }
-
-        .system-message h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .system-message p {
-            color: var(--grey-subtle);
-        }
+        @keyframes spin { to { transform: rotate(360deg); } }
+        .system-message h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; margin-bottom: 0.5rem; }
+        .system-message p { color: var(--grey-subtle); }
 
         /* Products Grid */
         .products-grid {
@@ -364,1468 +304,306 @@
         }
 
         .product-image-container {
-            height: 220px;
-            background: var(--grey-dark);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            position: relative;
+            height: 220px; background: var(--grey-dark); display: flex; align-items: center;
+            justify-content: center; overflow: hidden; position: relative;
         }
-
-        .product-image {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-            transition: transform 0.4s var(--transition-smooth);
-        }
-
-        .product-card:hover .product-image {
-            transform: scale(1.05);
-        }
+        .product-image { max-width: 90%; max-height: 90%; object-fit: contain; transition: transform 0.4s var(--transition-smooth); }
+        .product-card:hover .product-image { transform: scale(1.05); }
 
         .product-badge {
-            position: absolute;
-            top: 1rem;
-            left: 1rem;
-            padding: 0.35rem 0.75rem;
-            background: var(--gradient-orange);
-            color: var(--black);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
-            font-weight: 600;
-            border-radius: 6px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            position: absolute; top: 1rem; left: 1rem; padding: 0.35rem 0.75rem;
+            background: var(--gradient-orange); color: var(--black); font-family: 'JetBrains Mono', monospace;
+            font-size: 0.65rem; font-weight: 600; border-radius: 6px; text-transform: uppercase; letter-spacing: 0.5px;
         }
+        .product-badge.qty-badge { right: 1rem; left: auto; background: var(--white); color: var(--orange-primary); }
 
-        .product-badge.qty-badge {
-            right: 1rem;
-            left: auto;
-            background: var(--white);
-            color: var(--orange-primary);
-        }
-
-        .product-content {
-            padding: 1.5rem;
-            display: flex;
-            flex-direction: column;
-            flex: 1;
-        }
-
-        .product-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.25rem;
-            font-weight: 600;
-            margin-bottom: 0.5rem;
-            color: var(--white);
-        }
-
+        .product-content { padding: 1.5rem; display: flex; flex-direction: column; flex: 1; }
+        .product-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; font-weight: 600; margin-bottom: 0.5rem; color: var(--white); }
         .product-description {
-            color: var(--grey-subtle);
-            font-size: 0.9rem;
-            line-height: 1.6;
-            margin-bottom: 1rem;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
+            color: var(--grey-subtle); font-size: 0.9rem; line-height: 1.6; margin-bottom: 1rem;
+            display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden;
         }
-
-        .product-price {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.75rem;
-            font-weight: 700;
-            color: var(--orange-primary);
-            margin-bottom: 0.5rem;
-        }
+        .product-price { font-family: 'Space Grotesk', sans-serif; font-size: 1.75rem; font-weight: 700; color: var(--orange-primary); margin-bottom: 0.5rem; }
 
         /* Type Selector in Card */
-        .type-select-wrapper {
-            margin-bottom: 0.75rem;
-        }
-
+        .type-select-wrapper { margin-bottom: 0.75rem; }
         .type-select-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.7rem;
-            color: var(--grey-subtle);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.5rem;
-            display: block;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.7rem; color: var(--grey-subtle);
+            text-transform: uppercase; letter-spacing: 1px; margin-bottom: 0.5rem; display: block;
         }
-
         .type-select {
-            width: 100%;
-            padding: 0.75rem 1rem;
-            background: var(--grey-dark);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            color: var(--white);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            cursor: pointer;
-            transition: all 0.3s var(--transition-smooth);
-            appearance: none;
+            width: 100%; padding: 0.75rem 1rem; background: var(--grey-dark); border: 1px solid var(--glass-border);
+            border-radius: 10px; color: var(--white); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem;
+            cursor: pointer; transition: all 0.3s var(--transition-smooth); appearance: none;
             background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%238a8a95' stroke-width='2'%3E%3Cpath d='M6 9l6 6 6-6'/%3E%3C/svg%3E");
-            background-repeat: no-repeat;
-            background-position: right 1rem center;
+            background-repeat: no-repeat; background-position: right 1rem center;
         }
-
-        .type-select:hover {
-            border-color: rgba(255, 107, 44, 0.5);
-        }
-
-        .type-select:focus {
-            outline: none;
-            border-color: var(--orange-primary);
-            box-shadow: 0 0 0 3px var(--orange-glow);
-        }
-
-        .type-select option {
-            background: var(--grey-dark);
-            color: var(--white);
-        }
+        .type-select:hover { border-color: rgba(255, 107, 44, 0.5); }
+        .type-select:focus { outline: none; border-color: var(--orange-primary); box-shadow: 0 0 0 3px var(--orange-glow); }
+        .type-select option { background: var(--grey-dark); color: var(--white); }
 
         .selected-type-display {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--orange-light);
-            margin-bottom: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            background: rgba(255, 107, 44, 0.1);
-            border-radius: 6px;
-            border-left: 3px solid var(--orange-primary);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--orange-light);
+            margin-bottom: 0.5rem; padding: 0.5rem 0.75rem; background: rgba(255, 107, 44, 0.1);
+            border-radius: 6px; border-left: 3px solid var(--orange-primary);
         }
-
-        .selected-type-display.diy {
-            color: var(--blue-accent);
-            background: rgba(78, 168, 222, 0.1);
-            border-left-color: var(--blue-accent);
-        }
-
+        .selected-type-display.diy { color: var(--blue-accent); background: rgba(78, 168, 222, 0.1); border-left-color: var(--blue-accent); }
+        
         .type-tip-card {
-            font-size: 0.75rem;
-            color: var(--grey-subtle);
-            margin-bottom: 1rem;
-            padding: 0.6rem 0.75rem;
-            background: rgba(255, 255, 255, 0.03);
-            border-radius: 6px;
-            line-height: 1.5;
-            border-left: 2px solid var(--grey-light);
-        }
-
-        .type-tip-card strong {
-            color: var(--orange-light);
+            font-size: 0.75rem; color: var(--grey-subtle); margin-bottom: 1rem; padding: 0.6rem 0.75rem;
+            background: rgba(255, 255, 255, 0.03); border-radius: 6px; line-height: 1.5; border-left: 2px solid var(--grey-light);
         }
 
         /* Rent Checkbox */
         .rent-option {
-            margin-bottom: 1rem;
-            padding: 0.75rem 1rem;
-            background: rgba(34, 197, 94, 0.08);
-            border: 1px solid rgba(34, 197, 94, 0.2);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            cursor: pointer;
-            transition: all 0.3s var(--transition-smooth);
+            margin-bottom: 1rem; padding: 0.75rem 1rem; background: rgba(34, 197, 94, 0.08);
+            border: 1px solid rgba(34, 197, 94, 0.2); border-radius: 10px; display: flex;
+            align-items: center; gap: 0.75rem; cursor: pointer; transition: all 0.3s var(--transition-smooth);
         }
-
-        .rent-option:hover {
-            background: rgba(34, 197, 94, 0.12);
-            border-color: rgba(34, 197, 94, 0.4);
-        }
-
-        .rent-option.active {
-            background: rgba(34, 197, 94, 0.15);
-            border-color: #22c55e;
-        }
-
+        .rent-option:hover { background: rgba(34, 197, 94, 0.12); border-color: rgba(34, 197, 94, 0.4); }
+        .rent-option.active { background: rgba(34, 197, 94, 0.15); border-color: #22c55e; }
         .rent-checkbox {
-            width: 20px;
-            height: 20px;
-            border: 2px solid #22c55e;
-            border-radius: 4px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.2s var(--transition-smooth);
+            width: 20px; height: 20px; border: 2px solid #22c55e; border-radius: 4px; display: flex;
+            align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.2s var(--transition-smooth);
         }
-
-        .rent-option.active .rent-checkbox {
-            background: #22c55e;
-        }
-
-        .rent-option.active .rent-checkbox::after {
-            content: '✓';
-            color: var(--black);
-            font-size: 12px;
-            font-weight: 700;
-        }
-
-        .rent-label {
-            flex: 1;
-        }
-
-        .rent-label-title {
-            font-size: 0.85rem;
-            font-weight: 600;
-            color: #22c55e;
-            margin-bottom: 0.15rem;
-        }
-
-        .rent-label-desc {
-            font-size: 0.7rem;
-            color: var(--grey-subtle);
-        }
-
+        .rent-option.active .rent-checkbox { background: #22c55e; }
+        .rent-option.active .rent-checkbox::after { content: '✓'; color: var(--black); font-size: 12px; font-weight: 700; }
+        .rent-label { flex: 1; }
+        .rent-label-title { font-size: 0.85rem; font-weight: 600; color: #22c55e; margin-bottom: 0.15rem; }
+        .rent-label-desc { font-size: 0.7rem; color: var(--grey-subtle); }
         .rent-badge-cart {
-            display: inline-block;
-            padding: 0.2rem 0.5rem;
-            background: rgba(34, 197, 94, 0.15);
-            border: 1px solid rgba(34, 197, 94, 0.3);
-            color: #22c55e;
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.6rem;
-            font-weight: 600;
-            border-radius: 4px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-left: 0.5rem;
+            display: inline-block; padding: 0.2rem 0.5rem; background: rgba(34, 197, 94, 0.15);
+            border: 1px solid rgba(34, 197, 94, 0.3); color: #22c55e; font-family: 'JetBrains Mono', monospace;
+            font-size: 0.6rem; font-weight: 600; border-radius: 4px; text-transform: uppercase; margin-left: 0.5rem;
         }
 
-        .product-actions {
-            display: flex;
-            gap: 0.75rem;
-            margin-top: auto;
-        }
+        .product-actions { display: flex; gap: 0.75rem; margin-top: auto; }
 
+        /* Buttons */
         .btn {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            padding: 0.75rem 1.25rem;
-            border-radius: 10px;
-            cursor: pointer;
-            text-decoration: none;
-            display: inline-flex;
-            align-items: center;
-            justify-content: center;
-            gap: 0.5rem;
-            transition: all 0.3s var(--transition-smooth);
-            font-weight: 500;
-            border: none;
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; padding: 0.75rem 1.25rem;
+            border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-flex;
+            align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.3s var(--transition-smooth);
+            font-weight: 500; border: none;
         }
-
-        .btn-primary {
-            background: var(--gradient-orange);
-            color: var(--black);
-            box-shadow: 0 4px 20px var(--orange-glow);
-        }
-
-        .btn-primary:hover {
-            transform: translateY(-2px);
-            box-shadow: 0 8px 30px var(--orange-glow);
-        }
-
-        .btn-primary:disabled {
-            opacity: 0.6;
-            cursor: not-allowed;
-            transform: none;
-        }
-
-        .btn-secondary {
-            background: rgba(255, 107, 44, 0.1);
-            color: var(--orange-primary);
-            border: 1px solid rgba(255, 107, 44, 0.3);
-        }
-
-        .btn-secondary:hover {
-            background: rgba(255, 107, 44, 0.2);
-        }
-
-        .btn-icon {
-            width: 18px;
-            height: 18px;
-        }
+        .btn-primary { background: var(--gradient-orange); color: var(--black); box-shadow: 0 4px 20px var(--orange-glow); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--orange-glow); }
+        .btn-secondary { background: rgba(255, 107, 44, 0.1); color: var(--orange-primary); border: 1px solid rgba(255, 107, 44, 0.3); }
+        .btn-secondary:hover { background: rgba(255, 107, 44, 0.2); }
+        .btn-icon { width: 18px; height: 18px; }
 
         /* Quantity Controls */
-        .quantity-controls {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
+        .quantity-controls { display: flex; align-items: center; gap: 0.5rem; }
         .qty-btn {
-            width: 32px;
-            height: 32px;
-            border-radius: 8px;
-            background: rgba(255, 107, 44, 0.1);
-            border: 1px solid rgba(255, 107, 44, 0.3);
-            color: var(--orange-primary);
-            font-size: 1.25rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
-            transition: all 0.2s var(--transition-smooth);
+            width: 32px; height: 32px; border-radius: 8px; background: rgba(255, 107, 44, 0.1);
+            border: 1px solid rgba(255, 107, 44, 0.3); color: var(--orange-primary); font-size: 1.25rem;
+            display: flex; align-items: center; justify-content: center; cursor: pointer; transition: all 0.2s;
         }
-
-        .qty-btn:hover {
-            background: rgba(255, 107, 44, 0.2);
-        }
-
-        .qty-value {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 1rem;
-            font-weight: 600;
-            min-width: 2rem;
-            text-align: center;
-        }
-
-        /* Admin Actions */
-        .admin-actions {
-            display: flex;
-            gap: 0.5rem;
-        }
-
-        .btn-edit {
-            background: rgba(78, 168, 222, 0.1);
-            color: var(--blue-accent);
-            border: 1px solid rgba(78, 168, 222, 0.3);
-        }
-
-        .btn-edit:hover {
-            background: rgba(78, 168, 222, 0.2);
-        }
-
-        .btn-delete {
-            background: rgba(239, 68, 68, 0.1);
-            color: #ef4444;
-            border: 1px solid rgba(239, 68, 68, 0.3);
-        }
-
-        .btn-delete:hover {
-            background: rgba(239, 68, 68, 0.2);
-        }
+        .qty-btn:hover { background: rgba(255, 107, 44, 0.2); }
+        .qty-value { font-family: 'JetBrains Mono', monospace; font-size: 1rem; font-weight: 600; min-width: 2rem; text-align: center; }
 
         /* Cart FAB */
         .cart-fab {
-            position: fixed;
-            bottom: 2rem;
-            right: 2rem;
-            background: var(--gradient-orange);
-            color: var(--black);
-            border-radius: 50px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            height: 60px;
-            padding: 0 1.5rem;
-            box-shadow: 0 10px 40px var(--orange-glow);
-            transition: all 0.4s var(--transition-smooth);
-            z-index: 90;
-            cursor: pointer;
-            border: none;
+            position: fixed; bottom: 2rem; right: 2rem; background: var(--gradient-orange); color: var(--black);
+            border-radius: 50px; display: flex; align-items: center; justify-content: center; height: 60px;
+            padding: 0 1.5rem; box-shadow: 0 10px 40px var(--orange-glow); transition: all 0.4s var(--transition-smooth);
+            z-index: 90; cursor: pointer; border: none;
         }
-
-        .cart-fab:hover {
-            transform: translateY(-5px) scale(1.05);
-            box-shadow: 0 15px 50px var(--orange-glow);
-        }
-
-        .cart-fab.pulse {
-            animation: cartPulse 0.3s ease;
-        }
-
-        @keyframes cartPulse {
-            0%, 100% { transform: scale(1); }
-            50% { transform: scale(1.1); }
-        }
-
-        .cart-fab svg {
-            width: 24px;
-            height: 24px;
-        }
-
-        .cart-fab-text {
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
-            margin-left: 0.75rem;
-        }
-
+        .cart-fab:hover { transform: translateY(-5px) scale(1.05); box-shadow: 0 15px 50px var(--orange-glow); }
+        .cart-fab.pulse { animation: cartPulse 0.3s ease; }
+        @keyframes cartPulse { 0%, 100% { transform: scale(1); } 50% { transform: scale(1.1); } }
+        .cart-fab svg { width: 24px; height: 24px; }
+        .cart-fab-text { font-family: 'JetBrains Mono', monospace; font-weight: 600; margin-left: 0.75rem; }
         .cart-badge {
-            position: absolute;
-            top: -8px;
-            right: -8px;
-            background: var(--white);
-            color: var(--orange-primary);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            font-weight: 700;
-            min-width: 24px;
-            height: 24px;
-            border-radius: 12px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
-            transition: transform 0.3s var(--transition-smooth);
+            position: absolute; top: -8px; right: -8px; background: var(--white); color: var(--orange-primary);
+            font-family: 'JetBrains Mono', monospace; font-size: 0.75rem; font-weight: 700; min-width: 24px;
+            height: 24px; border-radius: 12px; display: flex; align-items: center; justify-content: center;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3); transition: transform 0.3s var(--transition-smooth);
         }
-
-        .cart-badge.hidden {
-            display: none;
-        }
+        .cart-badge.hidden { display: none; }
 
         /* Cart Drawer */
         .cart-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.6);
-            backdrop-filter: blur(4px);
-            z-index: 200;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s var(--transition-smooth);
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(4px);
+            z-index: 200; opacity: 0; visibility: hidden; transition: all 0.3s var(--transition-smooth);
         }
-
-        .cart-overlay.open {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .cart-overlay.open { opacity: 1; visibility: visible; }
         .cart-drawer {
-            position: fixed;
-            top: 0;
-            right: 0;
-            bottom: 0;
-            width: 100%;
-            max-width: 420px;
-            background: var(--grey-dark);
-            border-left: 1px solid var(--glass-border);
-            z-index: 201;
-            display: flex;
-            flex-direction: column;
-            transform: translateX(100%);
-            transition: transform 0.4s var(--transition-smooth);
+            position: fixed; top: 0; right: 0; bottom: 0; width: 100%; max-width: 420px;
+            background: var(--grey-dark); border-left: 1px solid var(--glass-border); z-index: 201;
+            display: flex; flex-direction: column; transform: translateX(100%); transition: transform 0.4s var(--transition-smooth);
         }
-
-        .cart-overlay.open .cart-drawer {
-            transform: translateX(0);
-        }
-
-        .cart-header {
-            padding: 1.5rem;
-            border-bottom: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-        }
-
-        .cart-header h2 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-        }
-
+        .cart-overlay.open .cart-drawer { transform: translateX(0); }
+        .cart-header { padding: 1.5rem; border-bottom: 1px solid var(--glass-border); display: flex; justify-content: space-between; align-items: center; }
+        .cart-header h2 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; }
         .cart-close {
-            width: 40px;
-            height: 40px;
-            border-radius: 10px;
-            background: var(--grey-mid);
-            border: 1px solid var(--glass-border);
-            color: var(--grey-subtle);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s var(--transition-smooth);
-            display: flex;
-            align-items: center;
-            justify-content: center;
+            width: 40px; height: 40px; border-radius: 10px; background: var(--grey-mid); border: 1px solid var(--glass-border);
+            color: var(--grey-subtle); font-size: 1.5rem; cursor: pointer; transition: all 0.3s var(--transition-smooth);
+            display: flex; align-items: center; justify-content: center;
         }
-
-        .cart-close:hover {
-            color: var(--orange-primary);
-            border-color: var(--orange-primary);
-        }
-
-        .cart-items {
-            flex: 1;
-            overflow-y: auto;
-            padding: 1.5rem;
-        }
-
-        .cart-empty {
-            text-align: center;
-            padding: 3rem 1rem;
-            color: var(--grey-subtle);
-        }
-
-        .cart-empty svg {
-            width: 64px;
-            height: 64px;
-            margin-bottom: 1rem;
-            opacity: 0.3;
-        }
-
-        .cart-item {
-            display: flex;
-            gap: 1rem;
-            padding: 1rem;
-            background: var(--grey-mid);
-            border-radius: 12px;
-            margin-bottom: 1rem;
-            position: relative;
-        }
-
+        .cart-close:hover { color: var(--orange-primary); border-color: var(--orange-primary); }
+        .cart-items { flex: 1; overflow-y: auto; padding: 1.5rem; }
+        .cart-empty { text-align: center; padding: 3rem 1rem; color: var(--grey-subtle); }
+        .cart-empty svg { width: 64px; height: 64px; margin-bottom: 1rem; opacity: 0.3; }
+        .cart-item { display: flex; gap: 1rem; padding: 1rem; background: var(--grey-mid); border-radius: 12px; margin-bottom: 1rem; position: relative; }
         .cart-item-image {
-            width: 80px;
-            height: 80px;
-            background: var(--grey-dark);
-            border-radius: 8px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            overflow: hidden;
-            flex-shrink: 0;
+            width: 80px; height: 80px; background: var(--grey-dark); border-radius: 8px; display: flex;
+            align-items: center; justify-content: center; overflow: hidden; flex-shrink: 0;
         }
-
-        .cart-item-image img {
-            max-width: 90%;
-            max-height: 90%;
-            object-fit: contain;
-        }
-
-        .cart-item-details {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .cart-item-type {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.65rem;
-            color: var(--orange-light);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-bottom: 0.25rem;
-        }
-
-        .cart-item-type.diy {
-            color: var(--blue-accent);
-        }
-
-        .cart-item-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 0.25rem;
-            padding-right: 2rem;
-        }
-
-        .cart-item-price {
-            color: var(--orange-primary);
-            font-family: 'JetBrains Mono', monospace;
-            font-weight: 600;
-            font-size: 0.9rem;
-        }
-
-        .cart-item-controls {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-top: auto;
-        }
-
-        .cart-item-qty {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .cart-item-qty .qty-btn {
-            width: 28px;
-            height: 28px;
-            font-size: 1rem;
-        }
-
-        .cart-item-remove {
-            background: none;
-            border: none;
-            color: var(--grey-subtle);
-            cursor: pointer;
-            padding: 0.25rem;
-            transition: color 0.2s;
-        }
-
-        .cart-item-remove:hover {
-            color: #ef4444;
-        }
-
-        .cart-item-subtotal {
-            font-family: 'Space Grotesk', sans-serif;
-            font-weight: 700;
-            color: var(--white);
-            font-size: 1rem;
-            margin-top: 0.5rem;
-        }
-
-        .cart-footer {
-            padding: 1.5rem;
-            border-top: 1px solid var(--glass-border);
-            background: var(--grey-mid);
-        }
-
-        .cart-total-row {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .cart-total-label {
-            font-size: 1rem;
-            color: var(--grey-subtle);
-        }
-
-        .cart-total-value {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--orange-primary);
-        }
-
-        .cart-checkout-btn {
-            width: 100%;
-            padding: 1rem;
-            font-size: 1rem;
-        }
-
-        .cart-footer-note {
-            text-align: center;
-            font-size: 0.8rem;
-            color: var(--grey-subtle);
-            margin-top: 1rem;
-        }
+        .cart-item-image img { max-width: 90%; max-height: 90%; object-fit: contain; }
+        .cart-item-details { flex: 1; display: flex; flex-direction: column; }
+        .cart-item-type { font-family: 'JetBrains Mono', monospace; font-size: 0.65rem; color: var(--orange-light); text-transform: uppercase; margin-bottom: 0.25rem; }
+        .cart-item-type.diy { color: var(--blue-accent); }
+        .cart-item-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem; padding-right: 2rem; }
+        .cart-item-price { color: var(--orange-primary); font-family: 'JetBrains Mono', monospace; font-weight: 600; font-size: 0.9rem; }
+        .cart-item-controls { display: flex; align-items: center; justify-content: space-between; margin-top: auto; }
+        .cart-item-qty { display: flex; align-items: center; gap: 0.5rem; }
+        .cart-item-qty .qty-btn { width: 28px; height: 28px; font-size: 1rem; }
+        .cart-item-remove { background: none; border: none; color: var(--grey-subtle); cursor: pointer; padding: 0.25rem; transition: color 0.2s; }
+        .cart-item-remove:hover { color: #ef4444; }
+        .cart-item-subtotal { font-family: 'Space Grotesk', sans-serif; font-weight: 700; color: var(--white); font-size: 1rem; margin-top: 0.5rem; }
+        .cart-footer { padding: 1.5rem; border-top: 1px solid var(--glass-border); background: var(--grey-mid); }
+        .cart-total-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+        .cart-total-label { font-size: 1rem; color: var(--grey-subtle); }
+        .cart-total-value { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700; color: var(--orange-primary); }
+        .cart-checkout-btn { width: 100%; padding: 1rem; font-size: 1rem; }
+        .cart-footer-note { text-align: center; font-size: 0.8rem; color: var(--grey-subtle); margin-top: 1rem; }
 
         /* Product Detail Modal */
         .detail-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 300;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s var(--transition-smooth);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
+            position: fixed; inset: 0; background: rgba(0, 0, 0, 0.8); backdrop-filter: blur(8px);
+            z-index: 300; opacity: 0; visibility: hidden; transition: all 0.3s var(--transition-smooth);
+            display: flex; align-items: center; justify-content: center; padding: 2rem;
         }
-
-        .detail-overlay.open {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .detail-overlay.open { opacity: 1; visibility: visible; }
         .detail-modal {
-            background: var(--grey-dark);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            width: 100%;
-            max-width: 900px;
-            max-height: 90vh;
-            overflow: hidden;
-            transform: scale(0.95) translateY(20px);
-            transition: transform 0.4s var(--transition-smooth);
-            display: flex;
-            flex-direction: column;
+            background: var(--grey-dark); border: 1px solid var(--glass-border); border-radius: 20px;
+            width: 100%; max-width: 900px; max-height: 90vh; overflow: hidden; transform: scale(0.95) translateY(20px);
+            transition: transform 0.4s var(--transition-smooth); display: flex; flex-direction: column; position: relative;
         }
-
-        .detail-overlay.open .detail-modal {
-            transform: scale(1) translateY(0);
-        }
-
+        .detail-overlay.open .detail-modal { transform: scale(1) translateY(0); }
         .detail-close {
-            position: absolute;
-            top: 1rem;
-            right: 1rem;
-            width: 44px;
-            height: 44px;
-            border-radius: 50%;
-            background: rgba(0, 0, 0, 0.5);
-            backdrop-filter: blur(10px);
-            border: 1px solid var(--glass-border);
-            color: var(--white);
-            font-size: 1.5rem;
-            cursor: pointer;
-            transition: all 0.3s var(--transition-smooth);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            z-index: 10;
+            position: absolute; top: 1rem; right: 1rem; width: 44px; height: 44px; border-radius: 50%;
+            background: rgba(0, 0, 0, 0.5); backdrop-filter: blur(10px); border: 1px solid var(--glass-border);
+            color: var(--white); font-size: 1.5rem; cursor: pointer; transition: all 0.3s var(--transition-smooth);
+            display: flex; align-items: center; justify-content: center; z-index: 10;
         }
-
-        .detail-close:hover {
-            background: var(--orange-primary);
-            color: var(--black);
-        }
-
-        .detail-content {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            overflow: hidden;
-        }
-
-        .detail-image-section {
-            background: var(--black);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            min-height: 400px;
-        }
-
-        .detail-image {
-            max-width: 100%;
-            max-height: 400px;
-            object-fit: contain;
-        }
-
-        .detail-info-section {
-            padding: 2rem;
-            display: flex;
-            flex-direction: column;
-            overflow-y: auto;
-        }
-
+        .detail-close:hover { background: var(--orange-primary); color: var(--black); }
+        .detail-content { display: grid; grid-template-columns: 1fr 1fr; overflow: hidden; }
+        .detail-image-section { background: var(--black); display: flex; align-items: center; justify-content: center; padding: 2rem; min-height: 400px; }
+        .detail-image { max-width: 100%; max-height: 400px; object-fit: contain; }
+        .detail-info-section { padding: 2rem; display: flex; flex-direction: column; overflow-y: auto; }
         .detail-badge {
-            display: inline-block;
-            padding: 0.35rem 0.75rem;
-            background: rgba(255, 107, 44, 0.1);
-            border: 1px solid rgba(255, 107, 44, 0.3);
-            color: var(--orange-light);
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.75rem;
-            border-radius: 6px;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-            width: fit-content;
+            display: inline-block; padding: 0.35rem 0.75rem; background: rgba(255, 107, 44, 0.1);
+            border: 1px solid rgba(255, 107, 44, 0.3); color: var(--orange-light); font-family: 'JetBrains Mono', monospace;
+            font-size: 0.75rem; border-radius: 6px; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 1rem; width: fit-content;
         }
-
-        .detail-badge.diy {
-            background: rgba(78, 168, 222, 0.1);
-            border-color: rgba(78, 168, 222, 0.3);
-            color: var(--blue-accent);
-        }
-
-        .detail-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2rem;
-            font-weight: 700;
-            margin-bottom: 1rem;
-            line-height: 1.2;
-        }
-
-        .detail-price {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 2.5rem;
-            font-weight: 700;
-            color: var(--orange-primary);
-            margin-bottom: 0.25rem;
-        }
-
-        .detail-price-note {
-            font-size: 0.85rem;
-            color: var(--grey-subtle);
-            margin-bottom: 1.5rem;
-        }
-
-        .detail-description {
-            color: var(--grey-subtle);
-            font-size: 1rem;
-            line-height: 1.8;
-            margin-bottom: 1.5rem;
-        }
-
+        .detail-badge.diy { background: rgba(78, 168, 222, 0.1); border-color: rgba(78, 168, 222, 0.3); color: var(--blue-accent); }
+        .detail-title { font-family: 'Space Grotesk', sans-serif; font-size: 2rem; font-weight: 700; margin-bottom: 1rem; line-height: 1.2; }
+        .detail-price { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; font-weight: 700; color: var(--orange-primary); margin-bottom: 0.25rem; }
+        .detail-price-note { font-size: 0.85rem; color: var(--grey-subtle); margin-bottom: 1.5rem; }
+        .detail-description { color: var(--grey-subtle); font-size: 1rem; line-height: 1.8; margin-bottom: 1.5rem; }
+        
         /* Type Selector in Detail Modal */
-        .type-selector {
-            margin-bottom: 1.5rem;
-        }
-
-        .type-selector-label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--grey-subtle);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 0.75rem;
-            display: block;
-        }
-
-        .type-options {
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
+        .type-selector { margin-bottom: 1.5rem; }
+        .type-selector-label { font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--grey-subtle); text-transform: uppercase; margin-bottom: 0.75rem; display: block; }
+        .type-options { display: flex; flex-direction: column; gap: 0.75rem; }
         .type-option {
-            display: flex;
-            align-items: flex-start;
-            padding: 1rem;
-            background: var(--grey-mid);
-            border: 2px solid var(--glass-border);
-            border-radius: 12px;
-            cursor: pointer;
-            transition: all 0.3s var(--transition-smooth);
+            display: flex; align-items: flex-start; padding: 1rem; background: var(--grey-mid);
+            border: 2px solid var(--glass-border); border-radius: 12px; cursor: pointer; transition: all 0.3s var(--transition-smooth);
         }
-
-        .type-option:hover {
-            border-color: rgba(255, 107, 44, 0.3);
-        }
-
-        .type-option.selected {
-            border-color: var(--orange-primary);
-            background: rgba(255, 107, 44, 0.05);
-        }
-
-        .type-option.selected.diy-option {
-            border-color: var(--blue-accent);
-            background: rgba(78, 168, 222, 0.05);
-        }
-
+        .type-option:hover { border-color: rgba(255, 107, 44, 0.3); }
+        .type-option.selected { border-color: var(--orange-primary); background: rgba(255, 107, 44, 0.05); }
+        .type-option.selected.diy-option { border-color: var(--blue-accent); background: rgba(78, 168, 222, 0.05); }
         .type-option-radio {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            border: 2px solid var(--grey-subtle);
-            margin-right: 1rem;
-            margin-top: 2px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-shrink: 0;
-            transition: all 0.3s var(--transition-smooth);
+            width: 20px; height: 20px; border-radius: 50%; border: 2px solid var(--grey-subtle);
+            margin-right: 1rem; margin-top: 2px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; transition: all 0.3s;
         }
-
-        .type-option.selected .type-option-radio {
-            border-color: var(--orange-primary);
-        }
-
-        .type-option.selected.diy-option .type-option-radio {
-            border-color: var(--blue-accent);
-        }
-
-        .type-option.selected .type-option-radio::after {
-            content: '';
-            width: 10px;
-            height: 10px;
-            border-radius: 50%;
-            background: var(--orange-primary);
-        }
-
-        .type-option.selected.diy-option .type-option-radio::after {
-            background: var(--blue-accent);
-        }
-
-        .type-option-content {
-            flex: 1;
-        }
-
-        .type-option-title {
-            font-weight: 600;
-            font-size: 0.95rem;
-            margin-bottom: 0.25rem;
-        }
-
-        .type-option-price {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--orange-primary);
-        }
-
-        .type-option-price .original {
-            text-decoration: line-through;
-            color: var(--grey-subtle);
-            margin-right: 0.5rem;
-        }
-
+        .type-option.selected .type-option-radio { border-color: var(--orange-primary); }
+        .type-option.selected.diy-option .type-option-radio { border-color: var(--blue-accent); }
+        .type-option.selected .type-option-radio::after { content: ''; width: 10px; height: 10px; border-radius: 50%; background: var(--orange-primary); }
+        .type-option.selected.diy-option .type-option-radio::after { background: var(--blue-accent); }
+        .type-option-content { flex: 1; }
+        .type-option-title { font-weight: 600; font-size: 0.95rem; margin-bottom: 0.25rem; }
+        .type-option-price { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--orange-primary); }
+        .type-option-price .original { text-decoration: line-through; color: var(--grey-subtle); margin-right: 0.5rem; }
         .type-tip {
-            margin-top: 0.75rem;
-            padding: 0.75rem 1rem;
-            background: rgba(255, 107, 44, 0.1);
-            border-radius: 8px;
-            font-size: 0.8rem;
-            color: var(--orange-light);
-            display: flex;
-            align-items: flex-start;
-            gap: 0.5rem;
-        }
-
-        .type-tip svg {
-            width: 16px;
-            height: 16px;
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .detail-features {
-            margin-bottom: 1.5rem;
-        }
-
-        .detail-features h4 {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.85rem;
-            color: var(--orange-light);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            margin-bottom: 1rem;
-        }
-
-        .detail-features ul {
-            list-style: none;
-        }
-
-        .detail-features li {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-            margin-bottom: 0.75rem;
-            color: var(--grey-subtle);
-            font-size: 0.95rem;
-        }
-
-        .detail-features li svg {
-            width: 18px;
-            height: 18px;
-            color: var(--orange-primary);
-            flex-shrink: 0;
-            margin-top: 2px;
-        }
-
-        .detail-actions {
-            margin-top: auto;
-            display: flex;
-            gap: 1rem;
-            flex-wrap: wrap;
-        }
-
-        .detail-actions .btn {
-            flex: 1;
-            min-width: 140px;
-        }
-
-        /* Admin Panel */
-        .admin-panel {
-            background: linear-gradient(135deg, var(--grey-mid) 0%, var(--grey-dark) 100%);
-            border: 2px solid var(--orange-primary);
-            border-radius: 20px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            max-width: 800px;
-            margin-left: auto;
-            margin-right: auto;
-        }
-
-        .admin-panel-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1.5rem;
-            padding-bottom: 1rem;
-            border-bottom: 1px solid var(--glass-border);
-        }
-
-        .admin-panel-header h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-        }
-
-        .admin-cancel-btn {
-            background: none;
-            border: none;
-            color: var(--grey-subtle);
-            cursor: pointer;
-            font-size: 0.9rem;
-            transition: color 0.2s;
-        }
-
-        .admin-cancel-btn:hover {
-            color: var(--orange-primary);
-        }
-
-        .admin-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-
-        .admin-form-row {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 1rem;
-        }
-
-        .form-group {
-            display: flex;
-            flex-direction: column;
-            gap: 0.5rem;
-        }
-
-        .form-group label {
-            font-family: 'JetBrains Mono', monospace;
-            font-size: 0.8rem;
-            color: var(--grey-subtle);
-            text-transform: uppercase;
-            letter-spacing: 1px;
-        }
-
-        .form-group input,
-        .form-group textarea,
-        .form-group select {
-            padding: 0.875rem 1rem;
-            background: var(--grey-dark);
-            border: 1px solid var(--glass-border);
-            border-radius: 10px;
-            color: var(--white);
-            font-family: 'Inter', sans-serif;
-            font-size: 1rem;
-            transition: all 0.3s var(--transition-smooth);
-        }
-
-        .form-group input:focus,
-        .form-group textarea:focus,
-        .form-group select:focus {
-            outline: none;
-            border-color: var(--orange-primary);
-            box-shadow: 0 0 0 3px var(--orange-glow);
-        }
-
-        .form-group textarea {
-            resize: vertical;
-            min-height: 100px;
-        }
-
-        .price-preview {
-            margin-top: 0.5rem;
-            padding: 0.75rem;
-            background: rgba(255, 107, 44, 0.1);
-            border-radius: 8px;
-            font-size: 0.85rem;
-        }
-
-        .price-preview strong {
-            color: var(--orange-primary);
-        }
-
-        .image-upload {
-            border: 2px dashed var(--grey-light);
-            border-radius: 12px;
-            padding: 2rem;
-            text-align: center;
-            cursor: pointer;
-            transition: all 0.3s var(--transition-smooth);
-        }
-
-        .image-upload:hover {
-            border-color: var(--orange-primary);
-            background: rgba(255, 107, 44, 0.05);
-        }
-
-        .image-upload svg {
-            width: 48px;
-            height: 48px;
-            color: var(--grey-subtle);
-            margin-bottom: 0.75rem;
-        }
-
-        .image-upload p {
-            color: var(--orange-primary);
-            font-weight: 600;
-        }
-
-        .image-upload small {
-            color: var(--grey-subtle);
-            font-size: 0.8rem;
-        }
-
-        .image-preview {
-            margin-bottom: 1rem;
-        }
-
-        .image-preview img {
-            max-height: 150px;
-            border-radius: 8px;
-            object-fit: contain;
-        }
-
-        .admin-status {
-            text-align: center;
-            font-size: 0.9rem;
-            font-weight: 600;
-            margin-top: 1rem;
-        }
-
-        .admin-status.success {
-            color: #22c55e;
-        }
-
-        .admin-status.error {
-            color: #ef4444;
-        }
-
-        .admin-status.processing {
-            color: var(--orange-primary);
-        }
-
-        /* Admin Login Modal */
-        .admin-login-overlay {
-            position: fixed;
-            inset: 0;
-            background: rgba(0, 0, 0, 0.8);
-            backdrop-filter: blur(8px);
-            z-index: 500;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 2rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: all 0.3s var(--transition-smooth);
-        }
-
-        .admin-login-overlay.open {
-            opacity: 1;
-            visibility: visible;
-        }
-
-        .admin-login-modal {
-            background: var(--grey-dark);
-            border: 1px solid var(--glass-border);
-            border-radius: 20px;
-            padding: 2.5rem;
-            width: 100%;
-            max-width: 420px;
-            transform: scale(0.95) translateY(20px);
-            transition: transform 0.4s var(--transition-smooth);
-        }
-
-        .admin-login-overlay.open .admin-login-modal {
-            transform: scale(1) translateY(0);
-        }
-
-        .admin-login-header {
-            text-align: center;
-            margin-bottom: 2rem;
-        }
-
-        .admin-login-header svg {
-            width: 48px;
-            height: 48px;
-            color: var(--orange-primary);
-            margin-bottom: 1rem;
-        }
-
-        .admin-login-header h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            margin-bottom: 0.5rem;
-        }
-
-        .admin-login-header p {
-            color: var(--grey-subtle);
-            font-size: 0.9rem;
-        }
-
-        .admin-login-form {
-            display: flex;
-            flex-direction: column;
-            gap: 1.25rem;
-        }
-
-        .admin-login-error {
-            padding: 0.75rem 1rem;
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 8px;
-            color: #ef4444;
-            font-size: 0.85rem;
-            display: none;
-        }
-
-        .admin-login-error.show {
-            display: block;
-        }
-
-        .admin-login-actions {
-            display: flex;
-            gap: 1rem;
-            margin-top: 0.5rem;
-        }
-
-        .admin-login-actions .btn {
-            flex: 1;
-        }
-
-        /* Toast Notification */
-        .toast-container {
-            position: fixed;
-            bottom: 6rem;
-            right: 2rem;
-            z-index: 400;
-            display: flex;
-            flex-direction: column;
-            gap: 0.75rem;
-        }
-
-        .toast {
-            background: var(--grey-mid);
-            border: 1px solid var(--glass-border);
-            border-radius: 12px;
-            padding: 1rem 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-            box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
-            transform: translateX(120%);
-            transition: transform 0.4s var(--transition-smooth);
-        }
-
-        .toast.show {
-            transform: translateX(0);
-        }
-
-        .toast.success {
-            border-color: rgba(34, 197, 94, 0.3);
-        }
-
-        .toast.success svg {
-            color: #22c55e;
-        }
-
-        .toast-icon {
-            width: 24px;
-            height: 24px;
-        }
-
-        .toast-message {
-            font-size: 0.9rem;
-        }
-
-        /* Footer */
-        .footer {
-            background: var(--black);
-            border-top: 1px solid var(--glass-border);
-            padding: 4rem 2rem 2rem;
-            margin-top: auto;
-        }
-
-        .footer-grid {
-            max-width: 1200px;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 2fr 1fr 1fr;
-            gap: 3rem;
-        }
-
-        .footer-brand p {
-            color: var(--grey-subtle);
-            margin-top: 1rem;
-            font-size: 0.95rem;
-            line-height: 1.7;
-        }
-
-        .footer-title {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1rem;
-            margin-bottom: 1.5rem;
-            color: var(--white);
-        }
-
-        .footer-links {
-            list-style: none;
-        }
-
-        .footer-links li {
-            margin-bottom: 0.75rem;
-        }
-
-        .footer-links a {
-            color: var(--grey-subtle);
-            text-decoration: none;
-            font-size: 0.9rem;
-            transition: color 0.3s var(--transition-smooth);
-            cursor: pointer;
-        }
-
-        .footer-links a:hover {
-            color: var(--orange-primary);
-        }
-
-        .footer-social {
-            display: flex;
-            gap: 1rem;
-            margin-top: 1.5rem;
-        }
-
-        .footer-social a {
-            width: 44px;
-            height: 44px;
-            background: var(--grey-mid);
-            border-radius: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            transition: all 0.3s var(--transition-smooth);
-        }
-
-        .footer-social a:hover {
-            background: var(--orange-primary);
-            transform: translateY(-3px);
-        }
-
-        .footer-social svg {
-            width: 22px;
-            height: 22px;
-            color: var(--white);
-        }
-
-        .footer-bottom {
-            max-width: 1200px;
-            margin: 3rem auto 0;
-            padding-top: 2rem;
-            border-top: 1px solid var(--glass-border);
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            flex-wrap: wrap;
-            gap: 1rem;
-        }
-
-        .footer-bottom p {
-            font-size: 0.85rem;
-            color: var(--grey-subtle);
-        }
-
-        .footer-bottom span {
-            color: var(--orange-primary);
-        }
-
-        .admin-trigger {
-            opacity: 0.1;
-            cursor: pointer;
-            transition: opacity 0.3s;
-            font-size: 0.9rem;
-        }
-
-        .admin-trigger:hover {
-            opacity: 1;
-        }
+            margin-top: 0.75rem; padding: 0.75rem 1rem; background: rgba(255, 107, 44, 0.1);
+            border-radius: 8px; font-size: 0.8rem; color: var(--orange-light); display: flex; align-items: flex-start; gap: 0.5rem;
+        }
+        .type-tip svg { width: 16px; height: 16px; flex-shrink: 0; margin-top: 2px; }
+
+        .detail-features { margin-bottom: 1.5rem; }
+        .detail-features h4 { font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; color: var(--orange-light); text-transform: uppercase; margin-bottom: 1rem; }
+        .detail-features ul { list-style: none; }
+        .detail-features li { display: flex; align-items: flex-start; gap: 0.75rem; margin-bottom: 0.75rem; color: var(--grey-subtle); font-size: 0.95rem; }
+        .detail-features li svg { width: 18px; height: 18px; color: var(--orange-primary); flex-shrink: 0; margin-top: 2px; }
+        .detail-actions { margin-top: auto; display: flex; gap: 1rem; flex-wrap: wrap; }
+        .detail-actions .btn { flex: 1; min-width: 140px; }
 
         /* Policy Modal */
         .policy-modal-overlay {
-            position: fixed;
-            inset: 0;
-            background-color: rgba(10, 10, 12, 0.9);
-            backdrop-filter: blur(10px);
-            z-index: 600;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 1rem;
-            opacity: 0;
-            visibility: hidden;
-            transition: opacity 0.4s ease, visibility 0.4s ease;
+            position: fixed; inset: 0; background-color: rgba(10, 10, 12, 0.9); backdrop-filter: blur(10px);
+            z-index: 600; display: flex; align-items: center; justify-content: center; padding: 1rem;
+            opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
         }
-
-        .policy-modal-overlay.is-open {
-            opacity: 1;
-            visibility: visible;
-        }
-
+        .policy-modal-overlay.is-open { opacity: 1; visibility: visible; }
         .policy-modal-content {
-            background: var(--grey-dark);
-            border: 1px solid var(--glass-border);
-            border-radius: 1rem;
-            width: 100%;
-            max-width: 700px;
-            max-height: 85vh;
-            display: flex;
-            flex-direction: column;
-            transform: scale(0.95) translateY(20px);
-            transition: transform 0.4s var(--transition-smooth);
+            background: var(--grey-dark); border: 1px solid var(--glass-border); border-radius: 1rem;
+            width: 100%; max-width: 700px; max-height: 85vh; display: flex; flex-direction: column;
+            transform: scale(0.95) translateY(20px); transition: transform 0.4s var(--transition-smooth);
         }
+        .policy-modal-overlay.is-open .policy-modal-content { transform: scale(1) translateY(0); }
+        .policy-modal-header { display: flex; justify-content: space-between; align-items: center; padding: 1.5rem 2rem; border-bottom: 1px solid var(--glass-border); }
+        .policy-modal-header h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; color: var(--white); }
+        .policy-modal-close { font-size: 2rem; line-height: 1; color: var(--grey-subtle); background: none; border: none; cursor: pointer; transition: all 0.3s ease; }
+        .policy-modal-close:hover { color: var(--orange-primary); transform: rotate(90deg); }
+        .policy-modal-body { padding: 2rem; overflow-y: auto; color: var(--grey-subtle); line-height: 1.8; }
+        .policy-modal-body h4 { color: var(--orange-primary); font-size: 1.1rem; margin-top: 1.5rem; margin-bottom: 0.75rem; }
+        .policy-modal-body h4:first-child { margin-top: 0; }
+        .policy-modal-body p { margin-bottom: 1rem; }
+        .policy-modal-body ul { margin-bottom: 1rem; padding-left: 1.5rem; }
+        .policy-modal-body ul li { margin-bottom: 0.5rem; }
 
-        .policy-modal-overlay.is-open .policy-modal-content {
-            transform: scale(1) translateY(0);
+        /* Footer */
+        .footer { background: var(--black); border-top: 1px solid var(--glass-border); padding: 4rem 2rem 2rem; margin-top: auto; }
+        .footer-grid { max-width: 1200px; margin: 0 auto; display: grid; grid-template-columns: 2fr 1fr 1fr; gap: 3rem; }
+        .footer-brand p { color: var(--grey-subtle); margin-top: 1rem; font-size: 0.95rem; line-height: 1.7; }
+        .footer-title { font-family: 'Space Grotesk', sans-serif; font-size: 1rem; margin-bottom: 1.5rem; color: var(--white); }
+        .footer-links { list-style: none; }
+        .footer-links li { margin-bottom: 0.75rem; }
+        .footer-links a { color: var(--grey-subtle); text-decoration: none; font-size: 0.9rem; transition: color 0.3s var(--transition-smooth); cursor: pointer; }
+        .footer-links a:hover { color: var(--orange-primary); }
+        .footer-social { display: flex; gap: 1rem; margin-top: 1.5rem; }
+        .footer-social a {
+            width: 44px; height: 44px; background: var(--grey-mid); border-radius: 10px; display: flex;
+            align-items: center; justify-content: center; transition: all 0.3s var(--transition-smooth);
         }
-
-        .policy-modal-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            padding: 1.5rem 2rem;
-            border-bottom: 1px solid var(--glass-border);
+        .footer-social a:hover { background: var(--orange-primary); transform: translateY(-3px); }
+        .footer-social svg { width: 22px; height: 22px; color: var(--white); }
+        .footer-bottom {
+            max-width: 1200px; margin: 3rem auto 0; padding-top: 2rem; border-top: 1px solid var(--glass-border);
+            display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 1rem;
         }
+        .footer-bottom p { font-size: 0.85rem; color: var(--grey-subtle); }
+        .footer-bottom span { color: var(--orange-primary); }
 
-        .policy-modal-header h3 {
-            font-family: 'Space Grotesk', sans-serif;
-            font-size: 1.5rem;
-            color: var(--white);
+        /* Toast Container */
+        .toast-container { position: fixed; bottom: 6rem; right: 2rem; z-index: 400; display: flex; flex-direction: column; gap: 0.75rem; pointer-events: none; }
+        .toast {
+            background: var(--grey-mid); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem 1.5rem;
+            display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3);
+            transform: translateX(120%); transition: transform 0.4s var(--transition-smooth); pointer-events: auto;
         }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-color: rgba(34, 197, 94, 0.3); }
+        .toast.success svg { color: #22c55e; }
+        .toast-icon { width: 24px; height: 24px; flex-shrink: 0; }
+        .toast-message { font-size: 0.9rem; color: var(--white); }
 
-        .policy-modal-close {
-            font-size: 2rem;
-            line-height: 1;
-            color: var(--grey-subtle);
-            background: none;
-            border: none;
-            cursor: pointer;
-            transition: all 0.3s ease;
-        }
-
-        .policy-modal-close:hover {
-            color: var(--orange-primary);
-            transform: rotate(90deg);
-        }
-
-        .policy-modal-body {
-            padding: 2rem;
-            overflow-y: auto;
-            color: var(--grey-subtle);
-            line-height: 1.8;
-        }
-
-        .policy-modal-body h4 {
-            color: var(--orange-primary);
-            font-size: 1.1rem;
-            margin-top: 1.5rem;
-            margin-bottom: 0.75rem;
-        }
-
-        .policy-modal-body h4:first-child {
-            margin-top: 0;
-        }
-
-        .policy-modal-body p {
-            margin-bottom: 1rem;
-        }
-
-        .policy-modal-body ul {
-            margin-bottom: 1rem;
-            padding-left: 1.5rem;
-        }
-
-        .policy-modal-body ul li {
-            margin-bottom: 0.5rem;
-        }
-
-        /* Responsive Media Queries fixing Navigation visibility */
+        /* Responsive Media Queries */
         @media (max-width: 1024px) {
-            .footer-grid {
-                grid-template-columns: 1fr 1fr;
-            }
+            .footer-grid { grid-template-columns: 1fr 1fr; }
         }
 
         @media (max-width: 768px) {
@@ -1833,53 +611,18 @@
             .mobile-toggle { display: flex; }
             .mobile-menu { display: block; }
             
-            .products-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .admin-form-row {
-                grid-template-columns: 1fr;
-            }
-
-            .detail-content {
-                grid-template-columns: 1fr;
-            }
-
-            .detail-image-section {
-                min-height: 250px;
-            }
-
-            .detail-info-section {
-                padding: 1.5rem;
-            }
-
-            .footer-grid {
-                grid-template-columns: 1fr;
-                text-align: center;
-            }
-
-            .footer-social {
-                justify-content: center;
-            }
-
-            .footer-bottom {
-                flex-direction: column;
-                text-align: center;
-            }
-
-            .cart-fab {
-                bottom: 1rem;
-                right: 1rem;
-            }
-
-            .toast-container {
-                right: 1rem;
-                left: 1rem;
-            }
-
-            .toast {
-                width: 100%;
-            }
+            .products-grid { grid-template-columns: 1fr; }
+            .detail-content { grid-template-columns: 1fr; }
+            .detail-image-section { min-height: 250px; }
+            .detail-info-section { padding: 1.5rem; }
+            
+            .footer-grid { grid-template-columns: 1fr; text-align: center; }
+            .footer-social { justify-content: center; }
+            .footer-bottom { flex-direction: column; text-align: center; }
+            
+            .cart-fab { bottom: 1rem; right: 1rem; }
+            .toast-container { right: 1rem; left: 1rem; }
+            .toast { width: 100%; }
         }
     </style>
     
@@ -1933,76 +676,11 @@
             <p class="page-subtitle" id="page-subtitle">Ready-to-use IoT projects and DIY electronics kits designed for hands-on learning.</p>
         </div>
 
-        <!-- Exit Admin Button -->
-        <button id="exit-admin-btn" class="admin-exit-btn" style="display: none; margin-bottom: 2rem;">
-            Exit Admin Mode
-        </button>
-
         <!-- System Message -->
         <div id="system-message" class="system-message" style="display: none;">
             <div class="loader" id="loader-spinner"></div>
             <h3 id="msg-title">Loading...</h3>
             <p id="msg-desc">Please wait a moment.</p>
-        </div>
-
-        <!-- Admin Panel -->
-        <div id="admin-panel" class="admin-panel" style="display: none;">
-            <div class="admin-panel-header">
-                <h3 id="admin-form-title">Add New Project</h3>
-                <button id="cancel-edit-btn" class="admin-cancel-btn" style="display: none;">Cancel Edit</button>
-            </div>
-            
-            <form id="project-form" class="admin-form">
-                <input type="hidden" id="proj-id">
-                
-                <div class="admin-form-row">
-                    <div class="form-group">
-                        <label for="proj-title">Project Title</label>
-                        <input type="text" id="proj-title" placeholder="Enter project name" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="proj-base-price">Base Price (₹)</label>
-                        <input type="number" id="proj-base-price" placeholder="299" required>
-                        <div id="price-preview" class="price-preview">
-                            <div><strong>DIY Kit:</strong> ₹<span id="price-diy-preview">299</span></div>
-                            <div><strong>Ready to Use:</strong> ₹<span id="price-ready-preview">348</span> (includes ₹49 assembly)</div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="form-group">
-                    <label for="proj-desc">Description</label>
-                    <textarea id="proj-desc" rows="3" placeholder="Describe your project..." required></textarea>
-                </div>
-
-                <div class="form-group">
-                    <label>Project Image</label>
-                    <div class="image-upload" onclick="document.getElementById('proj-image').click()">
-                        <input type="file" id="proj-image" accept="image/*" style="display: none;">
-                        <div id="image-preview-container" class="image-preview" style="display: none;">
-                            <img id="image-preview" src="">
-                            <input type="hidden" id="existing-image-url">
-                        </div>
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <rect x="3" y="3" width="18" height="18" rx="2"/>
-                            <circle cx="8.5" cy="8.5" r="1.5"/>
-                            <path d="M21 15l-5-5L5 21"/>
-                        </svg>
-                        <p>Click to Upload Image</p>
-                        <small>Leave blank during edit to keep existing image</small>
-                    </div>
-                </div>
-
-                <button type="submit" id="save-project-btn" class="btn btn-primary">
-                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-                        <polyline points="17 21 17 13 7 13 7 21"/>
-                        <polyline points="7 3 7 8 15 8"/>
-                    </svg>
-                    Save to Database
-                </button>
-            </form>
-            <p id="admin-status" class="admin-status" style="display: none;"></p>
         </div>
 
         <!-- Products Grid -->
@@ -2131,40 +809,6 @@
         </div>
     </div>
 
-    <!-- Admin Login Modal -->
-    <div id="admin-login-overlay" class="admin-login-overlay">
-        <div class="admin-login-modal">
-            <div class="admin-login-header">
-                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="11" width="18" height="11" rx="2"/>
-                    <path d="M7 11V7a5 5 0 0110 0v4"/>
-                </svg>
-                <h3>Team Access</h3>
-                <p>Enter your passkey to access admin controls</p>
-            </div>
-            <form id="admin-login-form" class="admin-login-form">
-                <div id="admin-login-error" class="admin-login-error">
-                    Invalid passkey. Please try again.
-                </div>
-                <div class="form-group">
-                    <label for="admin-passkey-input">Passkey</label>
-                    <input type="password" id="admin-passkey-input" placeholder="Enter team passkey" required>
-                </div>
-                <div class="admin-login-actions">
-                    <button type="button" id="admin-login-cancel" class="btn btn-secondary">Cancel</button>
-                    <button type="submit" id="admin-login-submit" class="btn btn-primary">
-                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/>
-                            <polyline points="10 17 15 12 10 7"/>
-                            <line x1="15" y1="12" x2="3" y2="12"/>
-                        </svg>
-                        Verify & Enter
-                    </button>
-                </div>
-            </form>
-        </div>
-    </div>
-
     <!-- Toast Container -->
     <div id="toast-container" class="toast-container"></div>
 
@@ -2175,79 +819,78 @@
                 <a href="/" class="logo">
                     <svg class="logo-icon" viewBox="277 265 278 342" xmlns="http://www.w3.org/2000/svg">
                         <path d="M306.06 335.03c34.29-19.77 68.28-39.35 102.25-58.94 4.32-2.5 8.55-5.16 12.87-7.65 4.68-2.69 7.08-1.5 7.11 3.71.09 19.32-.08 38.64.61 57.95.12 3.34-1.3 5.77-4.53 7.63-24.95 14.35-49.77 28.94-74.68 43.36-2.63 1.52-3.74 3.37-3.73 6.4.06 27.49.07 54.98-.03 82.47-.01 3.41 1.21 5.64 4.12 7.31 24.47 14.01 48.93 28.06 73.36 42.15 2.74 1.58 5.13 1.54 7.92-0.09 24.24-14.14 48.53-28.21 72.86-42.2 3.18-1.83 4.9-3.9 4.75-7.87-.31-8.24.1-16.51.1-25.43-9.49 4.13-17.09 9.81-25.28 14.4-16.97 9.51-33.76 19.36-50.64 28.97-4.79 2.74-6.9 1.76-6.93-3.7-.14-19.83-.05-39.66-.03-59.49.01-3.94 2.77-5.83 5.71-7.54 20.55-11.94 41.12-23.86 61.66-35.83 1.38-0.8 3.27-1.49 3.09-3.52-.16-1.74-1.93-2.04-3.22-2.79-11.21-6.52-22.42-13.04-33.55-19.7-2.83-1.69-4.58-4.41-4.56-7.86.11-19.16.2-38.31.46-57.46.07-4.82 3.28-6.21 7.52-3.78 21.18 12.15 42.41 24.22 63.58 36.4 13.23 7.61 26.4 15.32 39.56 23.05 2.75 1.61 4.14 3.99 4.18 7.41.2 16.32-.58 32.66.41 48.97.29 4.78-2.29 7.67-6.25 9.86-9.15 5.07-18.23 10.24-27.29 15.46-1.23 0.71-2.75 1.27-3.45 3.38 4.87 4.6 11.26 7.13 16.98 10.63 5.38 3.3 10.92 6.32 16.38 9.49 2.21 1.28 3.2 3.24 3.2 5.81-.02 16.83-.05 33.66.08 50.49.02 3.67-2.38 5.32-4.99 6.83-26.77 15.44-53.58 30.8-80.33 46.26-17.12 9.89-34.25 19.77-51.2 29.95-4.83 2.89-8.84 2.48-13.44-0.2-25.41-14.78-50.92-29.38-76.36-44.12-18.38-10.65-36.69-21.44-55.05-32.13-3.49-2.03-5.15-4.84-5.14-8.97.05-50.33.04-100.65.12-150.98.01-4.2 1.76-6.76 5.43-8.66 5.59-2.9 10.98-6.18 16.77-9.5z"/>
-                        </svg>
-                        
-                        <div style="display: flex; flex-direction: column;">
-                            <span class="logo-text">Circuit<span>Breakers</span></span>
-                            <span class="logo-tagline" style="margin-top: 2px; font-size: 0.85em;">Rewriting the future</span>
-                        </div>
-                    </a>
-                    <p>Built with 🖤 by students, for the community. We're democratizing electronics innovation across India.</p>
-                    <div class="footer-social">
-                        <a href="https://wa.me/919062420056?text=HI!%20I'm%20Interested%20on%20your%20startup%20-%20Circuit%20Breakers" target="_blank" aria-label="WhatsApp">
-                            <svg viewBox="0 0 30.667 30.667" fill="currentColor">
-                                <path d="M30.667,14.939c0,8.25-6.74,14.938-15.056,14.938c-2.639,0-5.118-0.675-7.276-1.857L0,30.667l2.717-8.017c-1.37-2.25-2.159-4.892-2.159-7.712C0.559,6.688,7.297,0,15.613,0C23.928,0.002,30.667,6.689,30.667,14.939z M15.61,2.382c-6.979,0-12.656,5.634-12.656,12.56c0,2.748,0.896,5.292,2.411,7.362l-1.58,4.663l4.862-1.545c2,1.312,4.393,2.076,6.963,2.076c6.979,0,12.658-5.633,12.658-12.559C28.27,8.016,22.59,2.382,15.61,2.382z M23.214,18.38c-0.094-0.151-0.34-0.243-0.708-0.427c-0.367-0.184-2.184-1.069-2.521-1.189c-0.34-0.123-0.586-0.185-0.832,0.182c-0.243,0.367-0.951,1.191-1.168,1.437c-0.215,0.245-0.43,0.276-0.799,0.095c-0.369-0.186-1.559-0.57-2.969-1.817c-1.097-0.972-1.838-2.169-2.052-2.536c-0.217-0.366-0.022-0.564,0.161-0.746c0.165-0.165,0.369-0.428,0.554-0.643c0.185-0.213,0.246-0.364,0.369-0.609c0.121-0.245,0.06-0.458-0.031-0.643c-0.092-0.184-0.829-1.984-1.138-2.717c-0.307-0.732-0.614-0.611-0.83-0.611c-0.215,0-0.461-0.03-0.707-0.03S9.897,8.215,9.56,8.582s-1.291,1.252-1.291,3.054c0,1.804,1.321,3.543,1.506,3.787c0.186,0.243,2.554,4.062,6.305,5.528c3.753,1.465,3.753,0.976,4.429,0.914c0.678-0.062,2.184-0.885,2.49-1.739C23.307,19.268,23.307,18.533,23.214,18.38z"/>
-                            </svg>
-                        </a>
-                        <a href="https://www.facebook.com/share/1aFMAAapqx/" target="_blank" aria-label="Facebook">
-                            <svg viewBox="0 0 512 512" fill="currentColor">
-                                <path d="M480,257.35c0-123.7-100.3-224-224-224s-224,100.3-224,224c0,111.8,81.9,204.47,189,221.29V322.12H164.11V257.35H221V208c0-56.13,33.45-87.16,84.61-87.16,24.51,0,50.15,4.38,50.15,4.38v55.13H327.5c-27.81,0-36.51,17.26-36.51,35v42h62.12l-9.92,64.77H291V478.66C398.1,461.85,480,369.18,480,257.35Z"/>
-                            </svg>
-                        </a>
-                        <a href="https://youtube.com/@circuitbreakers-r6p3f?si=LP8GrRaPhRvyKKaV" target="_blank" aria-label="YouTube">
-                            <svg viewBox="0 0 260 180" fill="currentColor">
-                                <path d="M220,2H40C19.01,2,2,19.01,2,40v100c0,20.99,17.01,38,38,38h180c20.99,0,38-17.01,38-38V40C258,19.01,240.99,2,220,2z M102,130V50l68,40L102,130z"/>
-                            </svg>
-                        </a>
-                        <a href="https://www.instagram.com/circuitbreakers_official?igsh=MXdwMXd4ejNjb2htNw==" target="_blank" aria-label="Instagram">
-                            <svg viewBox="2.4 2.4 27.2 27.2" fill="currentColor">
-                                <path d="M20,6h-8c-3.3,0-6,2.7-6,6v8c0,3.3,2.7,6,6,6h8c3.3,0,6-2.7,6-6v-8C26,8.7,23.3,6,20,6z M24.1,20c0,2.3-1.9,4.1-4.1,4.1h-8c-2.3,0-4.1-1.9-4.1-4.1v-8c0-2.3,1.9-4.1,4.1-4.1h8c2.3,0,4.1,1.9,4.1,4.1V20z"/>
-                                <path d="M16,11.2c-2.7,0-4.9,2.2-4.9,4.9c0,2.7,2.2,4.9,4.9,4.9s4.9-2.2,4.9-4.9C21,13.4,18.8,11.2,16,11.2z M16,19.3c-1.7,0-3.2-1.4-3.2-3.2c0-1.7,1.4-3.2,3.2-3.2c1.7,0,3.2,1.4,3.2,3.2C19.2,17.9,17.8,19.3,16,19.3z"/>
-                                <path d="M21.3,9.7c-0.6,0-1.2,0.5-1.2,1.2c0,0.7,0.5,1.2,1.2,1.2c0.7,0,1.2-0.5,1.2-1.2C22.4,10.2,21.9,9.7,21.3,9.7z"/>
-                            </svg>
-                        </a>
+                    </svg>
+                    
+                    <div style="display: flex; flex-direction: column;">
+                        <span class="logo-text">Circuit<span>Breakers</span></span>
+                        <span class="logo-tagline" style="margin-top: 2px; font-size: 0.85em;">Rewriting the future</span>
                     </div>
-                </div>
-                
-                <div>
-                    <h4 class="footer-title">Quick Links</h4>
-                    <ul class="footer-links">
-                        <li><a class="policy-link" data-policy="About Us">About Us</a></li>
-                        <li><a class="policy-link" data-policy="Contact Us">Contact Us</a></li>
-                        <li><a class="policy-link" data-policy="Privacy Policy">Privacy Policy</a></li>
-                        <li><a class="policy-link" data-policy="Terms of Service">Terms of Service</a></li>
-                        <li><a class="policy-link" data-policy="Shipping Policy">Shipping Policy</a></li>
-                        <li><a class="policy-link" data-policy="Refund Policy">Refund Policy</a></li>
-                    </ul>
-                </div>
-                
-                <div>
-                    <h4 class="footer-title">Services</h4>
-                    <ul class="footer-links">
-                        <li><a href="/#services">DIY Kits</a></li>
-                        <li><a href="/#services">50% Rental</a></li>
-                        <li><a href="/#services">Custom Development</a></li>
-                        <li><a href="/#contact">Get Quote</a></li>
-                    </ul>
+                </a>
+                <p>Built with 🖤 by students, for the community. We're democratizing electronics innovation across India.</p>
+                <div class="footer-social">
+                    <a href="https://wa.me/919062420056?text=HI!%20I'm%20Interested%20on%20your%20startup%20-%20Circuit%20Breakers" target="_blank" aria-label="WhatsApp">
+                        <svg viewBox="0 0 30.667 30.667" fill="currentColor">
+                            <path d="M30.667,14.939c0,8.25-6.74,14.938-15.056,14.938c-2.639,0-5.118-0.675-7.276-1.857L0,30.667l2.717-8.017c-1.37-2.25-2.159-4.892-2.159-7.712C0.559,6.688,7.297,0,15.613,0C23.928,0.002,30.667,6.689,30.667,14.939z M15.61,2.382c-6.979,0-12.656,5.634-12.656,12.56c0,2.748,0.896,5.292,2.411,7.362l-1.58,4.663l4.862-1.545c2,1.312,4.393,2.076,6.963,2.076c6.979,0,12.658-5.633,12.658-12.559C28.27,8.016,22.59,2.382,15.61,2.382z M23.214,18.38c-0.094-0.151-0.34-0.243-0.708-0.427c-0.367-0.184-2.184-1.069-2.521-1.189c-0.34-0.123-0.586-0.185-0.832,0.182c-0.243,0.367-0.951,1.191-1.168,1.437c-0.215,0.245-0.43,0.276-0.799,0.095c-0.369-0.186-1.559-0.57-2.969-1.817c-1.097-0.972-1.838-2.169-2.052-2.536c-0.217-0.366-0.022-0.564,0.161-0.746c0.165-0.165,0.369-0.428,0.554-0.643c0.185-0.213,0.246-0.364,0.369-0.609c0.121-0.245,0.06-0.458-0.031-0.643c-0.092-0.184-0.829-1.984-1.138-2.717c-0.307-0.732-0.614-0.611-0.83-0.611c-0.215,0-0.461-0.03-0.707-0.03S9.897,8.215,9.56,8.582s-1.291,1.252-1.291,3.054c0,1.804,1.321,3.543,1.506,3.787c0.186,0.243,2.554,4.062,6.305,5.528c3.753,1.465,3.753,0.976,4.429,0.914c0.678-0.062,2.184-0.885,2.49-1.739C23.307,19.268,23.307,18.533,23.214,18.38z"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.facebook.com/share/1aFMAAapqx/" target="_blank" aria-label="Facebook">
+                        <svg viewBox="0 0 512 512" fill="currentColor">
+                            <path d="M480,257.35c0-123.7-100.3-224-224-224s-224,100.3-224,224c0,111.8,81.9,204.47,189,221.29V322.12H164.11V257.35H221V208c0-56.13,33.45-87.16,84.61-87.16,24.51,0,50.15,4.38,50.15,4.38v55.13H327.5c-27.81,0-36.51,17.26-36.51,35v42h62.12l-9.92,64.77H291V478.66C398.1,461.85,480,369.18,480,257.35Z"/>
+                        </svg>
+                    </a>
+                    <a href="https://youtube.com/@circuitbreakers-r6p3f?si=LP8GrRaPhRvyKKaV" target="_blank" aria-label="YouTube">
+                        <svg viewBox="0 0 260 180" fill="currentColor">
+                            <path d="M220,2H40C19.01,2,2,19.01,2,40v100c0,20.99,17.01,38,38,38h180c20.99,0,38-17.01,38-38V40C258,19.01,240.99,2,220,2z M102,130V50l68,40L102,130z"/>
+                        </svg>
+                    </a>
+                    <a href="https://www.instagram.com/circuitbreakers_official?igsh=MXdwMXd4ejNjb2htNw==" target="_blank" aria-label="Instagram">
+                        <svg viewBox="2.4 2.4 27.2 27.2" fill="currentColor">
+                            <path d="M20,6h-8c-3.3,0-6,2.7-6,6v8c0,3.3,2.7,6,6,6h8c3.3,0,6-2.7,6-6v-8C26,8.7,23.3,6,20,6z M24.1,20c0,2.3-1.9,4.1-4.1,4.1h-8c-2.3,0-4.1-1.9-4.1-4.1v-8c0-2.3,1.9-4.1,4.1-4.1h8c2.3,0,4.1,1.9,4.1,4.1V20z"/>
+                            <path d="M16,11.2c-2.7,0-4.9,2.2-4.9,4.9c0,2.7,2.2,4.9,4.9,4.9s4.9-2.2,4.9-4.9C21,13.4,18.8,11.2,16,11.2z M16,19.3c-1.7,0-3.2-1.4-3.2-3.2c0-1.7,1.4-3.2,3.2-3.2c1.7,0,3.2,1.4,3.2,3.2C19.2,17.9,17.8,19.3,16,19.3z"/>
+                            <path d="M21.3,9.7c-0.6,0-1.2,0.5-1.2,1.2c0,0.7,0.5,1.2,1.2,1.2c0.7,0,1.2-0.5,1.2-1.2C22.4,10.2,21.9,9.7,21.3,9.7z"/>
+                        </svg>
+                    </a>
                 </div>
             </div>
             
-            <div class="footer-bottom">
-                <p>© 2025 Circuit Breakers. Rewriting the future.</p>
-                <p>Made with <span>♥</span> in Kolkata, India</p>
-                <span id="admin-trigger" class="admin-trigger" title="Team Access">🔒</span>
+            <div>
+                <h4 class="footer-title">Quick Links</h4>
+                <ul class="footer-links">
+                    <li><a class="policy-link" data-policy="About Us">About Us</a></li>
+                    <li><a class="policy-link" data-policy="Contact Us">Contact Us</a></li>
+                    <li><a class="policy-link" data-policy="Privacy Policy">Privacy Policy</a></li>
+                    <li><a class="policy-link" data-policy="Terms of Service">Terms of Service</a></li>
+                    <li><a class="policy-link" data-policy="Shipping Policy">Shipping Policy</a></li>
+                    <li><a class="policy-link" data-policy="Refund Policy">Refund Policy</a></li>
+                </ul>
             </div>
-        </footer>
+            
+            <div>
+                <h4 class="footer-title">Services</h4>
+                <ul class="footer-links">
+                    <li><a href="/#services">DIY Kits</a></li>
+                    <li><a href="/#services">50% Rental</a></li>
+                    <li><a href="/#services">Custom Development</a></li>
+                    <li><a href="/#contact">Get Quote</a></li>
+                    <li><a href="/my-orders/">My Orders</a></li>
+                </ul>
+            </div>
+        </div>
+        
+        <div class="footer-bottom">
+            <p>© 2025 Circuit Breakers. Rewriting the future.</p>
+            <p>Made with <span>♥</span> in Kolkata, India</p>
+        </div>
+    </footer>
 
-        <!-- Policy Modal -->
-        <div id="policy-modal-overlay" class="policy-modal-overlay">
-            <div class="policy-modal-content">
-                <div class="policy-modal-header">
-                    <h3 id="policy-modal-title"></h3>
-                    <button id="policy-modal-close" class="policy-modal-close">&times;</button>
-                </div>
-                <div id="policy-modal-body" class="policy-modal-body"></div>
+    <!-- Policy Modal -->
+    <div id="policy-modal-overlay" class="policy-modal-overlay">
+        <div class="policy-modal-content">
+            <div class="policy-modal-header">
+                <h3 id="policy-modal-title"></h3>
+                <button id="policy-modal-close" class="policy-modal-close">&times;</button>
             </div>
+            <div id="policy-modal-body" class="policy-modal-body"></div>
         </div>
     </div>
 
@@ -2269,19 +912,19 @@
         
         mobileToggle?.addEventListener('click', () => {
             mobileMenu?.classList.toggle('active');
+            mobileToggle?.classList.toggle('active');
         });
         
         document.querySelectorAll('.mobile-menu-nav a').forEach(link => {
             link.addEventListener('click', () => {
                 mobileMenu?.classList.remove('active');
+                mobileToggle?.classList.remove('active');
             });
         });
 
         // ==========================================
         // CONFIGURATION - DO NOT MODIFY
         // ==========================================
-        const CLOUDINARY_CLOUD_NAME = "dzazor3or"; 
-        const CLOUDINARY_UPLOAD_PRESET = "cb_admin_profiles"; 
         const WORKER_URL = "https://cb-backend.devteam-circuitbreakers.workers.dev";
         const ASSEMBLY_FEE = 49;
 
@@ -2290,8 +933,6 @@
         // ==========================================
         let projects = [];
         let cart = [];
-        let isAdmin = false;
-        let adminPasskey = "";
         let currentDetailProduct = null;
         let selectedType = 'diy';
         let selectedTypes = {}; // Track selected type per product card { productId: 'diy' | 'ready' }
@@ -2320,15 +961,7 @@
         const detailDescription = document.getElementById('detail-description');
         const detailBadge = document.getElementById('detail-badge');
         
-        const adminPanel = document.getElementById('admin-panel');
-        const exitAdminBtn = document.getElementById('exit-admin-btn');
-        const projectForm = document.getElementById('project-form');
         const toastContainer = document.getElementById('toast-container');
-        
-        const adminLoginOverlay = document.getElementById('admin-login-overlay');
-        const adminLoginForm = document.getElementById('admin-login-form');
-        const adminPasskeyInput = document.getElementById('admin-passkey-input');
-        const adminLoginError = document.getElementById('admin-login-error');
 
         // ==========================================
         // POLICY CONTENT
@@ -2493,6 +1126,25 @@
             `
         };
 
+        const policyModal = document.getElementById('policy-modal-overlay');
+        const modalTitle = document.getElementById('policy-modal-title');
+        const modalBody = document.getElementById('policy-modal-body');
+        
+        document.querySelectorAll('.policy-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const policy = e.target.getAttribute('data-policy');
+                if (policyContent[policy]) {
+                    modalTitle.innerText = policy;
+                    modalBody.innerHTML = policyContent[policy];
+                    policyModal.classList.add('is-open');
+                }
+            });
+        });
+        
+        document.getElementById('policy-modal-close')?.addEventListener('click', () => policyModal.classList.remove('is-open'));
+        policyModal?.addEventListener('click', (e) => { if (e.target === policyModal) policyModal.classList.remove('is-open'); });
+
         // ==========================================
         // INITIALIZATION
         // ==========================================
@@ -2541,9 +1193,7 @@
             loader.style.display = 'none';
             productsGrid.style.display = 'none';
             msgTitle.textContent = "No projects yet!";
-            msgDesc.textContent = isAdmin 
-                ? "Use the panel above to add your first project." 
-                : "We are brewing something awesome. Check back soon!";
+            msgDesc.textContent = "We are brewing something awesome. Check back soon!";
         }
 
         function hideSystemMessage() {
@@ -2610,64 +1260,43 @@
                 
                 let actionsHTML = '';
                 
-                if (isAdmin) {
+                // Pure Consumer View for product Actions
+                const currentCartItem = isRentEnabled 
+                    ? (currentType === 'diy' ? diyRentInCart : readyRentInCart)
+                    : (currentType === 'diy' ? diyInCart : readyInCart);
+                const qty = currentCartItem ? currentCartItem.quantity : 0;
+                
+                if (qty > 0) {
                     actionsHTML = `
-                        <div class="admin-actions">
-                            <button class="btn btn-edit" onclick="editProject('${p.id}')">
-                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/>
-                                    <path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
-                                </svg>
-                                Edit
-                            </button>
-                            <button class="btn btn-delete" onclick="deleteProject('${p.id}')">
-                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <polyline points="3 6 5 6 21 6"/>
-                                    <path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
-                                </svg>
-                                Delete
-                            </button>
+                        <div class="quantity-controls">
+                            <button class="qty-btn" onclick="decrementQty('${p.id}', '${currentType}', ${isRentEnabled})">−</button>
+                            <span class="qty-value">${qty}</span>
+                            <button class="qty-btn" onclick="incrementQty('${p.id}', '${currentType}', ${isRentEnabled})">+</button>
                         </div>
+                        <button class="btn btn-secondary" onclick="openDetail('${p.id}')">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                            Details
+                        </button>
                     `;
                 } else {
-                    // Check if current combination is in cart
-                    const currentCartItem = isRentEnabled 
-                        ? (currentType === 'diy' ? diyRentInCart : readyRentInCart)
-                        : (currentType === 'diy' ? diyInCart : readyInCart);
-                    const qty = currentCartItem ? currentCartItem.quantity : 0;
-                    
-                    if (qty > 0) {
-                        actionsHTML = `
-                            <div class="quantity-controls">
-                                <button class="qty-btn" onclick="decrementQty('${p.id}', '${currentType}', ${isRentEnabled})">−</button>
-                                <span class="qty-value">${qty}</span>
-                                <button class="qty-btn" onclick="incrementQty('${p.id}', '${currentType}', ${isRentEnabled})">+</button>
-                            </div>
-                            <button class="btn btn-secondary" onclick="openDetail('${p.id}')">
-                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                                Details
-                            </button>
-                        `;
-                    } else {
-                        actionsHTML = `
-                            <button class="btn btn-primary" onclick="addToCartFromCard('${p.id}')" style="flex: 1;">
-                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <line x1="12" y1="5" x2="12" y2="19"/>
-                                    <line x1="5" y1="12" x2="19" y2="12"/>
-                                </svg>
-                                Add to Cart
-                            </button>
-                            <button class="btn btn-secondary" onclick="openDetail('${p.id}')">
-                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
-                                    <circle cx="12" cy="12" r="3"/>
-                                </svg>
-                            </button>
-                        `;
-                    }
+                    actionsHTML = `
+                        <button class="btn btn-primary" onclick="addToCartFromCard('${p.id}')" style="flex: 1;">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <line x1="12" y1="5" x2="12" y2="19"/>
+                                <line x1="5" y1="12" x2="19" y2="12"/>
+                            </svg>
+                            Add to Cart
+                        </button>
+                        <button class="btn btn-secondary" onclick="openDetail('${p.id}')">
+                            <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                                <circle cx="12" cy="12" r="3"/>
+                            </svg>
+                        </button>
+                    `;
                 }
                 
                 const selectedTypeClass = currentType === 'diy' ? 'diy' : '';
@@ -2676,14 +1305,13 @@
                 card.innerHTML = `
                     <div class="product-image-container">
                         <img src="${p.image}" alt="${p.title}" class="product-image">
-                        ${totalInCart > 0 && !isAdmin ? `<span class="product-badge qty-badge">${totalInCart} in cart</span>` : ''}
+                        ${totalInCart > 0 ? `<span class="product-badge qty-badge">${totalInCart} in cart</span>` : ''}
                     </div>
                     <div class="product-content">
                         <h3 class="product-title">${p.title}</h3>
                         <p class="product-description">${p.description}</p>
                         <div class="product-price" id="price-${p.id}">₹${displayPrice}${isRentEnabled ? ' <span style="font-size:0.7rem;color:#22c55e;">(Rent)</span>' : ''}</div>
                         
-                        ${!isAdmin ? `
                         <div class="type-select-wrapper">
                             <label class="type-select-label" for="type-select-${p.id}">Select Type</label>
                             <select class="type-select" id="type-select-${p.id}" onchange="onTypeChange('${p.id}')">
@@ -2706,7 +1334,6 @@
                                 <div class="rent-label-desc">Return in 7 days • 50% refundable deposit</div>
                             </div>
                         </div>
-                        ` : ''}
                         
                         <div class="product-actions">
                             ${actionsHTML}
@@ -2732,7 +1359,6 @@
             if (!product) return;
             
             const isRentEnabled = rentEnabled[productId] || false;
-            const basePrice = parseInt(product.basePrice || product.price);
             const displayPrice = getDisplayPrice(product, newType, isRentEnabled);
             
             // Update price display
@@ -2796,7 +1422,7 @@
         }
 
         // ==========================================
-        // ADD TO CART FROM CARD (uses selected type and rent)
+        // ADD TO CART FROM CARD
         // ==========================================
         window.addToCartFromCard = function(id) {
             const type = selectedTypes[id] || 'diy';
@@ -2805,7 +1431,7 @@
         };
 
         // ==========================================
-        // CART LOGIC - QUANTITY BASED
+        // CART LOGIC
         // ==========================================
         function addToCart(id, type = 'diy', rent = false) {
             const product = projects.find(p => p.id === id);
@@ -3060,14 +1686,15 @@
         // ==========================================
         // TOAST NOTIFICATIONS
         // ==========================================
-        function showToast(message) {
+        function showToast(message, type = 'success') {
             const toast = document.createElement('div');
-            toast.className = 'toast success';
+            toast.className = `toast ${type}`;
+            const iconSvg = type === 'success' 
+                ? `<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`
+                : `<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>`;
+            
             toast.innerHTML = `
-                <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M22 11.08V12a10 10 0 11-5.93-9.14"/>
-                    <polyline points="22 4 12 14.01 9 11.01"/>
-                </svg>
+                <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${iconSvg}</svg>
                 <span class="toast-message">${message}</span>
             `;
             
@@ -3081,291 +1708,12 @@
         }
 
         // ==========================================
-        // ADMIN LOGIN MODAL
-        // ==========================================
-        document.getElementById('admin-trigger').addEventListener('click', () => {
-            if (isAdmin) return;
-            adminLoginOverlay.classList.add('open');
-            adminPasskeyInput.focus();
-        });
-
-        document.getElementById('admin-login-cancel').addEventListener('click', () => {
-            adminLoginOverlay.classList.remove('open');
-            adminPasskeyInput.value = '';
-            adminLoginError.classList.remove('show');
-        });
-
-        adminLoginOverlay.addEventListener('click', (e) => {
-            if (e.target === adminLoginOverlay) {
-                adminLoginOverlay.classList.remove('open');
-                adminPasskeyInput.value = '';
-                adminLoginError.classList.remove('show');
-            }
-        });
-
-        adminLoginForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const passkey = adminPasskeyInput.value.trim();
-            if (!passkey) {
-                adminLoginError.textContent = 'Please enter a passkey.';
-                adminLoginError.classList.add('show');
-                return;
-            }
-            
-            // Validate passkey with worker
-            try {
-                const res = await fetch(WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        passkey: passkey,
-                        action: 'validate'
-                    })
-                });
-                
-                const data = await res.json();
-                
-                if (res.ok && data.valid) {
-                    adminPasskey = passkey;
-                    isAdmin = true;
-                    adminLoginOverlay.classList.remove('open');
-                    adminPasskeyInput.value = '';
-                    adminLoginError.classList.remove('show');
-                    
-                    document.getElementById('page-title').textContent = "Admin Dashboard";
-                    document.getElementById('page-subtitle').textContent = "Manage your product database directly.";
-                    adminPanel.style.display = 'block';
-                    exitAdminBtn.style.display = 'block';
-                    cartFab.style.display = 'none';
-                    
-                    if (projects.length > 0) renderProducts();
-                    else showEmptyState();
-                    
-                    showToast('Welcome! Admin mode activated.');
-                } else {
-                    adminLoginError.textContent = 'Invalid passkey. Please try again.';
-                    adminLoginError.classList.add('show');
-                    adminPasskeyInput.value = '';
-                    adminPasskeyInput.focus();
-                }
-            } catch (err) {
-                adminLoginError.textContent = 'Connection error. Please try again.';
-                adminLoginError.classList.add('show');
-            }
-        });
-
-        exitAdminBtn.addEventListener('click', () => {
-            isAdmin = false;
-            adminPasskey = "";
-            
-            document.getElementById('page-title').textContent = "Available Projects";
-            document.getElementById('page-subtitle').textContent = "Ready-to-use IoT projects and DIY electronics kits designed for hands-on learning.";
-            adminPanel.style.display = 'none';
-            exitAdminBtn.style.display = 'none';
-            cartFab.style.display = 'flex';
-            
-            if (projects.length > 0) renderProducts();
-            else showEmptyState();
-            
-            resetForm();
-        });
-
-        // ==========================================
-        // ADMIN FORM - PRICE HANDLING
-        // ==========================================
-        const projBasePriceInput = document.getElementById('proj-base-price');
-        const priceDiyPreview = document.getElementById('price-diy-preview');
-        const priceReadyPreview = document.getElementById('price-ready-preview');
-
-        function updatePricePreview() {
-            const basePrice = parseInt(projBasePriceInput.value) || 0;
-            priceDiyPreview.textContent = basePrice;
-            priceReadyPreview.textContent = basePrice + ASSEMBLY_FEE;
-        }
-
-        projBasePriceInput.addEventListener('input', updatePricePreview);
-
-        // ==========================================
-        // ADMIN FORM LOGIC
-        // ==========================================
-        document.getElementById('proj-image').addEventListener('change', (e) => {
-            const file = e.target.files[0];
-            if (file) {
-                document.getElementById('image-preview').src = URL.createObjectURL(file);
-                document.getElementById('image-preview-container').style.display = 'block';
-            }
-        });
-
-        projectForm.addEventListener('submit', async (e) => {
-            e.preventDefault();
-            
-            const saveBtn = document.getElementById('save-project-btn');
-            const statusBox = document.getElementById('admin-status');
-            
-            saveBtn.disabled = true;
-            saveBtn.innerHTML = `
-                <svg class="btn-icon" style="animation: spin 1s linear infinite;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 12a9 9 0 11-6.219-8.56"/>
-                </svg>
-                Processing...
-            `;
-            
-            statusBox.style.display = 'block';
-            statusBox.className = 'admin-status processing';
-            statusBox.textContent = "Preparing data...";
-
-            try {
-                const isEdit = document.getElementById('proj-id').value !== "";
-                let imageUrl = document.getElementById('existing-image-url').value;
-                const fileInput = document.getElementById('proj-image');
-                const basePrice = parseInt(document.getElementById('proj-base-price').value);
-
-                if (fileInput.files.length > 0) {
-                    statusBox.textContent = "Uploading image to Cloudinary...";
-                    const formData = new FormData();
-                    formData.append('file', fileInput.files[0]);
-                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
-                    
-                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
-                        method: 'POST',
-                        body: formData
-                    });
-                    
-                    if (!res.ok) throw new Error("Image upload failed.");
-                    const data = await res.json();
-                    imageUrl = data.secure_url;
-                } else if (!isEdit) {
-                    throw new Error("Please select an image for the new project.");
-                }
-
-                const projectData = {
-                    id: isEdit ? document.getElementById('proj-id').value : "proj_" + Date.now(),
-                    title: document.getElementById('proj-title').value,
-                    basePrice: basePrice,
-                    price: basePrice, // Keep for backwards compatibility
-                    description: document.getElementById('proj-desc').value,
-                    image: imageUrl
-                };
-
-                if (isEdit) {
-                    const index = projects.findIndex(p => p.id === projectData.id);
-                    projects[index] = projectData;
-                } else {
-                    projects.push(projectData);
-                }
-
-                statusBox.textContent = "Committing to GitHub via Worker...";
-                
-                const workerRes = await fetch(WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        passkey: adminPasskey,
-                        action: 'update_db',
-                        data: projects
-                    })
-                });
-                
-                if (!workerRes.ok) {
-                    const errResult = await workerRes.json();
-                    throw new Error(errResult.error || "Worker rejected the commit.");
-                }
-
-                statusBox.className = 'admin-status success';
-                statusBox.textContent = "Success! Changes are being deployed.";
-                
-                resetForm();
-                hideSystemMessage();
-                renderProducts();
-
-            } catch (err) {
-                statusBox.className = 'admin-status error';
-                statusBox.textContent = err.message;
-            } finally {
-                saveBtn.disabled = false;
-                saveBtn.innerHTML = `
-                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
-                        <polyline points="17 21 17 13 7 13 7 21"/>
-                        <polyline points="7 3 7 8 15 8"/>
-                    </svg>
-                    Save to Database
-                `;
-            }
-        });
-
-        window.editProject = (id) => {
-            const p = projects.find(proj => proj.id === id);
-            if (!p) return;
-            
-            document.getElementById('admin-form-title').textContent = "Edit Project";
-            document.getElementById('cancel-edit-btn').style.display = 'block';
-            
-            document.getElementById('proj-id').value = p.id;
-            document.getElementById('proj-title').value = p.title;
-            document.getElementById('proj-base-price').value = p.basePrice || p.price;
-            document.getElementById('proj-desc').value = p.description;
-            
-            document.getElementById('existing-image-url').value = p.image;
-            document.getElementById('image-preview').src = p.image;
-            document.getElementById('image-preview-container').style.display = 'block';
-            
-            updatePricePreview();
-            
-            window.scrollTo({ top: 0, behavior: 'smooth' });
-        };
-
-        document.getElementById('cancel-edit-btn').addEventListener('click', resetForm);
-
-        function resetForm() {
-            projectForm.reset();
-            document.getElementById('proj-id').value = "";
-            document.getElementById('existing-image-url').value = "";
-            document.getElementById('admin-form-title').textContent = "Add New Project";
-            document.getElementById('cancel-edit-btn').style.display = 'none';
-            document.getElementById('image-preview-container').style.display = 'none';
-            document.getElementById('admin-status').style.display = 'none';
-            document.getElementById('price-diy-preview').textContent = '299';
-            document.getElementById('price-ready-preview').textContent = '348';
-        }
-
-        window.deleteProject = async (id) => {
-            if (!confirm("Are you sure you want to delete this project?")) return;
-            
-            const originalProjects = [...projects];
-            projects = projects.filter(p => p.id !== id);
-            
-            if (projects.length === 0) showEmptyState();
-            else renderProducts();
-
-            try {
-                const workerRes = await fetch(WORKER_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify({
-                        passkey: adminPasskey,
-                        action: 'update_db',
-                        data: projects
-                    })
-                });
-                
-                if (!workerRes.ok) throw new Error("Database deletion failed.");
-                showToast("Project permanently deleted.");
-            } catch (err) {
-                projects = originalProjects;
-                renderProducts();
-                showToast(err.message + " Check your passkey.");
-            }
-        };
-
-        // ==========================================
         // KEYBOARD SHORTCUTS
         // ==========================================
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
-                if (policyModalOverlay.classList.contains('is-open')) {
-                    policyModalOverlay.classList.remove('is-open');
+                if (policyModal.classList.contains('is-open')) {
+                    policyModal.classList.remove('is-open');
                     document.body.style.overflow = '';
                 }
                 if (detailOverlay.classList.contains('open')) {
@@ -3373,11 +1721,6 @@
                 }
                 if (cartOverlay.classList.contains('open')) {
                     cartOverlay.classList.remove('open');
-                }
-                if (adminLoginOverlay.classList.contains('open')) {
-                    adminLoginOverlay.classList.remove('open');
-                    adminPasskeyInput.value = '';
-                    adminLoginError.classList.remove('show');
                 }
             }
         });
