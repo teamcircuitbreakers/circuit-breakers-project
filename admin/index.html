@@ -1,0 +1,1099 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Circuit Breakers | Admin Portal</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="robots" content="noindex, nofollow">
+    <link rel="icon" type="image/png" href="/favicon.png">
+    
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@300;400;500;600;700&family=JetBrains+Mono:wght@400;500;600&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+</head>
+<body>
+<div id="app">
+    <style>
+        :root {
+            --orange-primary: #ff6b2c;
+            --orange-light: #ff8f5a;
+            --orange-dark: #e55a1f;
+            --orange-glow: rgba(255, 107, 44, 0.4);
+            --blue-accent: #4ea8de;
+            --blue-light: #a8dadc;
+            --grey-dark: #1a1a1f;
+            --grey-mid: #2d2d35;
+            --grey-light: #4a4a55;
+            --grey-subtle: #8a8a95;
+            --white: #ffffff;
+            --black: #0a0a0c;
+            --gradient-orange: linear-gradient(135deg, #ff6b2c 0%, #ff8f5a 100%);
+            --glass-bg: rgba(26, 26, 31, 0.85);
+            --glass-border: rgba(255, 255, 255, 0.08);
+            --transition-smooth: cubic-bezier(0.4, 0, 0.2, 1);
+        }
+
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        html { scroll-behavior: smooth; }
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--black);
+            color: var(--white);
+            overflow-x: hidden;
+            line-height: 1.6;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: var(--grey-dark); }
+        ::-webkit-scrollbar-thumb { background: var(--orange-primary); border-radius: 4px; }
+
+        .scrollable-list::-webkit-scrollbar { width: 6px; }
+        .scrollable-list::-webkit-scrollbar-track { background: rgba(255,255,255,0.02); border-radius: 4px; }
+        .scrollable-list::-webkit-scrollbar-thumb { background: var(--grey-light); border-radius: 4px; }
+        .scrollable-list::-webkit-scrollbar-thumb:hover { background: var(--orange-primary); }
+
+        /* Header */
+        .header {
+            position: fixed; top: 0; left: 0; right: 0; z-index: 1000;
+            padding: 1rem 2rem; background: var(--glass-bg); backdrop-filter: blur(20px);
+            border-bottom: 1px solid var(--glass-border);
+        }
+        .header-inner { max-width: 1400px; margin: 0 auto; display: flex; justify-content: space-between; align-items: center; }
+        .logo { display: flex; align-items: center; gap: 0.75rem; text-decoration: none; color: var(--white); }
+        .logo-icon { width: 36px; height: 44px; fill: var(--orange-primary); }
+        .logo-text { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; font-weight: 700; letter-spacing: -0.5px; }
+        .logo-text span { color: var(--orange-primary); }
+        .logo-tagline { font-size: 0.65rem; font-weight: 600; color: var(--grey-subtle); text-transform: uppercase; letter-spacing: 1px; margin-top: -4px; }
+
+        /* Buttons & Forms */
+        .btn {
+            font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; padding: 0.75rem 1.25rem;
+            border-radius: 10px; cursor: pointer; text-decoration: none; display: inline-flex;
+            align-items: center; justify-content: center; gap: 0.5rem; transition: all 0.3s var(--transition-smooth);
+            font-weight: 500; border: none;
+        }
+        .btn-primary { background: var(--gradient-orange); color: var(--black); box-shadow: 0 4px 20px var(--orange-glow); }
+        .btn-primary:hover { transform: translateY(-2px); box-shadow: 0 8px 30px var(--orange-glow); }
+        .btn-primary:disabled { opacity: 0.6; cursor: not-allowed; transform: none; }
+        .btn-secondary { background: rgba(255, 107, 44, 0.1); color: var(--orange-primary); border: 1px solid rgba(255, 107, 44, 0.3); }
+        .btn-secondary:hover { background: rgba(255, 107, 44, 0.2); }
+        .btn-icon { width: 18px; height: 18px; }
+
+        .form-group { margin-bottom: 1.5rem; display: flex; flex-direction: column; gap: 0.5rem;}
+        .form-group label { display: block; font-family: 'JetBrains Mono', monospace; font-size: 0.8rem; color: var(--grey-subtle); text-transform: uppercase; letter-spacing: 1px; }
+        .form-group input, .form-group textarea, .form-group select {
+            width: 100%; padding: 1rem; background: var(--grey-dark); border: 1px solid var(--glass-border);
+            border-radius: 10px; color: var(--white); font-family: 'Inter', sans-serif; font-size: 1rem; transition: all 0.3s var(--transition-smooth);
+        }
+        .form-group input:focus, .form-group textarea:focus, .form-group select:focus { outline: none; border-color: var(--orange-primary); box-shadow: 0 0 0 3px var(--orange-glow); }
+        .form-group textarea { resize: vertical; min-height: 120px; }
+
+        .password-wrapper { position: relative; width: 100%; }
+        .password-toggle {
+            position: absolute; right: 1rem; top: 50%; transform: translateY(-50%); background: none; border: none;
+            color: var(--grey-subtle); cursor: pointer; padding: 0.25rem; display: flex; align-items: center; justify-content: center; transition: color 0.2s;
+        }
+        .password-toggle:hover { color: var(--white); }
+        .password-wrapper input { padding-right: 3rem; }
+
+        .admin-login-error {
+            padding: 0.75rem 1rem; background: rgba(239, 68, 68, 0.1); border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px; color: #ef4444; font-size: 0.85rem; display: none; margin-bottom: 1rem;
+        }
+        .admin-login-error.show { display: block; }
+
+        /* Full Screen Login Area */
+        #login-section {
+            flex: 1; display: flex; align-items: center; justify-content: center; padding: 6rem 2rem; min-height: 100vh;
+        }
+        .login-card {
+            background: linear-gradient(135deg, var(--grey-mid) 0%, var(--grey-dark) 100%);
+            border: 1px solid var(--glass-border); border-radius: 20px; padding: 2.5rem; width: 100%; max-width: 420px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+        }
+
+        /* Admin Dashboard Architecture */
+        #admin-dashboard { padding: 8rem 2rem 4rem; max-width: 1400px; margin: 0 auto; min-height: 100vh; }
+        .admin-dash-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 3rem; flex-wrap: wrap; gap: 1rem; }
+        .admin-dash-title h2 { font-family: 'Space Grotesk', sans-serif; font-size: 2.5rem; margin-bottom: 0.5rem; }
+        .admin-dash-title p { color: var(--grey-subtle); font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; }
+        
+        .admin-view-section { display: none; animation: fadeIn 0.4s var(--transition-smooth); }
+        .admin-view-section.active { display: block; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+
+        .admin-grid-cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; margin-top: 1rem; }
+        .admin-nav-card {
+            background: linear-gradient(135deg, var(--grey-mid) 0%, var(--grey-dark) 100%);
+            border: 1px solid var(--glass-border); border-radius: 16px; padding: 2rem; cursor: pointer; transition: all 0.3s var(--transition-smooth);
+            display: flex; flex-direction: column; align-items: flex-start;
+        }
+        .admin-nav-card:hover { transform: translateY(-5px); border-color: var(--orange-primary); box-shadow: 0 10px 30px rgba(255, 107, 44, 0.15); }
+        .admin-nav-card .icon { width: 48px; height: 48px; background: rgba(255,107,44,0.1); color: var(--orange-primary); border-radius: 12px; display: flex; align-items: center; justify-content: center; margin-bottom: 1.25rem; }
+        .admin-nav-card .icon svg { width: 24px; height: 24px; }
+        .admin-nav-card h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.25rem; margin-bottom: 0.5rem; color: var(--white); }
+        .admin-nav-card p { color: var(--grey-subtle); font-size: 0.9rem; line-height: 1.5; }
+        
+        .admin-back-btn { 
+            background: none; border: none; color: var(--grey-subtle); display: inline-flex; align-items: center; gap: 0.5rem; cursor: pointer; 
+            font-family: 'JetBrains Mono', monospace; font-size: 0.9rem; margin-bottom: 2rem; transition: color 0.2s; padding: 0.5rem 0;
+        }
+        .admin-back-btn:hover { color: var(--orange-primary); }
+        
+        .admin-mini-tabs { display: flex; gap: 0.5rem; background: var(--grey-dark); padding: 0.5rem; border-radius: 12px; width: fit-content; margin-bottom: 2rem; border: 1px solid var(--glass-border); }
+        .admin-tab-btn { background: transparent; border: none; color: var(--grey-subtle); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; padding: 0.75rem 1.5rem; border-radius: 8px; cursor: pointer; transition: all 0.3s; font-weight: 500; }
+        .admin-tab-btn.active { background: var(--orange-primary); color: var(--black); }
+        .admin-tab-btn:hover:not(.active) { color: var(--white); background: rgba(255,255,255,0.05); }
+        
+        .empty-placeholder { text-align: center; padding: 4rem 2rem; background: rgba(255,255,255,0.02); border: 1px dashed var(--glass-border); border-radius: 16px; color: var(--grey-subtle); }
+
+        .admin-panel { background: linear-gradient(135deg, var(--grey-mid) 0%, var(--grey-dark) 100%); border: 1px solid var(--glass-border); border-radius: 20px; padding: 2rem; max-width: 800px; }
+        .admin-panel-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1.5rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border); }
+        .admin-panel-header h3 { font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; }
+        .admin-cancel-btn { background: none; border: none; color: var(--grey-subtle); cursor: pointer; font-size: 0.9rem; transition: color 0.2s; }
+        .admin-cancel-btn:hover { color: var(--orange-primary); }
+        .admin-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+        
+        /* Component Builder Styles */
+        .component-builder {
+            background: var(--black);
+            border: 1px solid var(--glass-border);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+        }
+        .component-list-item {
+            display: flex; justify-content: space-between; align-items: center; 
+            padding: 0.75rem 1rem; background: var(--grey-mid); border-radius: 8px; 
+            border: 1px solid var(--glass-border); margin-bottom: 0.5rem;
+        }
+
+        .image-upload { border: 2px dashed var(--grey-light); border-radius: 12px; padding: 2rem; text-align: center; cursor: pointer; transition: all 0.3s var(--transition-smooth); }
+        .image-upload:hover { border-color: var(--orange-primary); background: rgba(255, 107, 44, 0.05); }
+        .image-upload svg { width: 48px; height: 48px; color: var(--grey-subtle); margin-bottom: 0.75rem; }
+        .image-upload p { color: var(--orange-primary); font-weight: 600; }
+        .image-upload small { color: var(--grey-subtle); font-size: 0.8rem; }
+        .image-preview { margin-bottom: 1rem; }
+        .image-preview img { max-height: 150px; border-radius: 8px; object-fit: contain; }
+
+        .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(300px, 1fr)); gap: 1.5rem; }
+        .admin-product-card { background: var(--grey-mid); border: 1px solid var(--glass-border); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; transition: transform 0.3s; }
+        .admin-product-card:hover { transform: translateY(-4px); border-color: rgba(255,107,44,0.3); }
+        .admin-product-img { height: 160px; background: var(--grey-dark); display: flex; align-items: center; justify-content: center; padding: 1rem; }
+        .admin-product-img img { max-width: 100%; max-height: 100%; object-fit: contain; }
+        .admin-product-info { padding: 1.5rem; flex: 1; display: flex; flex-direction: column; }
+        .admin-product-title { font-family: 'Space Grotesk', sans-serif; font-size: 1.2rem; font-weight: 600; margin-bottom: 0.5rem; }
+        .admin-product-price { color: var(--orange-primary); font-family: 'JetBrains Mono', monospace; margin-bottom: 1rem; font-size: 1.1rem;}
+        .admin-actions { display: flex; gap: 0.5rem; margin-top: auto; }
+        
+        .btn-edit { background: rgba(78, 168, 222, 0.1); color: var(--blue-accent); border: 1px solid rgba(78, 168, 222, 0.3); flex: 1;}
+        .btn-edit:hover { background: rgba(78, 168, 222, 0.2); }
+        .btn-delete { background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3); flex: 1;}
+        .btn-delete:hover { background: rgba(239, 68, 68, 0.2); }
+
+        .admin-status { text-align: center; font-size: 0.9rem; font-weight: 600; margin-top: 1rem; }
+        .admin-status.success { color: #22c55e; }
+        .admin-status.error { color: #ef4444; }
+        .admin-status.processing { color: var(--orange-primary); }
+
+        .loader { width: 48px; height: 48px; border: 3px solid var(--grey-mid); border-top-color: var(--orange-primary); border-radius: 50%; animation: spin 1s linear infinite; margin: 0 auto 1.5rem; }
+        @keyframes spin { to { transform: rotate(360deg); } }
+
+        /* Modals & Toasts */
+        .modal-overlay {
+            position: fixed; inset: 0; background-color: rgba(10, 10, 12, 0.9); backdrop-filter: blur(10px);
+            z-index: 2000; display: flex; align-items: center; justify-content: center; padding: 1rem;
+            opacity: 0; visibility: hidden; transition: opacity 0.4s ease, visibility 0.4s ease;
+        }
+        .modal-overlay.is-open { opacity: 1; visibility: visible; }
+        .modal-content { background: var(--grey-dark); border: 1px solid var(--glass-border); border-radius: 1rem; width: 100%; transform: scale(0.95) translateY(20px); transition: transform 0.4s var(--transition-smooth); }
+        .modal-overlay.is-open .modal-content { transform: scale(1) translateY(0); }
+
+        .toast-container { position: fixed; bottom: 2rem; right: 2rem; z-index: 2000; display: flex; flex-direction: column; gap: 0.75rem; pointer-events: none; }
+        .toast { background: var(--grey-mid); border: 1px solid var(--glass-border); border-radius: 12px; padding: 1rem 1.5rem; display: flex; align-items: center; gap: 0.75rem; box-shadow: 0 10px 40px rgba(0, 0, 0, 0.3); transform: translateX(120%); transition: transform 0.4s var(--transition-smooth); pointer-events: auto; }
+        .toast.show { transform: translateX(0); }
+        .toast.success { border-color: rgba(34, 197, 94, 0.3); }
+        .toast.success svg { color: #22c55e; }
+        .toast.error { border-color: rgba(239, 68, 68, 0.3); }
+        .toast.error svg { color: #ef4444; }
+        .toast-icon { width: 24px; height: 24px; flex-shrink: 0; }
+        .toast-message { font-size: 0.9rem; color: var(--white); }
+
+        @media (max-width: 900px) {
+            .admin-form-row { grid-template-columns: 1fr; }
+        }
+        @media (max-width: 768px) {
+            .admin-dash-header { flex-direction: column; align-items: flex-start; }
+            .toast-container { right: 1rem; left: 1rem; bottom: 1rem; }
+            .toast { width: 100%; }
+        }
+    </style>
+
+    <header class="header">
+        <div class="header-inner">
+            <div class="logo">
+                <svg class="logo-icon" viewBox="277 265 278 342" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M306.06 335.03c34.29-19.77 68.28-39.35 102.25-58.94 4.32-2.5 8.55-5.16 12.87-7.65 4.68-2.69 7.08-1.5 7.11 3.71.09 19.32-.08 38.64.61 57.95.12 3.34-1.3 5.77-4.53 7.63-24.95 14.35-49.77 28.94-74.68 43.36-2.63 1.52-3.74 3.37-3.73 6.4.06 27.49.07 54.98-.03 82.47-.01 3.41 1.21 5.64 4.12 7.31 24.47 14.01 48.93 28.06 73.36 42.15 2.74 1.58 5.13 1.54 7.92-0.09 24.24-14.14 48.53-28.21 72.86-42.2 3.18-1.83 4.9-3.9 4.75-7.87-.31-8.24.1-16.51.1-25.43-9.49 4.13-17.09 9.81-25.28 14.4-16.97 9.51-33.76 19.36-50.64 28.97-4.79 2.74-6.9 1.76-6.93-3.7-.14-19.83-.05-39.66-.03-59.49.01-3.94 2.77-5.83 5.71-7.54 20.55-11.94 41.12-23.86 61.66-35.83 1.38-0.8 3.27-1.49 3.09-3.52-.16-1.74-1.93-2.04-3.22-2.79-11.21-6.52-22.42-13.04-33.55-19.7-2.83-1.69-4.58-4.41-4.56-7.86.11-19.16.2-38.31.46-57.46.07-4.82 3.28-6.21 7.52-3.78 21.18 12.15 42.41 24.22 63.58 36.4 13.23 7.61 26.4 15.32 39.56 23.05 2.75 1.61 4.14 3.99 4.18 7.41.2 16.32-.58 32.66.41 48.97.29 4.78-2.29 7.67-6.25 9.86-9.15 5.07-18.23 10.24-27.29 15.46-1.23 0.71-2.75 1.27-3.45 3.38 4.87 4.6 11.26 7.13 16.98 10.63 5.38 3.3 10.92 6.32 16.38 9.49 2.21 1.28 3.2 3.24 3.2 5.81-.02 16.83-.05 33.66.08 50.49.02 3.67-2.38 5.32-4.99 6.83-26.77 15.44-53.58 30.8-80.33 46.26-17.12 9.89-34.25 19.77-51.2 29.95-4.83 2.89-8.84 2.48-13.44-0.2-25.41-14.78-50.92-29.38-76.36-44.12-18.38-10.65-36.69-21.44-55.05-32.13-3.49-2.03-5.15-4.84-5.14-8.97.05-50.33.04-100.65.12-150.98.01-4.2 1.76-6.76 5.43-8.66 5.59-2.9 10.98-6.18 16.77-9.5z"/>
+                </svg>
+                <div style="display: flex; flex-direction: column;">
+                    <span class="logo-text">Circuit<span>Breakers</span></span>
+                    <span class="logo-tagline" style="margin-top: 2px; font-size: 0.85em;">Admin Portal</span>
+                </div>
+            </div>
+            <a href="/" class="nav-link" style="color: var(--orange-primary);">← Public Site</a>
+        </div>
+    </header>
+
+    <!-- LOGIN SCREEN -->
+    <div id="login-section">
+        <div class="login-card">
+            <div style="text-align: center; margin-bottom: 2rem;">
+                <svg style="width:48px; height:48px; color:var(--orange-primary); margin-bottom:1rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <rect x="3" y="11" width="18" height="11" rx="2"/>
+                    <path d="M7 11V7a5 5 0 0110 0v4"/>
+                </svg>
+                <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; color:var(--white);">Team Access</h3>
+                <p style="color:var(--grey-subtle); font-size:0.9rem;">Enter your passkey to manage the ecosystem.</p>
+            </div>
+            
+            <form id="admin-login-form" style="display: flex; flex-direction: column; gap: 1.25rem;">
+                <div id="admin-login-error" class="admin-login-error">Invalid passkey. Please try again.</div>
+                
+                <div class="form-group">
+                    <label for="admin-passkey-input">Passkey</label>
+                    <div class="password-wrapper">
+                        <input type="password" id="admin-passkey-input" placeholder="Enter team passkey" required>
+                        <button type="button" id="togglePasskey" class="password-toggle" title="Toggle Visibility">
+                            <svg id="eye-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path>
+                                <circle cx="12" cy="12" r="3"></circle>
+                            </svg>
+                        </button>
+                    </div>
+                </div>
+                
+                <button type="submit" id="admin-login-submit" class="btn btn-primary" style="width: 100%;">
+                    <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                        <path d="M15 3h4a2 2 0 012 2v14a2 2 0 01-2 2h-4"/><polyline points="10 17 15 12 10 7"/><line x1="15" y1="12" x2="3" y2="12"/>
+                    </svg>
+                    Authenticate
+                </button>
+            </form>
+        </div>
+    </div>
+
+    <!-- SECURE ADMIN DASHBOARD AREA (Hidden by default) -->
+    <div id="admin-dashboard" style="display: none;">
+        <div class="admin-dash-header">
+            <div class="admin-dash-title">
+                <h2>Admin Dashboard</h2>
+                <p>Manage your product database directly.</p>
+            </div>
+            <button id="exit-admin-btn" class="btn btn-secondary">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+                Logout
+            </button>
+        </div>
+
+        <!-- Level 1: Main Overview -->
+        <div id="admin-lvl-1" class="admin-view-section active">
+            <div class="admin-grid-cards">
+                <div class="admin-nav-card" onclick="goToAdminLevel('2')">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <line x1="16.5" y1="9.4" x2="7.5" y2="4.21"/>
+                            <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/>
+                            <polyline points="3.27 6.96 12 12.01 20.73 6.96"/>
+                            <line x1="12" y1="22.08" x2="12" y2="12"/>
+                        </svg>
+                    </div>
+                    <h3>Products & Stock Management</h3>
+                    <p>Add new kits, components, update pricing, or remove outdated stock.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level 2: Sub-options for Products -->
+        <div id="admin-lvl-2" class="admin-view-section">
+            <button class="admin-back-btn" onclick="goToAdminLevel('1')">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Dashboard
+            </button>
+            <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; margin-bottom: 1rem;">Products & Stock</h3>
+            
+            <div class="admin-grid-cards">
+                <div class="admin-nav-card" onclick="goToAdminLevel('3-add'); switchAdminTab('add', 'projects');">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+                    </div>
+                    <h3>Add New Project/Product</h3>
+                    <p>Create a new listing in your catalog.</p>
+                </div>
+                <div class="admin-nav-card" onclick="goToAdminLevel('3-manage'); switchAdminTab('manage', 'projects');">
+                    <div class="icon">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+                    </div>
+                    <h3>Edit/Delete Existing</h3>
+                    <p>Modify details or completely remove items.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Level 3: Add Form with Tabs -->
+        <div id="admin-lvl-3-add" class="admin-view-section">
+            <button class="admin-back-btn" onclick="goToAdminLevel('2')">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Options
+            </button>
+            
+            <div class="admin-mini-tabs">
+                <button class="admin-tab-btn active" id="tab-add-projects" onclick="switchAdminTab('add', 'projects')">Projects (Kits)</button>
+                <button class="admin-tab-btn" id="tab-add-products" onclick="switchAdminTab('add', 'products')">Products (Hardware)</button>
+            </div>
+
+            <!-- Single Reusable Form for both Projects and Products -->
+            <div class="admin-panel" id="admin-panel">
+                <div class="admin-panel-header">
+                    <h3 id="admin-form-title">Add New Project</h3>
+                    <button id="cancel-edit-btn" class="admin-cancel-btn" style="display: none;">Cancel Edit</button>
+                </div>
+                
+                <form id="project-form" class="admin-form">
+                    <input type="hidden" id="item-id">
+                    <div class="admin-form-row">
+                        <div class="form-group">
+                            <label for="proj-title">Title</label>
+                            <input type="text" id="proj-title" placeholder="Enter name" required>
+                        </div>
+                        
+                        <!-- Manual Price Input (Only visible for Products tab) -->
+                        <div class="form-group" id="product-price-group" style="display:none;">
+                            <label for="item-manual-price">Price (₹)</label>
+                            <input type="number" id="item-manual-price" placeholder="e.g. 599">
+                        </div>
+                    </div>
+
+                    <!-- Component Builder (Only visible for Projects tab) -->
+                    <div id="project-components-group" class="component-builder">
+                        <h4 style="margin-bottom: 1rem; color: var(--orange-light); font-family: 'JetBrains Mono', monospace; font-size: 0.85rem; text-transform: uppercase;">Build Project Kit</h4>
+                        
+                        <!-- Component Selection Row -->
+                        <div style="display: flex; gap: 0.5rem; margin-bottom: 1.5rem; align-items: flex-end; flex-wrap: wrap;">
+                            <div class="form-group" style="flex: 1; min-width: 200px; margin-bottom: 0;">
+                                <label>Select Component</label>
+                                <select id="component-select" style="padding: 0.75rem;">
+                                    <option value="">Loading components...</option>
+                                </select>
+                            </div>
+                            <div class="form-group" style="width: 80px; margin-bottom: 0;">
+                                <label>Qty</label>
+                                <input type="number" id="component-qty" value="1" min="1" style="padding: 0.75rem;">
+                            </div>
+                            <button type="button" class="btn btn-secondary" onclick="addProjectComponent()" style="padding: 0.75rem; height: 46px;">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><line x1="12" y1="5" x2="12" y2="19"></line><line x1="5" y1="12" x2="19" y2="12"></line></svg> Add
+                            </button>
+                        </div>
+
+                        <!-- Added Components List -->
+                        <div id="project-components-list" style="display: flex; flex-direction: column; margin-bottom: 1.5rem;">
+                            <!-- Dynamically populated -->
+                        </div>
+
+                        <!-- Dynamic Pricing Summary -->
+                        <div id="price-preview" style="padding:1.5rem; background:rgba(255,107,44,0.1); border-radius:12px; border: 1px solid rgba(255,107,44,0.2);">
+                            <div style="display: flex; justify-content: space-between; color: var(--grey-subtle); margin-bottom: 0.5rem; font-size: 0.9rem;">
+                                <span>Components Total:</span> <span id="calc-comp-total">₹0</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; color: var(--grey-subtle); margin-bottom: 1rem; padding-bottom: 1rem; border-bottom: 1px solid var(--glass-border); font-size: 0.9rem;">
+                                <span>Project Development (coding & testing):</span> <span>₹99</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-weight: 700; margin-bottom: 0.25rem; font-size: 1.25rem; color: var(--white);">
+                                <span>DIY Kit Base Price:</span> <span id="price-diy-preview" style="color: var(--orange-primary);">₹99</span>
+                            </div>
+                            <div style="display: flex; justify-content: space-between; font-size: 0.9rem; color: var(--grey-subtle);">
+                                <span>Ready to Use:</span> <span><span id="price-ready-preview" style="color: var(--orange-primary); font-weight: 600;">₹148</span> (+₹49 assembly)</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label for="item-desc">Description</label>
+                        <textarea id="item-desc" placeholder="Describe the item..." required></textarea>
+                    </div>
+
+                    <div class="form-group">
+                        <label>Item Image</label>
+                        <div class="image-upload" onclick="document.getElementById('item-image').click()">
+                            <input type="file" id="item-image" accept="image/*" style="display: none;">
+                            <div id="image-preview-container" class="image-preview" style="display: none;">
+                                <img id="image-preview" src="">
+                                <input type="hidden" id="existing-image-url">
+                            </div>
+                            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                <rect x="3" y="3" width="18" height="18" rx="2"/><circle cx="8.5" cy="8.5" r="1.5"/><path d="M21 15l-5-5L5 21"/>
+                            </svg>
+                            <p>Click to Upload Image</p>
+                            <small>Leave blank during edit to keep existing image</small>
+                        </div>
+                    </div>
+
+                    <button type="submit" id="save-project-btn" class="btn btn-primary" style="justify-content: center; width: 100%;">
+                        <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/>
+                            <polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/>
+                        </svg>
+                        Save to Database
+                    </button>
+                </form>
+                <p id="admin-status" class="admin-status" style="display: none;"></p>
+            </div>
+        </div>
+
+        <!-- Level 3: Manage Grid with Tabs -->
+        <div id="admin-lvl-3-manage" class="admin-view-section">
+            <button class="admin-back-btn" onclick="goToAdminLevel('2')">
+                <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2"><line x1="19" y1="12" x2="5" y2="12"/><polyline points="12 19 5 12 12 5"/></svg>
+                Back to Options
+            </button>
+            
+            <div class="admin-mini-tabs">
+                <button class="admin-tab-btn active" id="tab-manage-projects" onclick="switchAdminTab('manage', 'projects')">Projects (Kits)</button>
+                <button class="admin-tab-btn" id="tab-manage-products" onclick="switchAdminTab('manage', 'products')">Products (Hardware)</button>
+            </div>
+
+            <!-- Single Grid Container dynamically populated by JS -->
+            <div id="manage-system-message" style="display:none; text-align:center; padding: 4rem 2rem;">
+                <div class="loader" id="manage-loader-spinner"></div>
+                <h3 id="manage-msg-title" style="font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem;">Loading...</h3>
+                <p id="manage-msg-desc" style="color: var(--grey-subtle);">Please wait a moment.</p>
+            </div>
+            
+            <div class="scrollable-list" id="manage-grid-container" style="max-height: 60vh; overflow-y: auto; padding-right: 10px;">
+                <div id="admin-products-grid" class="products-grid"></div>
+            </div>
+        </div>
+    </div> <!-- End Admin Dashboard Wrapper -->
+
+    <!-- Confirm Deletion Modal -->
+    <div id="confirm-modal" class="modal-overlay">
+        <div class="modal-content" style="max-width: 400px; padding: 2rem; text-align: center;">
+            <svg style="width: 48px; height: 48px; color: #ef4444; margin: 0 auto 1rem;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <circle cx="12" cy="12" r="10"></circle>
+                <line x1="12" y1="8" x2="12" y2="12"></line>
+                <line x1="12" y1="16" x2="12.01" y2="16"></line>
+            </svg>
+            <h3 style="font-family: 'Space Grotesk', sans-serif; font-size: 1.5rem; margin-bottom: 0.5rem; color: var(--white);">Confirm Deletion</h3>
+            <p style="color: var(--grey-subtle); margin-bottom: 1.5rem;">Are you absolutely sure you want to delete this item? This action cannot be undone.</p>
+            <div style="display: flex; gap: 1rem;">
+                <button id="cancel-delete-btn" class="btn btn-secondary" style="flex: 1;">Cancel</button>
+                <button id="confirm-delete-btn" class="btn" style="flex: 1; background: rgba(239, 68, 68, 0.1); color: #ef4444; border: 1px solid rgba(239, 68, 68, 0.3);">Yes, Delete</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toast-container" class="toast-container"></div>
+
+    <script>
+        // Define showToast globally
+        window.showToast = function(message, type = 'success') {
+            const toastContainer = document.getElementById('toast-container');
+            const toast = document.createElement('div');
+            toast.className = `toast ${type}`;
+            const iconSvg = type === 'success' 
+                ? `<path d="M22 11.08V12a10 10 0 11-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>`
+                : `<circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line>`;
+            
+            toast.innerHTML = `
+                <svg class="toast-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">${iconSvg}</svg>
+                <span class="toast-message">${message}</span>
+            `;
+            toastContainer.appendChild(toast);
+            setTimeout(() => toast.classList.add('show'), 10);
+            setTimeout(() => {
+                toast.classList.remove('show');
+                setTimeout(() => toast.remove(), 400);
+            }, 3000);
+        };
+
+        // --- Admin Dashboard Logic & Config ---
+        const CLOUDINARY_CLOUD_NAME = "dzazor3or"; 
+        const CLOUDINARY_UPLOAD_PRESET = "cb_admin_profiles"; 
+        const WORKER_URL = "https://cb-backend.devteam-circuitbreakers.workers.dev/";
+        const ASSEMBLY_FEE = 49;
+        const PROJECT_DEV_FEE = 99; // Fixed cost for coding & testing
+
+        // State
+        let projects = [];
+        let products = [];
+        let adminPasskey = "";
+        let itemToDeleteId = null;
+        let currentAdminTab = 'projects'; // 'projects' or 'products'
+        let currentProjectComponents = []; // Array tracking selected components for a project being added/edited
+
+        // DOM Elements
+        const loginSection = document.getElementById('login-section');
+        const adminDashboard = document.getElementById('admin-dashboard');
+        const adminLoginForm = document.getElementById('admin-login-form');
+        const adminPasskeyInput = document.getElementById('admin-passkey-input');
+        const adminLoginError = document.getElementById('admin-login-error');
+        const exitAdminBtn = document.getElementById('exit-admin-btn');
+        
+        const manageSysMsg = document.getElementById('manage-system-message');
+        const manageMsgTitle = document.getElementById('manage-msg-title');
+        const manageMsgDesc = document.getElementById('manage-msg-desc');
+        const manageLoader = document.getElementById('manage-loader-spinner');
+        const adminProductsGrid = document.getElementById('admin-products-grid');
+        
+        const projectForm = document.getElementById('project-form');
+        const confirmModal = document.getElementById('confirm-modal');
+
+        // Dynamic Component Builder Elements
+        const projectComponentsGroup = document.getElementById('project-components-group');
+        const productPriceGroup = document.getElementById('product-price-group');
+        const itemManualPrice = document.getElementById('item-manual-price');
+        
+        // Navigation for Admin Levels
+        window.goToAdminLevel = function(level) {
+            document.querySelectorAll('.admin-view-section').forEach(el => el.classList.remove('active'));
+            document.getElementById('admin-lvl-' + level).classList.add('active');
+            
+            if(level === '3-manage') {
+                renderManageGrid();
+            }
+            window.scrollTo(0, 0); 
+        };
+
+        // Reset Form Utility defined before it is used
+        window.resetForm = function() {
+            projectForm.reset();
+            document.getElementById('item-id').value = "";
+            document.getElementById('existing-image-url').value = "";
+            document.getElementById('cancel-edit-btn').style.display = 'none';
+            document.getElementById('image-preview-container').style.display = 'none';
+            document.getElementById('admin-status').style.display = 'none';
+            
+            currentProjectComponents = [];
+            
+            if (currentAdminTab === 'projects') {
+                document.getElementById('admin-form-title').textContent = "Add New Project (Kit)";
+                renderProjectComponentsUI();
+            } else {
+                document.getElementById('admin-form-title').textContent = "Add New Product (Hardware)";
+            }
+        }
+
+        // Navigation for Mini Tabs (Projects vs Products)
+        window.switchAdminTab = function(view, tabName) {
+            currentAdminTab = tabName;
+            
+            // Sync tab buttons visually across both add and manage levels
+            document.querySelectorAll('.admin-tab-btn').forEach(btn => btn.classList.remove('active'));
+            const activeBtns = document.querySelectorAll(`#tab-${view}-${tabName}`);
+            activeBtns.forEach(btn => btn?.classList.add('active'));
+            
+            const isAddLevel = document.getElementById('admin-lvl-3-add').classList.contains('active');
+            
+            if (isAddLevel) {
+                resetForm();
+                if (tabName === 'projects') {
+                    document.getElementById('admin-form-title').textContent = "Add New Project (Kit)";
+                    // Show builder, hide manual price
+                    projectComponentsGroup.style.display = 'block';
+                    productPriceGroup.style.display = 'none';
+                    itemManualPrice.removeAttribute('required');
+                    
+                    updateComponentSelectDropdown();
+                    renderProjectComponentsUI();
+                } else {
+                    document.getElementById('admin-form-title').textContent = "Add New Product (Hardware)";
+                    // Show manual price, hide builder
+                    projectComponentsGroup.style.display = 'none';
+                    productPriceGroup.style.display = 'block';
+                    itemManualPrice.setAttribute('required', 'true');
+                }
+            } else {
+                renderManageGrid();
+            }
+        };
+
+        // Toggle Passkey Visibility
+        document.getElementById('togglePasskey').addEventListener('click', () => {
+            const type = adminPasskeyInput.type === 'password' ? 'text' : 'password';
+            adminPasskeyInput.type = type;
+            const eyeIcon = document.getElementById('eye-icon');
+            if(type === 'text') {
+                eyeIcon.innerHTML = `<path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"></path><line x1="1" y1="1" x2="23" y2="23"></line>`;
+            } else {
+                eyeIcon.innerHTML = `<path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"></path><circle cx="12" cy="12" r="3"></circle>`;
+            }
+        });
+
+        // Admin Login Validation
+        adminLoginForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const passkey = adminPasskeyInput.value.trim();
+            const submitBtn = document.getElementById('admin-login-submit');
+            const originalHTML = submitBtn.innerHTML;
+
+            if (!passkey) {
+                adminLoginError.textContent = 'Please enter a passkey.';
+                adminLoginError.classList.add('show');
+                return;
+            }
+
+            submitBtn.innerHTML = 'Verifying...';
+            submitBtn.disabled = true;
+
+            try {
+                const res = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ passkey: passkey, action: 'validate' })
+                });
+                
+                const data = await res.json();
+                
+                if (res.ok && data.valid) {
+                    adminPasskey = passkey;
+                    
+                    adminPasskeyInput.value = '';
+                    adminLoginError.classList.remove('show');
+                    adminPasskeyInput.type = 'password';
+                    
+                    loginSection.style.display = 'none';
+                    adminDashboard.style.display = 'block';
+                    goToAdminLevel('1');
+                    window.scrollTo(0,0);
+                    window.showToast('Welcome! Admin mode activated.');
+                    
+                    fetchAdminData();
+                } else {
+                    adminLoginError.textContent = 'Invalid passkey. Please try again.';
+                    adminLoginError.classList.add('show');
+                    adminPasskeyInput.value = '';
+                    adminPasskeyInput.focus();
+                }
+            } catch (err) {
+                adminLoginError.textContent = 'Connection error. Please try again.';
+                adminLoginError.classList.add('show');
+            } finally {
+                submitBtn.innerHTML = originalHTML;
+                submitBtn.disabled = false;
+            }
+        });
+
+        // Exit Admin
+        exitAdminBtn.addEventListener('click', () => {
+            adminPasskey = "";
+            adminDashboard.style.display = 'none';
+            loginSection.style.display = 'flex';
+            resetForm();
+            window.scrollTo(0,0);
+            window.showToast('Safely logged out of Admin Dashboard.');
+        });
+
+        // Fetch Both Databases at once
+        async function fetchAdminData() {
+            manageSysMsg.style.display = 'block';
+            manageLoader.style.display = 'block';
+            manageMsgTitle.textContent = "Fetching Inventory...";
+            manageMsgDesc.textContent = "Loading projects and products.";
+            adminProductsGrid.style.display = 'none';
+            
+            try {
+                const [projRes, prodRes] = await Promise.all([
+                    fetch(WORKER_URL, { method: 'POST', body: JSON.stringify({ action: 'fetch_db' }) }),
+                    fetch(WORKER_URL, { method: 'POST', body: JSON.stringify({ action: 'fetch_products_db' }) })
+                ]);
+                
+                const projData = await projRes.json();
+                const prodData = await prodRes.json();
+                
+                projects = (projData.data || []).filter(p => p.id !== 'system_placeholder');
+                products = (prodData.data || []).filter(p => p.id !== 'system_placeholder');
+                
+            } catch (err) {
+                console.error("Fetch error", err);
+                projects = [];
+                products = [];
+            }
+        }
+
+        // Render Manage Grid based on Tab
+        function renderManageGrid() {
+            const dataArray = currentAdminTab === 'projects' ? projects : products;
+            
+            if (dataArray.length === 0) {
+                manageSysMsg.style.display = 'block';
+                manageLoader.style.display = 'none';
+                manageMsgTitle.textContent = currentAdminTab === 'projects' ? "No Projects yet!" : "No Products have been added yet!";
+                manageMsgDesc.textContent = "Go back to 'Add New Item' to populate this section.";
+                adminProductsGrid.style.display = 'none';
+                return;
+            }
+
+            manageSysMsg.style.display = 'none';
+            adminProductsGrid.style.display = 'grid';
+            adminProductsGrid.innerHTML = '';
+            
+            dataArray.forEach(item => {
+                const price = currentAdminTab === 'projects' ? parseInt(item.basePrice || item.price) : parseInt(item.price);
+                const card = document.createElement('div');
+                card.className = 'admin-product-card';
+                card.innerHTML = `
+                    <div class="admin-product-img">
+                        <img src="${item.image}" alt="${item.title}">
+                    </div>
+                    <div class="admin-product-info">
+                        <h3 class="admin-product-title">${item.title}</h3>
+                        <div class="admin-product-price">₹${price}</div>
+                        <div class="admin-actions">
+                            <button class="btn btn-edit" onclick="editItem('${item.id}')">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/>
+                                </svg> Edit
+                            </button>
+                            <button class="btn btn-delete" onclick="promptDeleteItem('${item.id}')">
+                                <svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                                    <polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/>
+                                </svg> Delete
+                            </button>
+                        </div>
+                    </div>
+                `;
+                adminProductsGrid.appendChild(card);
+            });
+        }
+
+        // ==========================================
+        // DYNAMIC COMPONENT BUILDER LOGIC
+        // ==========================================
+        function updateComponentSelectDropdown() {
+            const select = document.getElementById('component-select');
+            select.innerHTML = '<option value="">Select a component...</option>';
+            
+            if (products.length === 0) {
+                select.innerHTML = '<option value="">No components available. Add products first.</option>';
+                select.disabled = true;
+            } else {
+                select.disabled = false;
+                products.forEach(p => {
+                    const opt = document.createElement('option');
+                    opt.value = p.id;
+                    opt.textContent = `${p.title} (₹${p.price})`;
+                    select.appendChild(opt);
+                });
+            }
+        }
+
+        window.addProjectComponent = function() {
+            const select = document.getElementById('component-select');
+            const qtyInput = document.getElementById('component-qty');
+            
+            if(select.disabled || !select.value) {
+                window.showToast("Please select a component first.", "error");
+                return;
+            }
+            
+            const productId = select.value;
+            const qty = parseInt(qtyInput.value) || 1;
+            
+            const product = products.find(p => p.id === productId);
+            if(!product) return;
+            
+            const existing = currentProjectComponents.find(c => c.id === productId);
+            if(existing) {
+                existing.qty += qty;
+            } else {
+                currentProjectComponents.push({
+                    id: product.id,
+                    title: product.title,
+                    price: parseInt(product.price),
+                    qty: qty
+                });
+            }
+            
+            // Reset qty input to 1
+            qtyInput.value = 1;
+            select.value = '';
+            
+            renderProjectComponentsUI();
+        };
+
+        window.removeProjectComponent = function(index) {
+            currentProjectComponents.splice(index, 1);
+            renderProjectComponentsUI();
+        };
+
+        function renderProjectComponentsUI() {
+            const list = document.getElementById('project-components-list');
+            list.innerHTML = '';
+            
+            let compTotal = 0;
+            
+            if (currentProjectComponents.length === 0) {
+                list.innerHTML = '<div style="text-align: center; color: var(--grey-subtle); padding: 1rem; font-size: 0.9rem; border: 1px dashed var(--glass-border); border-radius: 8px;">No components added yet.</div>';
+            } else {
+                currentProjectComponents.forEach((c, index) => {
+                    compTotal += c.price * c.qty;
+                    list.innerHTML += `
+                        <div class="component-list-item">
+                            <div>
+                                <div style="font-size: 0.95rem; font-weight: 500; color: var(--white);">${c.title}</div>
+                                <div style="font-size: 0.8rem; color: var(--grey-subtle); font-family: 'JetBrains Mono', monospace;">${c.qty} x ₹${c.price}</div>
+                            </div>
+                            <div style="display: flex; align-items: center; gap: 1rem;">
+                                <div style="font-weight: 600; color: var(--orange-primary); font-family: 'JetBrains Mono', monospace;">₹${c.price * c.qty}</div>
+                                <button type="button" onclick="removeProjectComponent(${index})" style="background: none; border: none; color: #ef4444; cursor: pointer; padding: 0.25rem;">
+                                    <svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2"><line x1="18" y1="6" x2="6" y2="18"></line><line x1="6" y1="6" x2="18" y2="18"></line></svg>
+                                </button>
+                            </div>
+                        </div>
+                    `;
+                });
+            }
+            
+            // Calculate Totals
+            document.getElementById('calc-comp-total').textContent = `₹${compTotal}`;
+            
+            // Total Base Price (Components + Development Fee)
+            const totalBase = compTotal > 0 ? compTotal + PROJECT_DEV_FEE : 0;
+            const readyTotal = totalBase > 0 ? totalBase + ASSEMBLY_FEE : 0;
+            
+            document.getElementById('price-diy-preview').textContent = totalBase;
+            document.getElementById('price-ready-preview').textContent = readyTotal;
+        }
+
+        // Image Upload Preview
+        document.getElementById('item-image').addEventListener('change', (e) => {
+            const file = e.target.files[0];
+            if (file) {
+                document.getElementById('image-preview').src = URL.createObjectURL(file);
+                document.getElementById('image-preview-container').style.display = 'block';
+            }
+        });
+        
+        document.getElementById('cancel-edit-btn').addEventListener('click', (e) => {
+            e.preventDefault();
+            resetForm();
+            goToAdminLevel('3-manage'); 
+        });
+
+        // Submit Add/Edit Form
+        projectForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const saveBtn = document.getElementById('save-project-btn');
+            const statusBox = document.getElementById('admin-status');
+            const isProject = currentAdminTab === 'projects';
+            
+            // Validation for Projects
+            if (isProject && currentProjectComponents.length === 0) {
+                window.showToast("Please add at least one component to the project.", "error");
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.innerHTML = `<svg class="btn-icon" style="animation: spin 1s linear infinite;" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 12a9 9 0 11-6.219-8.56"/></svg> Processing...`;
+            
+            statusBox.style.display = 'block';
+            statusBox.className = 'admin-status processing';
+            statusBox.textContent = "Preparing data...";
+
+            try {
+                const isEdit = document.getElementById('item-id').value !== "";
+                let imageUrl = document.getElementById('existing-image-url').value;
+                const fileInput = document.getElementById('item-image');
+
+                // 1. Handle Image Upload to Cloudinary
+                if (fileInput.files.length > 0) {
+                    statusBox.textContent = "Uploading image to Cloudinary...";
+                    const formData = new FormData();
+                    formData.append('file', fileInput.files[0]);
+                    formData.append('upload_preset', CLOUDINARY_UPLOAD_PRESET);
+                    
+                    const res = await fetch(`https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`, {
+                        method: 'POST', body: formData
+                    });
+                    if (!res.ok) throw new Error("Image upload failed.");
+                    const data = await res.json();
+                    imageUrl = data.secure_url;
+                } else if (!isEdit) {
+                    throw new Error("Please select an image for the new item.");
+                }
+
+                // 2. Construct Data Object based on active tab
+                const prefix = isProject ? "proj_" : "prod_";
+                const itemData = {
+                    id: isEdit ? document.getElementById('item-id').value : prefix + Date.now(),
+                    title: document.getElementById('item-title').value,
+                    description: document.getElementById('item-desc').value,
+                    image: imageUrl
+                };
+
+                // Dynamic Pricing vs Manual Pricing
+                if (isProject) {
+                    const compTotal = currentProjectComponents.reduce((sum, c) => sum + (c.price * c.qty), 0);
+                    const finalBasePrice = compTotal + PROJECT_DEV_FEE;
+                    
+                    itemData.basePrice = finalBasePrice;
+                    itemData.price = finalBasePrice; // Legacy field compatibility
+                    itemData.components = currentProjectComponents;
+                } else {
+                    const parsedPrice = parseInt(itemManualPrice.value);
+                    if (isNaN(parsedPrice) || parsedPrice < 0) throw new Error("Enter a valid price.");
+                    itemData.price = parsedPrice;
+                }
+
+                // 3. Update Local Array
+                const targetArray = isProject ? projects : products;
+                if (isEdit) {
+                    const index = targetArray.findIndex(p => p.id === itemData.id);
+                    if(index !== -1) targetArray[index] = itemData;
+                } else {
+                    targetArray.push(itemData);
+                }
+
+                // 4. Push to Worker
+                statusBox.textContent = "Saving to Database...";
+                const actionName = isProject ? 'update_db' : 'update_products_db';
+                // Note: we must include the system_placeholder back in to prevent breaking JSONBin on empty arrays
+                const payloadData = [
+                    { id: "system_placeholder", title: "System Placeholder", price: 0, description: "Do not delete", image: "", type: "system_placeholder" },
+                    ...targetArray
+                ];
+
+                const workerRes = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ passkey: adminPasskey, action: actionName, data: payloadData })
+                });
+                
+                if (!workerRes.ok) {
+                    const errResult = await workerRes.json();
+                    throw new Error(errResult.error || "Worker rejected the update.");
+                }
+
+                statusBox.className = 'admin-status success';
+                statusBox.textContent = "Success! Item saved.";
+                window.showToast("Item successfully saved.", "success");
+                
+                setTimeout(() => {
+                    resetForm();
+                    goToAdminLevel('3-manage'); // Redirect back to grid view after save
+                }, 1000);
+
+            } catch (err) {
+                statusBox.className = 'admin-status error';
+                statusBox.textContent = err.message;
+                window.showToast(err.message || "Failed to save item.", "error");
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.innerHTML = `<svg class="btn-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M19 21H5a2 2 0 01-2-2V5a2 2 0 012-2h11l5 5v11a2 2 0 01-2 2z"/><polyline points="17 21 17 13 7 13 7 21"/><polyline points="7 3 7 8 15 8"/></svg> Save to Database`;
+            }
+        });
+
+        // Edit Item Hook
+        window.editItem = (id) => {
+            const isProject = currentAdminTab === 'projects';
+            const targetArray = isProject ? projects : products;
+            const p = targetArray.find(item => item.id === id);
+            if (!p) return;
+            
+            goToAdminLevel('3-add');
+            switchAdminTab('add', currentAdminTab);
+            
+            document.getElementById('admin-form-title').textContent = isProject ? "Edit Project (Kit)" : "Edit Product (Hardware)";
+            document.getElementById('cancel-edit-btn').style.display = 'block';
+            
+            document.getElementById('item-id').value = p.id;
+            document.getElementById('item-title').value = p.title;
+            document.getElementById('item-desc').value = p.description;
+            
+            if (isProject) {
+                // Load saved components into the builder
+                currentProjectComponents = p.components ? JSON.parse(JSON.stringify(p.components)) : [];
+                renderProjectComponentsUI();
+            } else {
+                document.getElementById('item-manual-price').value = p.price;
+            }
+            
+            document.getElementById('existing-image-url').value = p.image;
+            document.getElementById('image-preview').src = p.image;
+            document.getElementById('image-preview-container').style.display = 'block';
+            
+            document.getElementById('admin-panel').scrollIntoView({ behavior: 'smooth', block: 'start' });
+        };
+
+        // Delete Logic
+        window.promptDeleteItem = (id) => {
+            itemToDeleteId = id;
+            confirmModal.classList.add('is-open');
+        };
+
+        document.getElementById('cancel-delete-btn').addEventListener('click', () => {
+            itemToDeleteId = null;
+            confirmModal.classList.remove('is-open');
+        });
+
+        document.getElementById('confirm-delete-btn').addEventListener('click', async () => {
+            if(!itemToDeleteId) return;
+            const id = itemToDeleteId;
+            confirmModal.classList.remove('is-open');
+            
+            const isProject = currentAdminTab === 'projects';
+            const actionName = isProject ? 'update_db' : 'update_products_db';
+            
+            let originalArray;
+            // Filter local array
+            if(isProject) {
+                originalArray = [...projects];
+                projects = projects.filter(p => p.id !== id);
+            } else {
+                originalArray = [...products];
+                products = products.filter(p => p.id !== id);
+            }
+            
+            const targetArray = isProject ? projects : products;
+            renderManageGrid(); // visually remove immediately
+
+            try {
+                const payloadData = [
+                    { id: "system_placeholder", title: "System Placeholder", price: 0, description: "Do not delete", image: "", type: "system_placeholder" },
+                    ...targetArray
+                ];
+
+                const workerRes = await fetch(WORKER_URL, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ passkey: adminPasskey, action: actionName, data: payloadData })
+                });
+                if (!workerRes.ok) throw new Error("Database deletion failed.");
+                window.showToast("Item permanently deleted.");
+            } catch (err) {
+                // If fail, revert state and refetch everything
+                if(isProject) projects = originalArray;
+                else products = originalArray;
+                fetchAdminData();
+                window.showToast("Deletion failed. Check connection.", "error");
+            } finally {
+                itemToDeleteId = null;
+            }
+        });
+
+        // Global Esc handler
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape') {
+                document.querySelectorAll('.modal-overlay').forEach(modal => modal.classList.remove('is-open'));
+                adminPasskeyInput.value = '';
+                adminLoginError.classList.remove('show');
+                adminPasskeyInput.type = 'password';
+            }
+        });
+    </script>
+</div>
+</body>
+</html>
