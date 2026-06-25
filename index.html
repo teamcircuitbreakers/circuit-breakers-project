@@ -1411,12 +1411,9 @@
                             <input type="number" id="proj-base-price" placeholder="299" required>
                             
                             <!-- Price Preview (Dynamically hidden/shown via JS) -->
-                            <div id="price-preview" style="margin-top:0.5rem; padding:0.75rem; background:rgba(255,107,44,0.1); border-radius:8px; font-size:0.85rem; line-height: 1.5;">
-                                <div style="margin-bottom: 4px; padding-bottom: 4px; border-bottom: 1px solid rgba(255,255,255,0.1);">
-                                    <span style="color:var(--grey-subtle);">Base Price: ₹<span id="admin-base-show">299</span> + R&D: ₹99</span>
-                                </div>
-                                <div><strong>DIY Kit Total:</strong> ₹<span id="price-diy-preview">398</span></div>
-                                <div><strong>Ready to Use Total:</strong> ₹<span id="price-ready-preview">447</span> <span style="color:var(--grey-subtle);">(+₹49 Assembly)</span></div>
+                            <div id="price-preview" style="margin-top:0.5rem; padding:0.75rem; background:rgba(255,107,44,0.1); border-radius:8px; font-size:0.85rem;">
+                                <div><strong>DIY Kit:</strong> ₹<span id="price-diy-preview">299</span></div>
+                                <div><strong>Ready to Use:</strong> ₹<span id="price-ready-preview">348</span> <span style="color:var(--grey-subtle);">(+₹49 assembly)</span></div>
                             </div>
                         </div>
                     </div>
@@ -1976,20 +1973,11 @@
         const priceDiyPreview = document.getElementById('price-diy-preview');
         const priceReadyPreview = document.getElementById('price-ready-preview');
 
-        const DEV_FEE = 99; // Project Development, Coding & Testing Fee
-        
         function updatePricePreview() {
             if(currentAdminTab === 'projects') {
                 const basePrice = parseInt(projBasePriceInput.value) || 0;
-                
-                // Update the breakdown text
-                document.getElementById('admin-base-show').textContent = basePrice;
-                
-                // DIY Total = Base + Dev Fee
-                priceDiyPreview.textContent = basePrice + DEV_FEE;
-                
-                // Ready Total = Base + Dev Fee + Assembly Fee
-                priceReadyPreview.textContent = basePrice + DEV_FEE + ASSEMBLY_FEE;
+                priceDiyPreview.textContent = basePrice;
+                priceReadyPreview.textContent = basePrice + ASSEMBLY_FEE;
             }
         }
         projBasePriceInput.addEventListener('input', updatePricePreview);
