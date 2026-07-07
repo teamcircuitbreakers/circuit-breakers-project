@@ -78,7 +78,7 @@
 
 <div class="glass-card">
   <h2>DigiLocker KYC Onboarding</h2>
-  <p>Initialize a secure, encrypted DigiLocker session via Surepass.</p>
+  <p>Initialize a secure DigiLocker session via Surepass.</p>
   
   <button id="init-btn" onclick="initializeDigiLocker()">Initialize Session</button>
 
@@ -96,7 +96,7 @@
 </div>
 
 <script>
-  // Pointing to your deployed Cloudflare Worker
+  // Pointing to your deployed Cloudflare Worker proxy
   const WORKER_URL = "https://soft-lab-fea9.devteam-circuitbreakers.workers.dev";
 
   async function initializeDigiLocker() {
@@ -104,7 +104,7 @@
     btn.disabled = true;
     btn.innerText = "Initializing securely...";
 
-    // Payload wrapped in the "data" object exactly like the Surepass Postman environment
+    // Updated payload to match the Surepass console exactly
     const payload = {
       "data": {
         "expiry_minutes": 10,
@@ -112,9 +112,9 @@
         "send_email": false,
         "verify_phone": false,
         "verify_email": false,
-        "signup_flow": true,
         "redirect_url": window.location.href, // Redirects back to this exact page when done
-        "state": "test"
+        "skip_main_screen": false,
+        "signup_flow": false
       }
     };
 
@@ -132,7 +132,7 @@
         document.getElementById('link-container').style.display = 'block';
         
         // Extract the URL and Dynamic Client ID
-        const generatedUrl = responseData.data.url;
+        const generatedUrl = responseData.data.url || responseData.data.authorization_url;
         const dynamicClientId = responseData.data.client_id;
         
         // Update the UI
@@ -144,7 +144,8 @@
         
         btn.style.display = 'none';
       } else {
-        alert("Failed to initialize: " + JSON.stringify(responseData));
+        alert("API Error: " + JSON.stringify(responseData));
+        console.error("Full response:", responseData);
         btn.disabled = false;
         btn.innerText = "Try Again";
       }
