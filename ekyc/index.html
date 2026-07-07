@@ -21,7 +21,7 @@
     display: flex;
     justify-content: center;
     align-items: center;
-    height: 100vh;
+    min-height: 100vh;
     margin: 0;
   }
 
@@ -32,7 +32,7 @@
     border-radius: 16px;
     padding: 32px;
     width: 100%;
-    max-width: 450px;
+    max-width: 500px;
     text-align: center;
     box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
   }
@@ -48,7 +48,7 @@
   
   button:disabled { background: #334155; color: #94a3b8; cursor: wait; }
 
-  #link-container {
+  #link-container, #data-container, #loading-container {
     display: none;
     margin-top: 20px;
     padding: 16px;
@@ -68,43 +68,70 @@
     border-radius: 6px;
     font-weight: bold;
     text-align: center;
-    transition: background 0.2s;
   }
   
-  a.digilocker-btn:hover { background: #2563eb; }
+  pre {
+    background: #000;
+    padding: 12px;
+    border-radius: 6px;
+    overflow-x: auto;
+    font-size: 0.8rem;
+    color: #34d399;
+    text-align: left;
+  }
 </style>
 </head>
 <body>
 
 <div class="glass-card">
   <h2>DigiLocker KYC Onboarding</h2>
-  <p>Initialize a secure DigiLocker session via Surepass.</p>
+  <p id="main-desc">Initialize a secure DigiLocker session via Surepass.</p>
   
   <button id="init-btn" onclick="initializeDigiLocker()">Initialize Session</button>
 
+  <!-- Step 1: The Link -->
   <div id="link-container">
-    <p style="color: var(--primary); margin-bottom: 12px; font-weight: bold; text-align: center;">Session Created Successfully!</p>
-    
-    <div style="font-size: 0.85rem; margin-bottom: 8px;">
-      <span style="color: var(--text-muted);">Dynamic Session Client ID:</span><br>
-      <span id="display-client-id" style="color: #f8fafc; font-family: monospace; word-break: break-all;"></span>
-    </div>
-    
-    <!-- This button redirects the user to the URL returned by the API -->
-    <a href="#" id="digilocker-link" class="digilocker-btn" target="_blank">Open DigiLocker Portal</a>
+    <p style="color: var(--primary); margin-bottom: 12px; font-weight: bold; text-align: center;">Session Created!</p>
+    <a href="#" id="digilocker-link" class="digilocker-btn">Open DigiLocker Portal</a>
+  </div>
+
+  <!-- Step 2: Fetching Data State -->
+  <div id="loading-container">
+    <p style="text-align: center; color: var(--primary);">User returned! Fetching KYC data from Surepass...</p>
+  </div>
+
+  <!-- Step 3: The Result Data -->
+  <div id="data-container">
+    <h3 style="color: var(--primary); margin-top: 0;">KYC Data Retrieved ✓</h3>
+    <p style="font-size: 0.85rem; color: var(--text-muted); margin-bottom: 8px;">Here is the raw output from DigiLocker:</p>
+    <pre id="json-output"></pre>
+    <button onclick="window.location.href = window.location.pathname" style="margin-top: 16px;">Start New Session</button>
   </div>
 </div>
 
 <script>
-  // Pointing to your deployed Cloudflare Worker proxy
   const WORKER_URL = "https://soft-lab-fea9.devteam-circuitbreakers.workers.dev";
+
+  // Check URL on page load to see if we just returned from DigiLocker
+  window.onload = async () => {
+    const urlParams = new URLSearchParams(window.location.search);
+    const returningClientId = urlParams.get('client_id');
+
+    if (returningClientId) {
+      // We are returning from the DigiLocker flow!
+      document.getElementById('init-btn').style.display = 'none';
+      document.getElementById('main-desc').style.display = 'none';
+      document.getElementById('loading-container').style.display = 'block';
+      
+      await fetchFinalCustomerData(returningClientId);
+    }
+  };
 
   async function initializeDigiLocker() {
     const btn = document.getElementById('init-btn');
     btn.disabled = true;
     btn.innerText = "Initializing securely...";
 
-    // Updated payload to match the Surepass console exactly
     const payload = {
       "data": {
         "expiry_minutes": 10,
@@ -112,7 +139,7 @@
         "send_email": false,
         "verify_phone": false,
         "verify_email": false,
-        "redirect_url": window.location.href, // Redirects back to this exact page when done
+        "redirect_url": window.location.href, // User comes back here
         "skip_main_screen": false,
         "signup_flow": false
       }
@@ -128,32 +155,45 @@
       const responseData = await res.json();
       
       if (responseData.success && responseData.data) {
-        // Unhide the success container
         document.getElementById('link-container').style.display = 'block';
-        
-        // Extract the URL and Dynamic Client ID
-        const generatedUrl = responseData.data.url || responseData.data.authorization_url;
-        const dynamicClientId = responseData.data.client_id;
-        
-        // Update the UI
-        document.getElementById('digilocker-link').href = generatedUrl;
-        document.getElementById('display-client-id').innerText = dynamicClientId;
-        
-        // Optional: Save this dynamic client_id to localStorage to fetch documents later
-        localStorage.setItem('surepass_session_client_id', dynamicClientId);
-        
+        document.getElementById('digilocker-link').href = responseData.data.url;
         btn.style.display = 'none';
       } else {
         alert("API Error: " + JSON.stringify(responseData));
-        console.error("Full response:", responseData);
         btn.disabled = false;
         btn.innerText = "Try Again";
       }
     } catch (e) {
-      console.error(e);
-      alert("Connection error. Check console.");
+      alert("Connection error.");
       btn.disabled = false;
-      btn.innerText = "Initialize Session";
+    }
+  }
+
+  // New Function: Fetch the actual data using the Client ID
+  async function fetchFinalCustomerData(clientId) {
+    try {
+      // Based on standard Surepass Docs, it is usually a POST to get-status
+      // Check your Postman "Get Status" endpoint to confirm this path!
+      const statusEndpoint = "/api/v1/digilocker/get-status"; 
+      
+      const res = await fetch(`${WORKER_URL}${statusEndpoint}`, {
+        method: 'POST', 
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ client_id: clientId })
+      });
+
+      const data = await res.json();
+      
+      document.getElementById('loading-container').style.display = 'none';
+      document.getElementById('data-container').style.display = 'block';
+      
+      // Display the JSON output beautifully on the screen
+      document.getElementById('json-output').innerText = JSON.stringify(data, null, 2);
+
+    } catch (e) {
+      document.getElementById('loading-container').style.display = 'none';
+      alert("Failed to fetch final data. Check console.");
+      console.error(e);
     }
   }
 </script>
