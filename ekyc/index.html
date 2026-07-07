@@ -169,30 +169,38 @@
     }
   }
 
-  // New Function: Fetch the actual data using the Client ID
+  // New Function: Fetch the actual data using the Client ID via a GET request
   async function fetchFinalCustomerData(clientId) {
     try {
-      // Based on standard Surepass Docs, it is usually a POST to get-status
-      // Check your Postman "Get Status" endpoint to confirm this path!
-      const statusEndpoint = "/api/v1/digilocker/get-status"; 
+      // 1. Build the exact endpoint path shown in your screenshot
+      const dataEndpoint = `/api/v1/digilocker/download-aadhaar/${clientId}`; 
       
-      const res = await fetch(`${WORKER_URL}${statusEndpoint}`, {
-        method: 'POST', 
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ client_id: clientId })
+      // 2. Make a GET request to your Cloudflare Worker proxy
+      const res = await fetch(`${WORKER_URL}${dataEndpoint}`, {
+        method: 'GET',
+        headers: { 'Content-Type': 'application/json' }
       });
+
+      // 3. Catch HTML errors gracefully in case of 404s or invalid paths
+      const contentType = res.headers.get("content-type");
+      if (contentType && contentType.indexOf("text/html") !== -1) {
+          const htmlText = await res.text();
+          console.error("Received HTML error:", htmlText);
+          throw new Error("Server returned an HTML page. Double-check your API permissions.");
+      }
 
       const data = await res.json();
       
+      // 4. Update the UI
       document.getElementById('loading-container').style.display = 'none';
       document.getElementById('data-container').style.display = 'block';
       
-      // Display the JSON output beautifully on the screen
+      // 5. Display the JSON Output
       document.getElementById('json-output').innerText = JSON.stringify(data, null, 2);
 
     } catch (e) {
       document.getElementById('loading-container').style.display = 'none';
-      alert("Failed to fetch final data. Check console.");
+      alert(e.message);
       console.error(e);
     }
   }
