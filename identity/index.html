@@ -27,7 +27,7 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <!-- Newly Added QRCode Library -->
+    <!-- Essential for Dual QR generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
@@ -87,23 +87,24 @@
         .tag-remove:hover { color: #ef4444; }
         .tag-input { border: none; outline: none; flex: 1; min-width: 100px; padding: 0.25rem; font-size: 1rem; }
 
-        /* SURGICAL PDF STYLING: Tuned for Dual QRs */
         #pdf-template { 
             display: none; 
-            width: 794px;         
-            height: 1123px;       
-            padding: 30px 40px;   /* Margins reduced to fit QRs */
+            width: 794px;         /* Strict Mathematical A4 Width */
+            height: 1123px;       /* Strict Mathematical A4 Height */
+            padding: 35px 40px;   
             background: #ffffff; 
             color: #1e293b; 
             position: relative; 
             box-sizing: border-box; 
-            overflow: hidden;     
+            overflow: hidden;     /* Force strict 1-page boundary */
+            display: flex;
+            flex-direction: column;
         }
         
-        .pdf-header { border-bottom: 3px solid #14b8a6; padding-bottom: 12px; margin-bottom: 12px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+        .pdf-header { border-bottom: 3px solid #14b8a6; padding-bottom: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
         .pdf-photo { width: 110px; height: 110px; object-fit: cover; border: 4px solid #14b8a6; border-radius: 50%; box-shadow: 0 4px 10px rgba(20, 184, 166, 0.15); flex-shrink: 0; }
-        .pdf-section { margin-bottom: 10px; } /* Slightly tightened margins */
-        .pdf-section-title { font-size: 1.05rem; color: #14b8a6; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 6px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .pdf-section { margin-bottom: 12px; }
+        .pdf-section-title { font-size: 1.05rem; color: #14b8a6; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
         .pdf-grid { display: grid; gap: 6px; font-size: 0.85rem; }
         .pdf-label { font-weight: 600; color: #475569; }
         .pdf-value { color: #0f172a; font-weight: 500; }
@@ -114,22 +115,20 @@
         .pdf-tags { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.85rem; }
         .pdf-tag-item { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
 
-        /* Dynamic Footer with Dual QRs */
-        .pdf-footer-block {
-            position: absolute;
-            bottom: 20px;
-            left: 40px;
-            right: 40px;
+        /* Dual QR Code Footer CSS */
+        .qr-footer {
+            margin-top: auto; /* Pushes to bottom of A4 */
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
             border-top: 2px solid #e2e8f0;
             padding-top: 10px;
         }
-        .qr-wrapper { text-align: center; }
-        .qr-code img { width: 64px; height: 64px; margin: 0 auto; border: 2px solid #f1f5f9; border-radius: 4px; }
-        .qr-text { font-size: 10px; font-weight: 700; color: #64748b; margin-top: 4px; letter-spacing: 0.5px; }
-        .pdf-watermark-inline { text-align: center; color: #94a3b8; font-size: 12px; font-weight: 500; padding-bottom: 10px; }
+        .qr-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .qr-code { width: 60px; height: 60px; background: #fff; padding: 2px; border: 1px solid #cbd5e1; border-radius: 4px; }
+        /* Force image rendering to be pixelated so high density QRs scan perfectly */
+        .qr-code img { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
+        .qr-text { font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center relative py-6">
@@ -256,7 +255,7 @@
                             </div>
                             <div class="md:col-span-2">
                                 <label class="block text-xs font-semibold text-slate-500 mb-1">Relation</label>
-                                <input type="text" id="input-emergency-relation" class="smart-input text-sm py-2.5" placeholder="e.g. Father, Mother, Guardian" maxlength="25">
+                                <input type="text" id="input-emergency-relation" class="smart-input text-sm py-2.5" placeholder="e.g. Father, Mother" maxlength="25">
                             </div>
                         </div>
                     </div>
@@ -318,7 +317,7 @@
                 <div class="mb-5 p-3 bg-brand-50 border border-brand-100 rounded-xl">
                     <label class="block text-sm font-bold text-brand-900 mb-2">Highest Qualification</label>
                     <select id="input-highest-qual" class="smart-input !border-brand-200 cursor-pointer text-brand-900">
-                        <option value="" disabled selected>Select Highest Level Completed...</option>
+                        <option value="" disabled selected>Select Highest Level...</option>
                         <option value="10">10th / Secondary</option>
                         <option value="12">12th / Higher Secondary / Diploma</option>
                         <option value="UG">Bachelor's Degree / UG</option>
@@ -434,20 +433,38 @@
                 </div>
             </div>
 
-            <!-- STEP 11: Final -->
+            <!-- STEP 11: Final (Original Generation Screen) -->
             <div class="step-container text-center" data-step="11">
                 <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <i class="ph-fill ph-check-circle text-4xl text-green-500"></i>
                 </div>
                 <h2 class="text-2xl font-bold text-slate-800 mb-3">Profile Complete</h2>
-                <p class="text-slate-500 mb-8 max-w-sm mx-auto text-sm">Your data has been verified, structured, and compiled into a professional format.</p>
+                <p class="text-slate-500 mb-8 max-w-sm mx-auto text-sm">Your data has been verified, encrypted, and compiled. Generating high-resolution PDF...</p>
                 
-                <div class="flex flex-col gap-3">
+                <div class="flex flex-col gap-3" id="final-action-buttons" style="display: none;">
                     <button id="btn-download" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
                         <i class="ph-bold ph-file-pdf text-xl"></i> Download PDF
                     </button>
                     <button id="btn-share" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
                         <i class="ph-bold ph-share-network text-xl"></i> Quick Share
+                    </button>
+                </div>
+            </div>
+
+            <!-- STEP 12: Digital View / Edit Routing Screen -->
+            <div class="step-container text-center" data-step="12">
+                <div class="w-20 h-20 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <i class="ph-fill ph-identification-card text-4xl text-brand-500"></i>
+                </div>
+                <h2 class="text-2xl font-bold text-slate-800 mb-3">Digital Profile Loaded</h2>
+                <p class="text-slate-500 mb-8 max-w-sm mx-auto text-sm">You are viewing a secure digital copy of this Biodata. You can download it directly or edit the details to generate a new copy.</p>
+                
+                <div class="flex flex-col gap-3">
+                    <button id="btn-view-download" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-download-simple text-xl"></i> Download As-Is
+                    </button>
+                    <button id="btn-view-edit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-pencil-simple text-xl"></i> Edit Details
                     </button>
                 </div>
             </div>
@@ -471,99 +488,101 @@
 
     <div id="pdf-container" class="hidden">
         <div id="pdf-template">
-            <div class="pdf-header">
-                <div>
-                    <h1 id="pdf-name" style="font-size: 2.1rem; font-weight: 700; color: #0f172a; margin-bottom: 2px; font-family: 'Playfair Display', serif;">Name</h1>
-                    <p id="pdf-subtitle" style="color: #64748b; font-size: 0.95rem; letter-spacing: 1px; text-transform: uppercase;">BIODATA</p>
-                    <div style="margin-top: 12px; font-size: 0.85rem; color: #334155; line-height: 1.4;">
-                        <div><i class="ph-fill ph-phone" style="position:relative; top:2px"></i> <span id="pdf-phone"></span></div>
-                        <div><i class="ph-fill ph-envelope" style="position:relative; top:2px"></i> <span id="pdf-email"></span></div>
-                        <div><i class="ph-fill ph-map-pin" style="position:relative; top:2px"></i> <span id="pdf-address-short"></span></div>
+            <div class="flex-1">
+                <div class="pdf-header">
+                    <div>
+                        <h1 id="pdf-name" style="font-size: 2.1rem; font-weight: 700; color: #0f172a; margin-bottom: 2px; font-family: 'Playfair Display', serif;">Name</h1>
+                        <p id="pdf-subtitle" style="color: #64748b; font-size: 0.95rem; letter-spacing: 1px; text-transform: uppercase;">BIODATA</p>
+                        <div style="margin-top: 12px; font-size: 0.85rem; color: #334155; line-height: 1.4;">
+                            <div><i class="ph-fill ph-phone" style="position:relative; top:2px"></i> <span id="pdf-phone"></span></div>
+                            <div><i class="ph-fill ph-envelope" style="position:relative; top:2px"></i> <span id="pdf-email"></span></div>
+                            <div><i class="ph-fill ph-map-pin" style="position:relative; top:2px"></i> <span id="pdf-address-short"></span></div>
+                        </div>
+                    </div>
+                    <img id="pdf-photo-img" class="pdf-photo" src="" alt="Photo" style="display: none;">
+                </div>
+
+                <!-- Compact Personal Info -->
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Personal Information</div>
+                    <div class="pdf-grid" style="grid-template-columns: 120px 1fr 120px 1fr;">
+                        <div class="pdf-label">Date of Birth:</div><div class="pdf-value" id="pdf-dob"></div>
+                        <div class="pdf-label">Gender:</div><div class="pdf-value" id="pdf-gender"></div>
+                        <div class="pdf-label">Blood Group:</div><div class="pdf-value" id="pdf-blood"></div>
+                        <div class="pdf-label">Height:</div><div class="pdf-value" id="pdf-height"></div>
+                        <div class="pdf-label">Religion:</div><div class="pdf-value" id="pdf-religion"></div>
+                        <div class="pdf-label" id="pdf-label-caste">Caste:</div><div class="pdf-value" id="pdf-caste"></div>
                     </div>
                 </div>
-                <img id="pdf-photo-img" class="pdf-photo" src="" alt="Photo" style="display: none;">
-            </div>
 
-            <!-- Compact Personal Info -->
-            <div class="pdf-section">
-                <div class="pdf-section-title">Personal Information</div>
-                <div class="pdf-grid" style="grid-template-columns: 120px 1fr 120px 1fr;">
-                    <div class="pdf-label">Date of Birth:</div><div class="pdf-value" id="pdf-dob"></div>
-                    <div class="pdf-label">Gender:</div><div class="pdf-value" id="pdf-gender"></div>
-                    <div class="pdf-label">Blood Group:</div><div class="pdf-value" id="pdf-blood"></div>
-                    <div class="pdf-label">Height:</div><div class="pdf-value" id="pdf-height"></div>
-                    <div class="pdf-label">Religion:</div><div class="pdf-value" id="pdf-religion"></div>
-                    <div class="pdf-label" id="pdf-label-caste">Caste:</div><div class="pdf-value" id="pdf-caste"></div>
+                <!-- Dynamic Academic Table -->
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Academic Qualifications</div>
+                    <table class="pdf-table">
+                        <thead>
+                            <tr>
+                                <th>Examination</th>
+                                <th>Board / University</th>
+                                <th>Total</th>
+                                <th>Obtained</th>
+                                <th>Percentage</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pdf-academic-tbody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Professional Traits -->
+                <div class="pdf-section" id="pdf-traits-section">
+                    <div class="pdf-section-title">Skills & Languages</div>
+                    <div class="pdf-grid" style="grid-template-columns: 100px 1fr;">
+                        <div class="pdf-label" id="pdf-label-skills">Key Skills:</div>
+                        <div class="pdf-tags" id="pdf-skills"></div>
+                        <div class="pdf-label mt-1" id="pdf-label-langs">Languages:</div>
+                        <div class="pdf-tags mt-1" id="pdf-langs"></div>
+                    </div>
+                </div>
+
+                <!-- Current Status -->
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Current Status</div>
+                    <div class="pdf-grid" style="grid-template-columns: 120px 1fr 120px 1fr;">
+                        <div class="pdf-label">Primary Status:</div><div class="pdf-value" id="pdf-status"></div>
+                        <div class="pdf-label" id="pdf-label-inst">Institution:</div><div class="pdf-value" id="pdf-inst"></div>
+                        <div class="pdf-label" id="pdf-label-role">Role/Job:</div><div class="pdf-value" id="pdf-role"></div>
+                    </div>
+                </div>
+
+                <!-- Family & Emergency -->
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Family Details</div>
+                    <div class="pdf-grid" style="grid-template-columns: 120px 1fr 120px 1fr;">
+                        <div class="pdf-label">Father's Name:</div><div class="pdf-value" id="pdf-father"></div>
+                        <div class="pdf-label">Mother's Name:</div><div class="pdf-value" id="pdf-mother"></div>
+                        <div class="pdf-label">Emergency Contact:</div><div class="pdf-value col-span-3" id="pdf-emergency"></div>
+                    </div>
+                </div>
+
+                <!-- Permanent Address -->
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Permanent Address</div>
+                    <div class="pdf-value" id="pdf-address" style="line-height: 1.4; font-size: 0.85rem; white-space: pre-line;"></div>
                 </div>
             </div>
 
-            <!-- Dynamic Academic Table -->
-            <div class="pdf-section">
-                <div class="pdf-section-title">Academic Qualifications</div>
-                <table class="pdf-table">
-                    <thead>
-                        <tr>
-                            <th>Examination</th>
-                            <th>Board / University</th>
-                            <th>Total</th>
-                            <th>Obtained</th>
-                            <th>Percentage</th>
-                            <th>Grade</th>
-                        </tr>
-                    </thead>
-                    <tbody id="pdf-academic-tbody"></tbody>
-                </table>
-            </div>
-
-            <!-- Professional Traits -->
-            <div class="pdf-section" id="pdf-traits-section">
-                <div class="pdf-section-title">Skills & Languages</div>
-                <div class="pdf-grid" style="grid-template-columns: 100px 1fr;">
-                    <div class="pdf-label" id="pdf-label-skills">Key Skills:</div>
-                    <div class="pdf-tags" id="pdf-skills"></div>
-                    <div class="pdf-label mt-1" id="pdf-label-langs">Languages:</div>
-                    <div class="pdf-tags mt-1" id="pdf-langs"></div>
-                </div>
-            </div>
-
-            <!-- Current Status -->
-            <div class="pdf-section">
-                <div class="pdf-section-title">Current Status</div>
-                <div class="pdf-grid" style="grid-template-columns: 120px 1fr 120px 1fr;">
-                    <div class="pdf-label">Primary Status:</div><div class="pdf-value" id="pdf-status"></div>
-                    <div class="pdf-label" id="pdf-label-inst">Institution:</div><div class="pdf-value" id="pdf-inst"></div>
-                    <div class="pdf-label" id="pdf-label-role">Role/Job:</div><div class="pdf-value" id="pdf-role"></div>
-                </div>
-            </div>
-
-            <!-- Family & Emergency -->
-            <div class="pdf-section">
-                <div class="pdf-section-title">Family Details</div>
-                <div class="pdf-grid" style="grid-template-columns: 120px 1fr 120px 1fr;">
-                    <div class="pdf-label">Father's Name:</div><div class="pdf-value" id="pdf-father"></div>
-                    <div class="pdf-label">Mother's Name:</div><div class="pdf-value" id="pdf-mother"></div>
-                    <div class="pdf-label">Emergency Contact:</div><div class="pdf-value col-span-3" id="pdf-emergency"></div>
-                </div>
-            </div>
-
-            <!-- Permanent Address -->
-            <div class="pdf-section">
-                <div class="pdf-section-title">Permanent Address</div>
-                <div class="pdf-value" id="pdf-address" style="line-height: 1.4; font-size: 0.85rem; white-space: pre-line;"></div>
-            </div>
-            
-            <!-- Dual QR Code Footer -->
-            <div class="pdf-footer-block">
-                <div class="qr-wrapper">
+            <!-- The Dual QR Code Footer -->
+            <div class="qr-footer">
+                <div class="qr-box">
                     <div id="qr-vcard" class="qr-code"></div>
-                    <div class="qr-text">ADD CONTACT</div>
+                    <div class="qr-text">Scan for Contact</div>
                 </div>
-                <div class="pdf-watermark-inline">
+                <div style="text-align: center; color: #94a3b8; font-size: 0.85rem; font-weight: 500; align-self: center; padding-bottom: 5px;">
                     Made with <i class="ph-fill ph-leaf" style="color: #14b8a6; position: relative; top: 2px;"></i> Identity.
                 </div>
-                <div class="qr-wrapper">
+                <div class="qr-box">
                     <div id="qr-digital" class="qr-code"></div>
-                    <div class="qr-text">DIGITAL PROFILE</div>
+                    <div class="qr-text">Digital Profile</div>
                 </div>
             </div>
         </div>
@@ -576,9 +595,7 @@
             let generatedPdfBlob = null;
             let cropper = null;
 
-            // Worker API URL
-            const WORKER_API_URL = 'https://identity.devteam-circuitbreakers.workers.dev/api/save';
-
+            // Global State
             const userData = {
                 photoUrl: '', fullname: '', gender: '', dob: '', height: '', bloodGroup: '',
                 phone: '', email: '', emergency: '', religion: '', caste: '',
@@ -588,7 +605,7 @@
                 address: { house: '', village: '', po: '', ps: '', district: '', state: '', pin: '' }
             };
 
-            // Initialize Height Options
+            // Height Generator
             const heightSelect = document.getElementById('input-height');
             for(let f=4; f<=7; f++) {
                 for(let i=0; i<12; i++) {
@@ -598,7 +615,7 @@
                 }
             }
 
-            // Advanced Surgical Validation Object
+            // Sanitizer & Utilities
             const Sanitizer = {
                 cleanString: (str) => {
                     if(!str) return '';
@@ -610,13 +627,10 @@
                 isValidName: (str) => {
                     if (!/^[a-zA-Z\s\.]+$/.test(str)) return false;
                     let parts = str.trim().split(/\s+/);
-                    if (parts.length < 2) return false; 
-                    
+                    if (parts.length < 2) return false;
                     let p1 = parts[0].toLowerCase().replace(/\./g,'');
                     let p2 = parts[1].toLowerCase().replace(/\./g,'');
-                    if (p1 === p2) return false; 
-                    if (p1.length < 2 || p2.length < 2) return false; 
-                    
+                    if (p1 === p2 || p1.length < 2 || p2.length < 2) return false;
                     const dummies = ['abc', 'xyz', 'test', 'dummy', 'qwer', 'asdf'];
                     if (dummies.includes(p1) || dummies.includes(p2)) return false;
                     return true;
@@ -657,23 +671,32 @@
             const navButtons = document.getElementById('nav-buttons');
             const progressBar = document.getElementById('progress-bar');
             
+            // UI Routing Logic
             function updateUI() {
-                progressBar.style.width = `${((currentStep - 1) / (TOTAL_STEPS - 1)) * 100}%`;
-                document.getElementById('step-counter').textContent = `Step ${currentStep} of ${TOTAL_STEPS}`;
+                if (currentStep <= TOTAL_STEPS) {
+                    progressBar.style.width = `${((currentStep - 1) / (TOTAL_STEPS - 1)) * 100}%`;
+                    document.getElementById('step-counter').textContent = `Step ${currentStep} of ${TOTAL_STEPS}`;
+                } else {
+                    progressBar.style.width = '100%';
+                    document.getElementById('step-counter').textContent = `Digital View`;
+                }
                 
                 steps.forEach(s => s.classList.remove('active'));
-                document.querySelector(`.step-container[data-step="${currentStep}"]`).classList.add('active');
+                const targetStep = document.querySelector(`.step-container[data-step="${currentStep}"]`);
+                if(targetStep) targetStep.classList.add('active');
 
                 btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
-                if(currentStep === TOTAL_STEPS) {
+                
+                if (currentStep >= TOTAL_STEPS) {
                     navButtons.style.display = 'none';
-                    prepareFinalData(); // Triggers the heavy lifting
+                    if (currentStep === TOTAL_STEPS) prepareFinalData();
                 } else {
                     navButtons.style.display = 'flex';
                     btnNext.innerHTML = currentStep === TOTAL_STEPS - 1 ? 'Generate Profile <i class="ph-bold ph-magic-wand"></i>' : 'Continue <i class="ph-bold ph-arrow-right"></i>';
                 }
             }
 
+            // UI Listeners
             document.querySelectorAll('.pill-grid').forEach(grid => {
                 grid.addEventListener('click', (e) => {
                     if(e.target.classList.contains('smart-pill')) {
@@ -691,7 +714,6 @@
                 const wrapStudType = document.getElementById('wrapper-student-type');
                 
                 fields.classList.remove('hidden');
-                
                 document.getElementById('input-institution').value = '';
                 document.getElementById('input-role').value = '';
                 
@@ -720,22 +742,15 @@
                         container.insertBefore(span, input);
                     });
                 }
-
                 container.addEventListener('click', (e) => {
-                    if(e.target.classList.contains('tag-remove')) {
-                        arrayRef.splice(e.target.dataset.idx, 1);
-                        renderTags();
-                    }
+                    if(e.target.classList.contains('tag-remove')) { arrayRef.splice(e.target.dataset.idx, 1); renderTags(); }
                 });
-
                 input.addEventListener('keydown', (e) => {
                     if(e.key === 'Enter' || e.key === ',') {
                         e.preventDefault();
                         const val = Sanitizer.cleanString(input.value);
                         if(val && !arrayRef.includes(val) && arrayRef.length < maxTags) {
-                            arrayRef.push(val);
-                            input.value = '';
-                            renderTags();
+                            arrayRef.push(val); input.value = ''; renderTags();
                         } else if (arrayRef.length >= maxTags) {
                             showError(`Maximum ${maxTags} entries allowed here.`);
                         }
@@ -745,65 +760,19 @@
             setupTagInput('skills-container', 'input-skill', userData.skills, 5);
             setupTagInput('languages-container', 'input-language', userData.languages, 5);
 
+            // Academic Logic
             const academicTbody = document.getElementById('academic-tbody');
             const qualSelect = document.getElementById('input-highest-qual');
             const acadTableContainer = document.getElementById('academic-table-container');
 
-            const getBoardOptions10 = () => `
-                <option value="" disabled selected>Select Board</option>
-                <option value="WBBSE" data-tot="700">WBBSE (West Bengal) - 700</option>
-                <option value="CBSE" data-tot="500">CBSE - 500</option>
-                <option value="ICSE" data-tot="500">ICSE - 500</option>
-                <option value="UPMSP" data-tot="600">UP Board - 600</option>
-                <option value="BSEB" data-tot="500">BSEB (Bihar) - 500</option>
-                <option value="MSBSHSE" data-tot="500">Maharashtra SSC - 500</option>
-                <option value="Other" data-tot="">Other Board</option>
-            `;
-
-            const getBoardOptions12 = () => `
-                <option value="" disabled selected>Select Board</option>
-                <option value="WBCHSE" data-tot="500">WBCHSE (West Bengal) - 500</option>
-                <option value="CBSE" data-tot="500">CBSE - 500</option>
-                <option value="ISC" data-tot="500">ISC - 500</option>
-                <option value="UPMSP" data-tot="500">UP Board - 500</option>
-                <option value="BSEB" data-tot="500">BSEB (Bihar) - 500</option>
-                <option value="MSBSHSE" data-tot="600">Maharashtra HSC - 600</option>
-                <option value="Other" data-tot="">Other Board</option>
-            `;
+            const getBoardOptions10 = () => `<option value="" disabled selected>Select Board</option><option value="WBBSE" data-tot="700">WBBSE (West Bengal) - 700</option><option value="CBSE" data-tot="500">CBSE - 500</option><option value="ICSE" data-tot="500">ICSE - 500</option><option value="UPMSP" data-tot="600">UP Board - 600</option><option value="BSEB" data-tot="500">BSEB (Bihar) - 500</option><option value="MSBSHSE" data-tot="500">Maharashtra SSC - 500</option><option value="Other" data-tot="">Other Board</option>`;
+            const getBoardOptions12 = () => `<option value="" disabled selected>Select Board</option><option value="WBCHSE" data-tot="500">WBCHSE (West Bengal) - 500</option><option value="CBSE" data-tot="500">CBSE - 500</option><option value="ISC" data-tot="500">ISC - 500</option><option value="UPMSP" data-tot="500">UP Board - 500</option><option value="BSEB" data-tot="500">BSEB (Bihar) - 500</option><option value="MSBSHSE" data-tot="600">Maharashtra HSC - 600</option><option value="Other" data-tot="">Other Board</option>`;
 
             const rowTemplates = {
-                10: `<tr>
-                        <td><input type="text" class="table-input font-semibold" value="10th (Secondary)" readonly></td>
-                        <td><select class="table-input cursor-pointer board-selector">${getBoardOptions10()}</select></td>
-                        <td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td>
-                        <td><input type="number" class="table-input calc-trigger t-obt" placeholder="Marks" min="0"></td>
-                        <td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td>
-                        <td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td>
-                    </tr>`,
-                12: `<tr>
-                        <td><input type="text" class="table-input font-semibold" value="12th / Diploma" readonly></td>
-                        <td><select class="table-input cursor-pointer board-selector">${getBoardOptions12()}</select></td>
-                        <td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td>
-                        <td><input type="number" class="table-input calc-trigger t-obt" placeholder="Marks" min="0"></td>
-                        <td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td>
-                        <td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td>
-                    </tr>`,
-                UG: `<tr>
-                        <td><input type="text" class="table-input font-semibold" placeholder="Degree (e.g. B.Tech)" maxlength="20"></td>
-                        <td><input type="text" class="table-input" placeholder="University Name" maxlength="40"></td>
-                        <td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td>
-                        <td><input type="number" class="table-input calc-trigger t-obt" placeholder="Obtained" min="0"></td>
-                        <td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td>
-                        <td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td>
-                    </tr>`,
-                PG: `<tr>
-                        <td><input type="text" class="table-input font-semibold" placeholder="Degree (e.g. M.Tech)" maxlength="20"></td>
-                        <td><input type="text" class="table-input" placeholder="University Name" maxlength="40"></td>
-                        <td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td>
-                        <td><input type="number" class="table-input calc-trigger t-obt" placeholder="Obtained" min="0"></td>
-                        <td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td>
-                        <td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td>
-                    </tr>`
+                10: `<tr><td><input type="text" class="table-input font-semibold" value="10th (Secondary)" readonly></td><td><select class="table-input cursor-pointer board-selector">${getBoardOptions10()}</select></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Marks" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`,
+                12: `<tr><td><input type="text" class="table-input font-semibold" value="12th / Diploma" readonly></td><td><select class="table-input cursor-pointer board-selector">${getBoardOptions12()}</select></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Marks" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`,
+                UG: `<tr><td><input type="text" class="table-input font-semibold" placeholder="Degree (e.g. B.Tech)" maxlength="20"></td><td><input type="text" class="table-input" placeholder="University Name" maxlength="40"></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Obtained" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`,
+                PG: `<tr><td><input type="text" class="table-input font-semibold" placeholder="Degree (e.g. M.Tech)" maxlength="20"></td><td><input type="text" class="table-input" placeholder="University Name" maxlength="40"></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Obtained" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`
             };
 
             qualSelect.addEventListener('change', (e) => {
@@ -821,8 +790,7 @@
                 if(isNaN(perc) || perc === '') return '';
                 if(perc >= 90) return 'A+'; if(perc >= 80) return 'A';
                 if(perc >= 70) return 'B+'; if(perc >= 60) return 'B';
-                if(perc >= 50) return 'C';  if(perc >= 40) return 'D';
-                return 'F';
+                if(perc >= 50) return 'C';  if(perc >= 40) return 'D'; return 'F';
             }
 
             function attachAcademicListeners() {
@@ -831,13 +799,10 @@
                         const tr = e.target.closest('tr');
                         const totalBox = tr.querySelector('.t-tot');
                         const selectedOption = e.target.options[e.target.selectedIndex];
-                        
                         if (selectedOption.dataset.tot) {
                             totalBox.value = selectedOption.dataset.tot;
                             tr.querySelector('.t-obt').dispatchEvent(new Event('input')); 
-                        } else if (e.target.value === 'Other') {
-                            totalBox.value = ''; 
-                        }
+                        } else if (e.target.value === 'Other') totalBox.value = '';
                     });
                 });
 
@@ -854,8 +819,7 @@
 
                         if(total > 0 && obt >= 0) {
                             if(obt > total) { 
-                                percBox.value = 'Err'; gradeBox.value = '-'; 
-                                percBox.style.color = '#ef4444';
+                                percBox.value = 'Err'; gradeBox.value = '-'; percBox.style.color = '#ef4444';
                             } else {
                                 percBox.style.color = '#0f172a';
                                 let p = (total <= 10) ? (obt/total)*100 : (obt/total)*100;
@@ -863,13 +827,12 @@
                                 percBox.value = p > 100 ? 100 : p.toFixed(1) + '%';
                                 gradeBox.value = calculateGrade(p);
                             }
-                        } else {
-                            percBox.value = ''; gradeBox.value = '';
-                        }
+                        } else { percBox.value = ''; gradeBox.value = ''; }
                     });
                 });
             }
 
+            // Cropper
             const fileInput = document.getElementById('input-photo');
             const cropModal = document.getElementById('cropper-modal');
             const cropImage = document.getElementById('cropper-image');
@@ -885,9 +848,7 @@
                         cropImage.src = event.target.result;
                         cropModal.classList.add('active');
                         if(cropper) cropper.destroy();
-                        cropper = new Cropper(cropImage, {
-                            aspectRatio: 1, viewMode: 1, dragMode: 'move', autoCropArea: 0.8, guides: false,
-                        });
+                        cropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 1, dragMode: 'move', autoCropArea: 0.8, guides: false });
                     };
                     reader.readAsDataURL(file);
                 }
@@ -895,7 +856,6 @@
 
             document.getElementById('btn-crop-save').addEventListener('click', () => {
                 if (!cropper) return;
-                // High-Res Master for the PDF
                 const canvas = cropper.getCroppedCanvas({ width: 400, height: 400, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
                 const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
                 userData.photoUrl = dataUrl;
@@ -907,13 +867,14 @@
             });
             document.getElementById('btn-close-cropper').addEventListener('click', () => cropModal.classList.remove('active'));
 
+            // Validation Engine
             function validateStep() {
                 let s = Sanitizer;
                 switch(currentStep) {
                     case 1:
                         if(!userData.photoUrl) { showError("Please confirm a professional photo."); return false; }
                         let name = s.cleanString(document.getElementById('input-fullname').value);
-                        if(!s.isValidName(name)) { showError("Please enter a valid First and Last Name (No emojis/special chars)."); return false; }
+                        if(!s.isValidName(name)) { showError("Please enter a valid First and Last Name."); return false; }
                         userData.fullname = name;
                         break;
                     case 2:
@@ -938,16 +899,13 @@
                         let eName = s.cleanString(document.getElementById('input-emergency-name').value);
                         let eRel = s.cleanString(document.getElementById('input-emergency-relation').value);
                         
-                        if(!s.isValidPhone(ph)) { showError("Valid 10-digit mobile number required (No repetitive sequences)."); return false; }
+                        if(!s.isValidPhone(ph)) { showError("Valid 10-digit mobile number required."); return false; }
                         if(!s.isValidEmail(em)) { showError("Valid email address required."); return false; }
-                        
                         if(eph || eName || eRel) {
                             if(!s.isValidPhone(eph)) { showError("Valid 10-digit emergency number required."); return false; }
-                            if(!eName || !eRel) { showError("Emergency Name & Relation required if number is provided."); return false; }
+                            if(!eName || !eRel) { showError("Emergency Name & Relation required."); return false; }
                             userData.emergency = `+91 ${eph} | ${eName} - ${eRel}`;
-                        } else {
-                            userData.emergency = 'Not Provided';
-                        }
+                        } else { userData.emergency = 'Not Provided'; }
                         userData.phone = ph; userData.email = em; 
                         break;
                     case 5:
@@ -972,9 +930,7 @@
                         if(!qualSelect.value) { showError("Please select Highest Qualification."); return false; }
                         userData.education = [];
                         let hasMathError = false;
-                        
-                        const rows = academicTbody.querySelectorAll('tr');
-                        rows.forEach(tr => {
+                        academicTbody.querySelectorAll('tr').forEach(tr => {
                             const levelBox = tr.querySelector('td:nth-child(1) input');
                             const boardSel = tr.querySelector('td:nth-child(2) select, td:nth-child(2) input');
                             const totalBox = tr.querySelector('.t-tot');
@@ -986,10 +942,7 @@
                                 if(parseFloat(obtBox.value) > parseFloat(totalBox.value) || !percBox.value || percBox.value === 'Err') {
                                     hasMathError = true;
                                 }
-                                userData.education.push({
-                                    level: levelBox.value, board: boardSel.value, total: totalBox.value,
-                                    obt: obtBox.value, perc: percBox.value, grade: gradeBox.value
-                                });
+                                userData.education.push({ level: levelBox.value, board: boardSel.value, total: totalBox.value, obt: obtBox.value, perc: percBox.value, grade: gradeBox.value });
                             }
                         });
                         if(hasMathError) { showError("Check Marks. Obtained cannot exceed Total."); return false; }
@@ -1013,10 +966,8 @@
                         let dt = s.cleanString(document.getElementById('addr-district').value);
                         let st = s.cleanString(document.getElementById('addr-state').value);
                         let pi = s.cleanString(document.getElementById('addr-pin').value);
-                        
                         if(!dt || !st || !pi) { showError("District, State, and Pincode are strictly required."); return false; }
                         if(!/^\d{6}$/.test(pi)) { showError("Valid 6-digit Pincode required."); return false; }
-                        
                         userData.address = { house: hs, village: vi, po: po, ps: ps, district: dt, state: st, pin: pi };
                         break;
                 }
@@ -1026,6 +977,7 @@
             btnNext.addEventListener('click', () => { if(validateStep()) { currentStep++; updateUI(); } });
             btnPrev.addEventListener('click', () => { if(currentStep > 1) { currentStep--; updateUI(); } });
 
+            // Geo-Location
             document.getElementById('btn-fetch-location').addEventListener('click', async () => {
                 const btn = document.getElementById('btn-fetch-location');
                 const errMsg = document.getElementById('location-error-msg');
@@ -1039,8 +991,7 @@
 
                 navigator.geolocation.getCurrentPosition(
                     async (pos) => {
-                        const lat = pos.coords.latitude;
-                        const lon = pos.coords.longitude;
+                        const lat = pos.coords.latitude; const lon = pos.coords.longitude;
                         let foundData = false;
 
                         try {
@@ -1053,7 +1004,7 @@
                                 document.getElementById('addr-pin').value = ad.postcode || '';
                                 foundData = true;
                             }
-                        } catch(e) { console.log("BDC failed, attempting fallback"); }
+                        } catch(e) {}
 
                         if(!foundData) {
                             try {
@@ -1067,7 +1018,7 @@
                                     document.getElementById('addr-pin').value = ad.postcode || '';
                                     foundData = true;
                                 }
-                            } catch(e) { console.log("Nominatim failed"); }
+                            } catch(e) {}
                         }
 
                         if (foundData) {
@@ -1075,87 +1026,39 @@
                             setTimeout(()=> { btn.innerHTML = `<i class="ph-bold ph-crosshair text-lg"></i> Auto-Fetch Address`; }, 2000);
                         } else {
                             btn.innerHTML = `<i class="ph-bold ph-crosshair text-lg"></i> Auto-Fetch Address`;
-                            showError("Network blocked by browser security. Please type address manually.");
+                            showError("Network blocked by browser security. Please type manually.");
                         }
                     },
-                    (err) => { 
-                        btn.innerHTML = `<i class="ph-bold ph-crosshair text-lg"></i> Auto-Fetch Address`; 
-                        showError("GPS Access Denied or Location Services Disabled."); 
-                    },
+                    (err) => { btn.innerHTML = `<i class="ph-bold ph-crosshair text-lg"></i> Auto-Fetch Address`; showError("GPS Access Denied."); },
                     { enableHighAccuracy: true, timeout: 8000 }
                 );
             });
 
-            async function createProxyImage(dataUrl) {
+            async function generateHash(str) {
+                const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 10);
+            }
+
+            function compressImageProxy(dataUrl, quality = 0.6) {
                 return new Promise((resolve) => {
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        // Crush resolution for microscopic server footprint
-                        const maxDim = 150;
-                        let w = img.width, h = img.height;
-                        if(w > maxDim) { h = Math.round(h * maxDim / w); w = maxDim; }
-                        canvas.width = w; canvas.height = h;
+                        canvas.width = 150; canvas.height = 150; // Microscopic footprint
                         const ctx = canvas.getContext('2d');
-                        ctx.drawImage(img, 0, 0, w, h);
-                        // Convert to Lossy WebP (results in ~3-10KB string)
-                        resolve(canvas.toDataURL('image/webp', 0.6));
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/webp', quality));
                     };
                     img.src = dataUrl;
                 });
             }
 
-            async function generateHashId(dataStr) {
-                const encoder = new TextEncoder();
-                const hashBuffer = await crypto.subtle.digest('SHA-256', encoder.encode(dataStr));
-                const hashArray = Array.from(new Uint8Array(hashBuffer));
-                return hashArray.map(b => b.toString(16).padStart(2, '0')).join('').substring(0, 8); // 8-char Hash
-            }
-
             async function prepareFinalData() {
                 const ldr = document.getElementById('loader-overlay');
-                const ldrTxt = document.getElementById('loader-text');
                 ldr.classList.remove('hidden');
+                
+                // 1. Format text
                 const tf = Sanitizer.forceTitleCase;
-
-                // 1. Image Proxy Generation (Master stays in userData)
-                ldrTxt.textContent = "Compressing Data...";
-                const proxyPhoto = await createProxyImage(userData.photoUrl);
-                
-                const cloudPayload = JSON.parse(JSON.stringify(userData));
-                cloudPayload.photoUrl = proxyPhoto; // Swap 5MB Master with 10KB Proxy for Cloud
-
-                // 2. Hash ID Generation (Physical/Digital Enforcement)
-                ldrTxt.textContent = "Securing Identity Hash...";
-                const hashId = await generateHashId(JSON.stringify(cloudPayload));
-
-                // 3. API Sync to Cloudflare
-                ldrTxt.textContent = "Connecting to Serverless...";
-                try {
-                    await fetch(WORKER_API_URL, {
-                        method: 'POST',
-                        headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: hashId, payload: cloudPayload })
-                    });
-                } catch (e) {
-                    console.error("Cloud sync failed. Proceeding with offline rendering.", e);
-                }
-
-                // 4. Generate QR Footprints
-                ldrTxt.textContent = "Generating QR Footprints...";
-                document.getElementById("qr-vcard").innerHTML = "";
-                document.getElementById("qr-digital").innerHTML = "";
-                
-                // VCard
-                const vcardStr = `BEGIN:VCARD\nVERSION:3.0\nFN:${userData.fullname}\nTEL:+91${userData.phone}\nEMAIL:${userData.email}\nEND:VCARD`;
-                new QRCode(document.getElementById("qr-vcard"), { text: vcardStr, width: 64, height: 64, colorDark: "#1e293b", correctLevel: QRCode.CorrectLevel.L });
-                
-                // Digital Link (To Worker)
-                const digitalUrl = `https://identity.devteam-circuitbreakers.workers.dev/v/${hashId}`;
-                new QRCode(document.getElementById("qr-digital"), { text: digitalUrl, width: 64, height: 64, colorDark: "#1e293b", correctLevel: QRCode.CorrectLevel.L });
-
-                // 5. Populate the DOM Template
-                ldrTxt.textContent = "Compiling PDF Layout...";
                 document.getElementById('pdf-name').textContent = tf(userData.fullname);
                 document.getElementById('pdf-phone').textContent = "+91 " + userData.phone; 
                 document.getElementById('pdf-email').textContent = userData.email.toLowerCase(); 
@@ -1165,7 +1068,7 @@
                 if(userData.address.state) shortAddr.push(tf(userData.address.state));
                 document.getElementById('pdf-address-short').textContent = shortAddr.join(", ");
                 
-                document.getElementById('pdf-photo-img').src = userData.photoUrl; // Original High-Res Master
+                document.getElementById('pdf-photo-img').src = userData.photoUrl; // Uses 5MB Master for Print!
                 document.getElementById('pdf-photo-img').style.display = 'block';
 
                 document.getElementById('pdf-dob').textContent = tf(Sanitizer.formatDate(userData.dob));
@@ -1173,7 +1076,6 @@
                 document.getElementById('pdf-blood').textContent = userData.bloodGroup.toUpperCase(); 
                 document.getElementById('pdf-height').textContent = userData.height; 
                 document.getElementById('pdf-religion').textContent = tf(userData.religion);
-                
                 if(userData.caste === 'Not Specified') {
                     document.getElementById('pdf-label-caste').style.display = 'none';
                     document.getElementById('pdf-caste').style.display = 'none';
@@ -1221,7 +1123,31 @@
                 addrLines.push(`${tf(adr.district)}, ${tf(adr.state)} - ${adr.pin}.`);
                 document.getElementById('pdf-address').textContent = addrLines.join("\n");
 
-                // 6. Virtual Monitor Rendering Fix
+                // 2. Cryptographic Logic & Dual QR Generation
+                try {
+                    const proxyPhoto = await compressImageProxy(userData.photoUrl);
+                    const cloudPayload = { ...userData, photoUrl: proxyPhoto };
+                    const payloadString = JSON.stringify(cloudPayload);
+                    const hashId = await generateHash(payloadString);
+                    const digitalDeepLink = window.location.origin + window.location.pathname + '?v=' + hashId;
+                    
+                    document.getElementById('qr-vcard').innerHTML = '';
+                    document.getElementById('qr-digital').innerHTML = '';
+                    
+                    const vcardData = `BEGIN:VCARD\nVERSION:3.0\nFN:${tf(userData.fullname)}\nTEL:+91${userData.phone}\nEMAIL:${userData.email.toLowerCase()}\nEND:VCARD`;
+                    
+                    new QRCode(document.getElementById('qr-vcard'), { text: vcardData, width: 256, height: 256, correctLevel: QRCode.CorrectLevel.L });
+                    new QRCode(document.getElementById('qr-digital'), { text: digitalDeepLink, width: 256, height: 256, correctLevel: QRCode.CorrectLevel.L });
+                    
+                    // Non-blocking background sync to Cloudflare
+                    fetch('https://identity.devteam-circuitbreakers.workers.dev/api/save', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: hashId, payload: cloudPayload })
+                    }).catch(console.error);
+
+                } catch(e) { console.error("QR Engine Error: ", e); }
+
+                // 3. Absolute Virtual Monitor Rendering
                 setTimeout(() => {
                     const pdfContainer = document.getElementById('pdf-container');
                     const pdfTemplate = document.getElementById('pdf-template');
@@ -1233,7 +1159,8 @@
                     pdfContainer.style.width = '794px'; 
                     pdfContainer.style.display = 'block';
                     pdfContainer.style.zIndex = '-9999';
-                    pdfTemplate.style.display = 'block';
+                    
+                    pdfTemplate.style.display = 'flex';
 
                     setTimeout(() => {
                         const opt = {
@@ -1249,6 +1176,7 @@
                         html2pdf().set(opt).from(pdfTemplate).outputPdf('blob').then((blob) => {
                             generatedPdfBlob = blob;
                             ldr.classList.add('hidden');
+                            document.getElementById('final-action-buttons').style.display = 'flex';
                             
                             pdfTemplate.style.display = 'none';
                             pdfContainer.style.display = 'none';
@@ -1258,7 +1186,6 @@
                                 if(!navigator.share) document.getElementById('btn-share').style.display = 'none';
                             }
                         }).catch(err => {
-                            console.error("PDF Error: ", err);
                             ldr.classList.add('hidden');
                             pdfTemplate.style.display = 'none';
                             pdfContainer.style.display = 'none';
@@ -1292,7 +1219,114 @@
                 }
             });
 
-            updateUI();
+            // Step 12 Routing Buttons
+            document.getElementById('btn-view-download').addEventListener('click', () => {
+                // Instantly generate the PDF from the fetched data
+                currentStep = TOTAL_STEPS;
+                updateUI();
+            });
+
+            document.getElementById('btn-view-edit').addEventListener('click', () => {
+                // Route user back to Step 1 to edit pre-filled data
+                currentStep = 1;
+                updateUI();
+            });
+
+            function populateUIFromData(d) {
+                if(d.photoUrl) {
+                    document.getElementById('final-photo-preview').src = d.photoUrl;
+                    document.getElementById('final-photo-preview').style.display = 'block';
+                    document.querySelector('#photo-trigger i').style.display = 'none';
+                    document.getElementById('photo-hover-edit').classList.replace('hidden', 'flex');
+                }
+                const setVal = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ''; };
+                setVal('input-fullname', d.fullname);
+                setVal('input-dob', d.dob);
+                setVal('input-height', d.height);
+                setVal('input-blood', d.bloodGroup);
+                setVal('input-phone', d.phone);
+                setVal('input-email', d.email);
+                setVal('input-religion', d.religion);
+                setVal('input-caste', d.caste !== 'Not Specified' ? d.caste : '');
+                setVal('input-institution', d.institution);
+                setVal('input-role', d.role);
+                setVal('input-father', d.father);
+                setVal('input-mother', d.mother);
+                
+                // Emergency parsing
+                if(d.emergency && d.emergency !== 'Not Provided') {
+                    const parts = d.emergency.split(' | ');
+                    if(parts.length === 2) {
+                        setVal('input-emergency', parts[0].replace('+91 ', ''));
+                        const sub = parts[1].split(' - ');
+                        if(sub.length === 2) {
+                            setVal('input-emergency-name', sub[0]);
+                            setVal('input-emergency-relation', sub[1]);
+                        }
+                    }
+                }
+
+                if (d.address && typeof d.address === 'object') {
+                    setVal('addr-house', d.address.house);
+                    setVal('addr-village', d.address.village);
+                    setVal('addr-po', d.address.po);
+                    setVal('addr-ps', d.address.ps);
+                    setVal('addr-district', d.address.district);
+                    setVal('addr-state', d.address.state);
+                    setVal('addr-pin', d.address.pin);
+                }
+                
+                const activatePill = (gridId, val) => {
+                    if(!val) return;
+                    Array.from(document.getElementById(gridId).children).forEach(c => {
+                        if(c.dataset.value === val) c.classList.add('active'); else c.classList.remove('active');
+                    });
+                };
+                activatePill('gender-selection', d.gender);
+                activatePill('status-selection', d.status);
+                if(d.status) handleStatusChange(d.status);
+
+                const renderTags = (containerId, inputId, arrayRef) => {
+                    const container = document.getElementById(containerId);
+                    const input = document.getElementById(inputId);
+                    container.querySelectorAll('.tag-pill').forEach(e => e.remove());
+                    arrayRef.forEach((tag, idx) => {
+                        const span = document.createElement('span'); span.className = 'tag-pill';
+                        span.innerHTML = `${Sanitizer.forceTitleCase(tag)} <i class="ph-bold ph-x tag-remove" data-idx="${idx}"></i>`;
+                        container.insertBefore(span, input);
+                    });
+                };
+                renderTags('skills-container', 'input-skill', d.skills || []);
+                renderTags('languages-container', 'input-language', d.languages || []);
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewId = urlParams.get('v');
+            
+            if (viewId) {
+                const ldr = document.getElementById('loader-overlay');
+                ldr.classList.remove('hidden');
+                document.getElementById('loader-text').textContent = "Fetching Secure Profile...";
+                
+                fetch(`https://identity.devteam-circuitbreakers.workers.dev/api/data/${viewId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if(data.error) throw new Error();
+                    Object.assign(userData, data);
+                    populateUIFromData(data);
+                    
+                    currentStep = 12; // Force to Digital View Screen
+                    updateUI();
+                    ldr.classList.add('hidden');
+                    document.getElementById('loader-text').textContent = "Processing...";
+                }).catch(e => {
+                    showError("Could not load digital profile. It may have expired.");
+                    ldr.classList.add('hidden');
+                    updateUI();
+                });
+            } else {
+                updateUI(); // Normal start
+            }
         });
     </script>
 </body>
