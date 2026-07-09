@@ -87,6 +87,7 @@
         .tag-remove:hover { color: #ef4444; }
         .tag-input { border: none; outline: none; flex: 1; min-width: 100px; padding: 0.25rem; font-size: 1rem; }
 
+        /* Strict Mathematical PDF Blueprint */
         #pdf-template { 
             display: none; 
             width: 794px;         /* Strict Mathematical A4 Width */
@@ -97,7 +98,6 @@
             position: relative; 
             box-sizing: border-box; 
             overflow: hidden;     /* Force strict 1-page boundary */
-            display: flex;
             flex-direction: column;
         }
         
@@ -115,9 +115,9 @@
         .pdf-tags { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.85rem; }
         .pdf-tag-item { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
 
-        /* Dual QR Code Footer CSS */
+        /* Dual QR Code Footer CSS - Strictly locked dimensions to prevent mobile canvas explosion */
         .qr-footer {
-            margin-top: auto; /* Pushes to bottom of A4 */
+            margin-top: auto; 
             display: flex;
             justify-content: space-between;
             align-items: flex-end;
@@ -125,9 +125,9 @@
             padding-top: 10px;
         }
         .qr-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
-        .qr-code { width: 60px; height: 60px; background: #fff; padding: 2px; border: 1px solid #cbd5e1; border-radius: 4px; }
-        /* Force image rendering to be pixelated so high density QRs scan perfectly */
-        .qr-code img { width: 100% !important; height: 100% !important; image-rendering: pixelated; }
+        .qr-code { width: 60px; height: 60px; background: #fff; padding: 2px; border: 1px solid #cbd5e1; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        /* Caged img tag for extracted base64 QR */
+        .qr-code img { width: 100% !important; height: 100% !important; object-fit: contain; image-rendering: pixelated; display: block; }
         .qr-text { font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
     </style>
 </head>
@@ -138,6 +138,7 @@
         <span id="error-msg">Error</span>
     </div>
 
+    <!-- Image Cropper Modal -->
     <div id="cropper-modal" class="fixed inset-0 z-[9999] items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col">
             <div class="p-4 border-b border-slate-200 flex justify-between items-center">
@@ -486,9 +487,10 @@
         </div>
     </div>
 
+    <!-- The 1-Page PDF Blueprint -->
     <div id="pdf-container" class="hidden">
         <div id="pdf-template">
-            <div class="flex-1">
+            <div style="flex: 1;">
                 <div class="pdf-header">
                     <div>
                         <h1 id="pdf-name" style="font-size: 2.1rem; font-weight: 700; color: #0f172a; margin-bottom: 2px; font-family: 'Playfair Display', serif;">Name</h1>
@@ -571,17 +573,17 @@
                 </div>
             </div>
 
-            <!-- The Dual QR Code Footer -->
+            <!-- The Dual QR Code Footer (Caged Img tags to prevent canvas explosion) -->
             <div class="qr-footer">
                 <div class="qr-box">
-                    <div id="qr-vcard" class="qr-code"></div>
+                    <div class="qr-code" id="qr-vcard-container"></div>
                     <div class="qr-text">Scan for Contact</div>
                 </div>
                 <div style="text-align: center; color: #94a3b8; font-size: 0.85rem; font-weight: 500; align-self: center; padding-bottom: 5px;">
                     Made with <i class="ph-fill ph-leaf" style="color: #14b8a6; position: relative; top: 2px;"></i> Identity.
                 </div>
                 <div class="qr-box">
-                    <div id="qr-digital" class="qr-code"></div>
+                    <div class="qr-code" id="qr-digital-container"></div>
                     <div class="qr-text">Digital Profile</div>
                 </div>
             </div>
@@ -665,13 +667,13 @@
                 setTimeout(() => toast.classList.remove('show'), 3500);
             }
 
+            // UI Routing Logic
             const steps = document.querySelectorAll('.step-container');
             const btnNext = document.getElementById('btn-next');
             const btnPrev = document.getElementById('btn-prev');
             const navButtons = document.getElementById('nav-buttons');
             const progressBar = document.getElementById('progress-bar');
             
-            // UI Routing Logic
             function updateUI() {
                 if (currentStep <= TOTAL_STEPS) {
                     progressBar.style.width = `${((currentStep - 1) / (TOTAL_STEPS - 1)) * 100}%`;
@@ -1034,17 +1036,19 @@
                 );
             });
 
+            // Cryptographic Hashing
             async function generateHash(str) {
                 const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
                 return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 10);
             }
 
+            // Image Proxy Generator (For lightweight cloud storage)
             function compressImageProxy(dataUrl, quality = 0.6) {
                 return new Promise((resolve) => {
                     const img = new Image();
                     img.onload = () => {
                         const canvas = document.createElement('canvas');
-                        canvas.width = 150; canvas.height = 150; // Microscopic footprint
+                        canvas.width = 150; canvas.height = 150; 
                         const ctx = canvas.getContext('2d');
                         ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
                         resolve(canvas.toDataURL('image/webp', quality));
@@ -1053,11 +1057,32 @@
                 });
             }
 
+            // Safe Base64 QR Extractor (Prevents canvas explosion in html2canvas)
+            const generateSafeQR = (text, containerId) => {
+                return new Promise((resolve) => {
+                    const tempDiv = document.createElement('div');
+                    new QRCode(tempDiv, { text: text, width: 256, height: 256, correctLevel: QRCode.CorrectLevel.L });
+                    
+                    setTimeout(() => {
+                        const canvas = tempDiv.querySelector('canvas');
+                        if(canvas) {
+                            const img = document.createElement('img');
+                            img.src = canvas.toDataURL("image/png");
+                            const container = document.getElementById(containerId);
+                            container.innerHTML = ''; 
+                            container.appendChild(img);
+                        }
+                        resolve();
+                    }, 100);
+                });
+            };
+
             async function prepareFinalData() {
                 const ldr = document.getElementById('loader-overlay');
                 ldr.classList.remove('hidden');
+                document.getElementById('loader-text').textContent = "Securing Identity...";
                 
-                // 1. Format text
+                // 1. Format text mappings
                 const tf = Sanitizer.forceTitleCase;
                 document.getElementById('pdf-name').textContent = tf(userData.fullname);
                 document.getElementById('pdf-phone').textContent = "+91 " + userData.phone; 
@@ -1068,7 +1093,7 @@
                 if(userData.address.state) shortAddr.push(tf(userData.address.state));
                 document.getElementById('pdf-address-short').textContent = shortAddr.join(", ");
                 
-                document.getElementById('pdf-photo-img').src = userData.photoUrl; // Uses 5MB Master for Print!
+                document.getElementById('pdf-photo-img').src = userData.photoUrl; // Original High-Res for Print
                 document.getElementById('pdf-photo-img').style.display = 'block';
 
                 document.getElementById('pdf-dob').textContent = tf(Sanitizer.formatDate(userData.dob));
@@ -1125,21 +1150,20 @@
 
                 // 2. Cryptographic Logic & Dual QR Generation
                 try {
+                    document.getElementById('loader-text').textContent = "Encrypting Data...";
                     const proxyPhoto = await compressImageProxy(userData.photoUrl);
                     const cloudPayload = { ...userData, photoUrl: proxyPhoto };
                     const payloadString = JSON.stringify(cloudPayload);
                     const hashId = await generateHash(payloadString);
                     const digitalDeepLink = window.location.origin + window.location.pathname + '?v=' + hashId;
                     
-                    document.getElementById('qr-vcard').innerHTML = '';
-                    document.getElementById('qr-digital').innerHTML = '';
-                    
                     const vcardData = `BEGIN:VCARD\nVERSION:3.0\nFN:${tf(userData.fullname)}\nTEL:+91${userData.phone}\nEMAIL:${userData.email.toLowerCase()}\nEND:VCARD`;
                     
-                    new QRCode(document.getElementById('qr-vcard'), { text: vcardData, width: 256, height: 256, correctLevel: QRCode.CorrectLevel.L });
-                    new QRCode(document.getElementById('qr-digital'), { text: digitalDeepLink, width: 256, height: 256, correctLevel: QRCode.CorrectLevel.L });
+                    // Await the generation of the locked PNG images
+                    await generateSafeQR(vcardData, 'qr-vcard-container');
+                    await generateSafeQR(digitalDeepLink, 'qr-digital-container');
                     
-                    // Non-blocking background sync to Cloudflare
+                    // Non-blocking background sync to Cloudflare KV
                     fetch('https://identity.devteam-circuitbreakers.workers.dev/api/save', {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ id: hashId, payload: cloudPayload })
@@ -1147,56 +1171,57 @@
 
                 } catch(e) { console.error("QR Engine Error: ", e); }
 
-                // 3. Absolute Virtual Monitor Rendering
+                // 3. Absolute Virtual Monitor PDF Rendering
+                document.getElementById('loader-text').textContent = "Compiling PDF...";
+                
+                const pdfContainer = document.getElementById('pdf-container');
+                const pdfTemplate = document.getElementById('pdf-template');
+                
+                pdfContainer.classList.remove('hidden');
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.top = '-10000px';
+                pdfContainer.style.left = '0px';
+                pdfContainer.style.width = '794px'; 
+                pdfContainer.style.maxWidth = 'none'; 
+                pdfContainer.style.display = 'block';
+                pdfContainer.style.zIndex = '-9999';
+                
+                pdfTemplate.style.display = 'flex';
+
                 setTimeout(() => {
-                    const pdfContainer = document.getElementById('pdf-container');
-                    const pdfTemplate = document.getElementById('pdf-template');
-                    
-                    pdfContainer.classList.remove('hidden');
-                    pdfContainer.style.position = 'absolute';
-                    pdfContainer.style.top = '-10000px';
-                    pdfContainer.style.left = '0px';
-                    pdfContainer.style.width = '794px'; 
-                    pdfContainer.style.maxWidth = 'none'; /* CRITICAL: Prevents mobile viewports from squishing the container */
-                    pdfContainer.style.display = 'block';
-                    pdfContainer.style.zIndex = '-9999';
-                    
-                    pdfTemplate.style.display = 'flex';
+                    const opt = {
+                        margin: 0,
+                        filename: `${tf(userData.fullname).replace(/\s+/g, '_')}_BioData.pdf`,
+                        image: { type: 'jpeg', quality: 1.0 },
+                        html2canvas: { 
+                            scale: 2, useCORS: true, windowWidth: 794, width: 794, height: 1123, scrollY: 0, x: 0, y: 0
+                        },
+                        jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait', hotfixes: ['px_scaling'] }
+                    };
 
-                    setTimeout(() => {
-                        const opt = {
-                            margin: 0,
-                            filename: `${tf(userData.fullname).replace(/\s+/g, '_')}_BioData.pdf`,
-                            image: { type: 'jpeg', quality: 1.0 },
-                            html2canvas: { 
-                                scale: 2, useCORS: true, windowWidth: 794, width: 794, height: 1123, scrollY: 0, x: 0, y: 0
-                            },
-                            jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait', hotfixes: ['px_scaling'] }
-                        };
-
-                        html2pdf().set(opt).from(pdfTemplate).outputPdf('blob').then((blob) => {
-                            generatedPdfBlob = blob;
-                            ldr.classList.add('hidden');
-                            document.getElementById('final-action-buttons').style.display = 'flex';
-                            
-                            pdfTemplate.style.display = 'none';
-                            pdfContainer.style.display = 'none';
-                            pdfContainer.classList.add('hidden');
-                            
-                            if (!navigator.canShare || !navigator.canShare({ files: [new File([blob], opt.filename, { type: 'application/pdf' })] })) {
-                                if(!navigator.share) document.getElementById('btn-share').style.display = 'none';
-                            }
-                        }).catch(err => {
-                            ldr.classList.add('hidden');
-                            pdfTemplate.style.display = 'none';
-                            pdfContainer.style.display = 'none';
-                            pdfContainer.classList.add('hidden');
-                            showError("Failed to generate PDF. Please try again.");
-                        });
-                    }, 500); 
-                }, 100); 
+                    html2pdf().set(opt).from(pdfTemplate).outputPdf('blob').then((blob) => {
+                        generatedPdfBlob = blob;
+                        ldr.classList.add('hidden');
+                        document.getElementById('final-action-buttons').style.display = 'flex';
+                        
+                        pdfTemplate.style.display = 'none';
+                        pdfContainer.style.display = 'none';
+                        pdfContainer.classList.add('hidden');
+                        
+                        if (!navigator.canShare || !navigator.canShare({ files: [new File([blob], opt.filename, { type: 'application/pdf' })] })) {
+                            if(!navigator.share) document.getElementById('btn-share').style.display = 'none';
+                        }
+                    }).catch(err => {
+                        ldr.classList.add('hidden');
+                        pdfTemplate.style.display = 'none';
+                        pdfContainer.style.display = 'none';
+                        pdfContainer.classList.add('hidden');
+                        showError("Failed to generate PDF. Please try again.");
+                    });
+                }, 500); 
             }
 
+            // Buttons
             document.getElementById('btn-download').addEventListener('click', () => {
                 if(generatedPdfBlob) {
                     const url = URL.createObjectURL(generatedPdfBlob);
@@ -1222,13 +1247,11 @@
 
             // Step 12 Routing Buttons
             document.getElementById('btn-view-download').addEventListener('click', () => {
-                // Instantly generate the PDF from the fetched data
                 currentStep = TOTAL_STEPS;
                 updateUI();
             });
 
             document.getElementById('btn-view-edit').addEventListener('click', () => {
-                // Route user back to Step 1 to edit pre-filled data
                 currentStep = 1;
                 updateUI();
             });
@@ -1254,7 +1277,6 @@
                 setVal('input-father', d.father);
                 setVal('input-mother', d.mother);
                 
-                // Emergency parsing
                 if(d.emergency && d.emergency !== 'Not Provided') {
                     const parts = d.emergency.split(' | ');
                     if(parts.length === 2) {
@@ -1301,6 +1323,7 @@
                 renderTags('languages-container', 'input-language', d.languages || []);
             }
 
+            // On Load Check for Deep Link
             const urlParams = new URLSearchParams(window.location.search);
             const viewId = urlParams.get('v');
             
