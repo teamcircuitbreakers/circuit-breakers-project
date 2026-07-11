@@ -24,6 +24,7 @@
     </script>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
@@ -497,8 +498,8 @@
                 <i class="ph-bold ph-download-simple text-lg"></i> Download PDF
             </button>
         </div>
-        <div class="flex-1 w-full max-w-4xl mx-auto p-2 md:p-6 overflow-hidden relative">
-            <iframe id="pdf-iframe" class="w-full h-full rounded-xl shadow-2xl bg-white border-0" title="PDF Preview"></iframe>
+        <div class="flex-1 w-full p-4 overflow-y-auto flex justify-center items-start" id="pdf-canvas-container">
+            <canvas id="pdf-canvas" class="max-w-full h-auto shadow-2xl bg-white border border-slate-300 rounded-sm"></canvas>
         </div>
     </div>
 
@@ -607,6 +608,9 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
+            // Initialize robust PDF.js worker for mobile previews
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
             const TOTAL_STEPS = 10;
             let currentStep = 1;
             let generatedPdfBlob = null;
@@ -1272,10 +1276,27 @@
                         
                         if (showPreview) {
                             const url = URL.createObjectURL(blob);
-                            document.getElementById('pdf-iframe').src = url;
                             const modal = document.getElementById('pdf-preview-modal');
                             modal.classList.remove('hidden');
                             modal.classList.add('flex');
+                            
+                            // Reliable Canvas Painting Engine (Replaces broken mobile iframes)
+                            pdfjsLib.getDocument(url).promise.then(pdf => {
+                                pdf.getPage(1).then(page => {
+                                    const canvas = document.getElementById('pdf-canvas');
+                                    const ctx = canvas.getContext('2d');
+                                    
+                                    // High-resolution scale, CSS handles responsively sizing it down
+                                    const viewport = page.getViewport({ scale: 2 }); 
+                                    canvas.width = viewport.width;
+                                    canvas.height = viewport.height;
+                                    
+                                    page.render({ canvasContext: ctx, viewport: viewport });
+                                });
+                            }).catch(err => {
+                                console.error("PDF Preview Error:", err);
+                                document.getElementById('pdf-canvas-container').innerHTML = `<p class="text-slate-400 text-center mt-10 font-medium">Preview engine failed. Please click "Download PDF" to view.</p>`;
+                            });
                         }
                     }).catch(err => {
                         ldr.classList.add('hidden');
