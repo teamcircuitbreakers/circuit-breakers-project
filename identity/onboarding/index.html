@@ -804,6 +804,13 @@
                     }
                 });
                 
+                // FIX FOR MOBILE: Watch the actual input value directly (bypasses mobile predictive text quirks)
+                input.addEventListener('input', () => {
+                    if (input.value.includes(',')) {
+                        processInputTags();
+                    }
+                });
+                
                 input.addEventListener('blur', processInputTags);
                 
                 // Allow pasting comma separated lists safely
