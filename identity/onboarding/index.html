@@ -756,6 +756,7 @@
                 }
             }
 
+            // Bulletproof Tag Engine (Handles Comma, Enter, Pasting, and Blurring)
             function setupTagInput(containerId, inputId, arrayRef, maxTags) {
                 const container = document.getElementById(containerId);
                 const input = document.getElementById(inputId);
@@ -768,21 +769,49 @@
                         container.insertBefore(span, input);
                     });
                 }
+                
+                function processInputTags() {
+                    const rawValues = input.value.split(',');
+                    let tagsAdded = false;
+                    
+                    rawValues.forEach(rawVal => {
+                        const cleanVal = Sanitizer.cleanString(rawVal);
+                        if (cleanVal && !arrayRef.includes(cleanVal)) {
+                            if (arrayRef.length < maxTags) {
+                                arrayRef.push(cleanVal);
+                                tagsAdded = true;
+                            } else {
+                                showError(`Maximum ${maxTags} entries allowed.`);
+                            }
+                        }
+                    });
+                    
+                    input.value = '';
+                    if (tagsAdded) renderTags();
+                }
+
                 container.addEventListener('click', (e) => {
-                    if(e.target.classList.contains('tag-remove')) { arrayRef.splice(e.target.dataset.idx, 1); renderTags(); }
+                    if(e.target.classList.contains('tag-remove')) { 
+                        arrayRef.splice(e.target.dataset.idx, 1); 
+                        renderTags(); 
+                    }
                 });
+                
                 input.addEventListener('keydown', (e) => {
                     if(e.key === 'Enter' || e.key === ',') {
                         e.preventDefault();
-                        const val = Sanitizer.cleanString(input.value);
-                        if(val && !arrayRef.includes(val) && arrayRef.length < maxTags) {
-                            arrayRef.push(val); input.value = ''; renderTags();
-                        } else if (arrayRef.length >= maxTags) {
-                            showError(`Maximum ${maxTags} entries allowed here.`);
-                        }
+                        processInputTags();
                     }
                 });
+                
+                input.addEventListener('blur', processInputTags);
+                
+                // Allow pasting comma separated lists safely
+                input.addEventListener('paste', (e) => {
+                    setTimeout(processInputTags, 50);
+                });
             }
+            
             setupTagInput('skills-container', 'input-skill', userData.skills, 5);
             setupTagInput('languages-container', 'input-language', userData.languages, 5);
 
@@ -796,8 +825,8 @@
             const rowTemplates = {
                 10: `<tr><td><input type="text" class="table-input font-semibold" value="10th (Secondary)" readonly></td><td><select class="table-input cursor-pointer board-selector">${getBoardOptions10()}</select></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Marks" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`,
                 12: `<tr><td><input type="text" class="table-input font-semibold" value="12th / Diploma" readonly></td><td><select class="table-input cursor-pointer board-selector">${getBoardOptions12()}</select></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Marks" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`,
-                UG: `<tr><td><input type="text" class="table-input font-semibold" placeholder="Degree (e.g. B.Tech)" maxlength="20"></td><td><input type="text" class="table-input" placeholder="University Name" maxlength="40"></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Obtained" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`,
-                PG: `<tr><td><input type="text" class="table-input font-semibold" placeholder="Degree (e.g. M.Tech)" maxlength="20"></td><td><input type="text" class="table-input" placeholder="University Name" maxlength="40"></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Obtained" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`
+                'UG': `<tr><td><input type="text" class="table-input font-semibold" placeholder="Degree (e.g. B.Tech)" maxlength="20"></td><td><input type="text" class="table-input" placeholder="University Name" maxlength="40"></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Obtained" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`,
+                'PG': `<tr><td><input type="text" class="table-input font-semibold" placeholder="Degree (e.g. M.Tech)" maxlength="20"></td><td><input type="text" class="table-input" placeholder="University Name" maxlength="40"></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Obtained" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`
             };
 
             qualSelect.addEventListener('change', (e) => {
@@ -806,8 +835,8 @@
                 const v = e.target.value;
                 academicTbody.insertAdjacentHTML('beforeend', rowTemplates[10]);
                 if(['12','UG','PG'].includes(v)) academicTbody.insertAdjacentHTML('beforeend', rowTemplates[12]);
-                if(['UG','PG'].includes(v)) academicTbody.insertAdjacentHTML('beforeend', rowTemplates['UG']);
-                if(v === 'PG') academicTbody.insertAdjacentHTML('beforeend', rowTemplates['PG']);
+                if(['UG','PG'].includes(v)) academicTbody.insertAdjacentHTML('beforeend', rowTemplates['UG']); // Fixed syntax crash
+                if(v === 'PG') academicTbody.insertAdjacentHTML('beforeend', rowTemplates['PG']); // Fixed syntax crash
                 attachAcademicListeners();
             });
 
@@ -863,19 +892,32 @@
             const previewImg = document.getElementById('final-photo-preview');
             
             document.getElementById('photo-trigger').addEventListener('click', () => fileInput.click());
+            
             fileInput.addEventListener('change', (e) => {
                 const file = e.target.files[0];
                 if(file) {
-                    if(file.size > 5 * 1024 * 1024) { showError("Image too large. Max 5MB."); return; }
+                    if(file.size > 5 * 1024 * 1024) { 
+                        showError("Image too large. Max 5MB."); 
+                        e.target.value = ''; 
+                        return; 
+                    }
                     const reader = new FileReader();
                     reader.onload = (event) => {
+                        // FIX: Ensure modal opens BEFORE cropper initializes so DOM has dimensions
+                        cropModal.classList.add('active'); 
                         cropImage.src = event.target.result;
-                        cropModal.classList.add('active');
                         if(cropper) cropper.destroy();
-                        cropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 1, dragMode: 'move', autoCropArea: 0.8, guides: false });
+                        
+                        setTimeout(() => {
+                            cropper = new Cropper(cropImage, { 
+                                aspectRatio: 1, viewMode: 1, dragMode: 'move', autoCropArea: 0.8, guides: false 
+                            });
+                        }, 50); // Tiny delay to allow CSS flex to snap image into place securely
                     };
                     reader.readAsDataURL(file);
                 }
+                // FIX: Allows user to pick the SAME file again if they cancelled cropper
+                e.target.value = '';
             });
 
             document.getElementById('btn-crop-save').addEventListener('click', () => {
@@ -1173,7 +1215,7 @@
                 ptbody.innerHTML = '';
                 userData.education.forEach(edu => {
                     const tr = document.createElement('tr');
-                    // No space replacements used here. Standard geometrical text layout will flow correctly
+                    // Standard geometric text layout flows correctly without space hacks
                     tr.innerHTML = `<td>${tf(edu.level)}</td><td>${tf(edu.board)}</td><td>${edu.total}</td><td>${edu.obt}</td><td>${edu.perc}</td><td style="font-weight:bold">${edu.grade.toUpperCase()}</td>`;
                     ptbody.appendChild(tr);
                 });
@@ -1262,7 +1304,6 @@
                             scrollY: 0, 
                             x: 0, 
                             y: 0
-                            // Removed letterRendering: true specifically to fix the PushkarBose missing whitespace bug
                         },
                         jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait', hotfixes: ['px_scaling'] }
                     };
@@ -1280,13 +1321,12 @@
                             modal.classList.remove('hidden');
                             modal.classList.add('flex');
                             
-                            // Load Canvas Preview
+                            // Load Canvas Preview directly bypassing iframe mobile blocks
                             pdfjsLib.getDocument(url).promise.then(pdf => {
                                 pdf.getPage(1).then(page => {
                                     const canvas = document.getElementById('pdf-canvas');
                                     const ctx = canvas.getContext('2d');
                                     
-                                    // Make scalable high-res format
                                     const viewport = page.getViewport({ scale: 2 }); 
                                     canvas.width = viewport.width;
                                     canvas.height = viewport.height;
@@ -1324,7 +1364,6 @@
                 enterEditMode();
             });
 
-            // Populate logic when parsing returning visitor ID
             function populateUIFromData(d) {
                 if(d.photoUrl) {
                     document.getElementById('final-photo-preview').src = d.photoUrl;
