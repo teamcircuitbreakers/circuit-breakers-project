@@ -99,8 +99,8 @@
             box-sizing: border-box; 
             overflow: hidden;     /* Force strict 1-page boundary */
             flex-direction: column;
-            letter-spacing: 0px !important;
-            word-spacing: normal !important;
+            word-spacing: normal; /* Fix whitespace bug */
+            letter-spacing: normal;
         }
         
         .pdf-header { border-bottom: 3px solid #14b8a6; padding-bottom: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
@@ -485,7 +485,7 @@
         </button>
     </div>
 
-    <!-- The PDF Preview Modal Overlay -->
+    <!-- The PDF Preview Modal Overlay (Canvas version) -->
     <div id="pdf-preview-modal" class="fixed inset-0 bg-slate-900/95 backdrop-blur-sm z-[9999] hidden flex-col">
         <div class="flex items-center justify-between p-4 bg-slate-900 border-b border-slate-800 shadow-lg shrink-0">
             <button id="btn-preview-edit" class="flex items-center gap-2 text-white bg-slate-800 hover:bg-slate-700 px-4 py-2.5 rounded-xl font-medium transition-colors border border-slate-700 shadow-sm">
@@ -499,11 +499,11 @@
             </button>
         </div>
         <div class="flex-1 w-full p-4 overflow-y-auto flex justify-center items-start" id="pdf-canvas-container">
+            <!-- Used pdf.js rendering canvas to avoid mobile iframe blocking -->
             <canvas id="pdf-canvas" class="max-w-full h-auto shadow-2xl bg-white border border-slate-300 rounded-sm"></canvas>
         </div>
     </div>
 
-    <!-- The 1-Page PDF Blueprint (Used as source for html2pdf) -->
     <div id="pdf-container" class="hidden">
         <div id="pdf-template">
             <div style="flex: 1;">
@@ -686,7 +686,6 @@
                 setTimeout(() => toast.classList.remove('show'), 3500);
             }
 
-            // UI Routing Logic
             const steps = document.querySelectorAll('.step-container');
             const btnNext = document.getElementById('btn-next');
             const btnPrev = document.getElementById('btn-prev');
@@ -713,6 +712,7 @@
                 }
             }
 
+            // One-Page Inline Editor Mode
             function enterEditMode() {
                 document.body.classList.add('is-edit-mode');
                 document.getElementById('nav-buttons').style.display = 'none';
@@ -857,7 +857,6 @@
                 });
             }
 
-            // Cropper Implementation
             const fileInput = document.getElementById('input-photo');
             const cropModal = document.getElementById('cropper-modal');
             const cropImage = document.getElementById('cropper-image');
@@ -1012,10 +1011,11 @@
                 return true;
             }
 
+            // Button Routing Events
             btnNext.addEventListener('click', () => { 
                 if(validateStep(currentStep)) { 
                     if(currentStep === TOTAL_STEPS) {
-                        prepareFinalData(true); // Triggers Modal Preview
+                        prepareFinalData(true); // Triggers PDF Gen and Instantly shows the Preview Modal
                     } else {
                         currentStep++; 
                         updateUI(); 
@@ -1024,10 +1024,10 @@
             });
             btnPrev.addEventListener('click', () => { if(currentStep > 1) { currentStep--; updateUI(); } });
 
-            // Button Event for Edit Mode
+            // Editing Submit Event
             document.getElementById('btn-update-pdf').addEventListener('click', () => {
                 if(validateAll()) {
-                    prepareFinalData(true); // Generates updated PDF and opens Modal
+                    prepareFinalData(true); // Generates updated PDF and re-opens Modal
                 }
             });
 
@@ -1130,18 +1130,18 @@
                 ldr.classList.remove('hidden');
                 document.getElementById('loader-text').textContent = "Securing Identity...";
                 
-                // CRITICAL FIX: HTML2Canvas Word-Spacing & Font Bug Solutions
-                // Wait for external fonts to fully load before allowing PDF paint
+                // Wait for external fonts to fully load to prevent measurement glitches
                 await document.fonts.ready; 
 
                 const tf = Sanitizer.forceTitleCase;
-                // Helper to inject non-breaking spaces (\u00A0) to guarantee html2canvas spacing accuracy
+                
+                // Clean Helper (No '\u00A0' hacks, standard text content mapped securely)
                 const setSafeText = (id, str) => {
                     const el = document.getElementById(id);
-                    if(el && typeof str !== 'undefined') el.textContent = str.toString().replace(/ /g, '\u00A0');
+                    if(el && typeof str !== 'undefined') el.textContent = str.toString();
                 };
 
-                // Map safely to blueprint
+                // Map standard values
                 setSafeText('pdf-name', tf(userData.fullname));
                 setSafeText('pdf-phone', "+91 " + userData.phone);
                 setSafeText('pdf-email', userData.email.toLowerCase()); 
@@ -1173,16 +1173,16 @@
                 ptbody.innerHTML = '';
                 userData.education.forEach(edu => {
                     const tr = document.createElement('tr');
-                    // Applying replace spaces to \u00A0 heavily ensures no structural compression in html2canvas tables
-                    tr.innerHTML = `<td>${tf(edu.level).replace(/ /g, '\u00A0')}</td><td>${tf(edu.board).replace(/ /g, '\u00A0')}</td><td>${edu.total}</td><td>${edu.obt}</td><td>${edu.perc}</td><td style="font-weight:bold">${edu.grade.toUpperCase()}</td>`;
+                    // No space replacements used here. Standard geometrical text layout will flow correctly
+                    tr.innerHTML = `<td>${tf(edu.level)}</td><td>${tf(edu.board)}</td><td>${edu.total}</td><td>${edu.obt}</td><td>${edu.perc}</td><td style="font-weight:bold">${edu.grade.toUpperCase()}</td>`;
                     ptbody.appendChild(tr);
                 });
 
                 const sContainer = document.getElementById('pdf-skills');
                 const lContainer = document.getElementById('pdf-langs');
                 sContainer.innerHTML = ''; lContainer.innerHTML = '';
-                userData.skills.forEach(s => sContainer.innerHTML += `<div class="pdf-tag-item">${tf(s).replace(/ /g, '\u00A0')}</div>`);
-                userData.languages.forEach(l => lContainer.innerHTML += `<div class="pdf-tag-item">${tf(l).replace(/ /g, '\u00A0')}</div>`);
+                userData.skills.forEach(s => sContainer.innerHTML += `<div class="pdf-tag-item">${tf(s)}</div>`);
+                userData.languages.forEach(l => lContainer.innerHTML += `<div class="pdf-tag-item">${tf(l)}</div>`);
 
                 setSafeText('pdf-status', tf(userData.status));
                 setSafeText('pdf-inst', tf(userData.institution));
@@ -1211,6 +1211,7 @@
                 
                 setSafeText('pdf-address', addrLines.join("\n"));
 
+                // QR Encryption Logic
                 try {
                     document.getElementById('loader-text').textContent = "Encrypting Data...";
                     const proxyPhoto = await compressImageProxy(userData.photoUrl);
@@ -1224,7 +1225,6 @@
                     await generateSafeQR(vcardData, 'qr-vcard-container');
                     await generateSafeQR(digitalDeepLink, 'qr-digital-container');
                     
-                    // Background non-blocking sync
                     fetch('https://identity.devteam-circuitbreakers.workers.dev/api/save', {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ id: hashId, payload: cloudPayload })
@@ -1261,8 +1261,8 @@
                             height: 1123, 
                             scrollY: 0, 
                             x: 0, 
-                            y: 0,
-                            letterRendering: true // Forces rigorous font space calculations
+                            y: 0
+                            // Removed letterRendering: true specifically to fix the PushkarBose missing whitespace bug
                         },
                         jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait', hotfixes: ['px_scaling'] }
                     };
@@ -1280,13 +1280,13 @@
                             modal.classList.remove('hidden');
                             modal.classList.add('flex');
                             
-                            // Reliable Canvas Painting Engine (Replaces broken mobile iframes)
+                            // Load Canvas Preview
                             pdfjsLib.getDocument(url).promise.then(pdf => {
                                 pdf.getPage(1).then(page => {
                                     const canvas = document.getElementById('pdf-canvas');
                                     const ctx = canvas.getContext('2d');
                                     
-                                    // High-resolution scale, CSS handles responsively sizing it down
+                                    // Make scalable high-res format
                                     const viewport = page.getViewport({ scale: 2 }); 
                                     canvas.width = viewport.width;
                                     canvas.height = viewport.height;
@@ -1315,7 +1315,6 @@
                     a.href = url; 
                     a.download = `${Sanitizer.forceTitleCase(userData.fullname).replace(/\s+/g, '_')}_BioData.pdf`;
                     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                    // Retain blob url lifecycle for iframe continuation
                 }
             });
 
@@ -1325,6 +1324,7 @@
                 enterEditMode();
             });
 
+            // Populate logic when parsing returning visitor ID
             function populateUIFromData(d) {
                 if(d.photoUrl) {
                     document.getElementById('final-photo-preview').src = d.photoUrl;
@@ -1392,7 +1392,6 @@
                 renderTags('languages-container', 'input-language', d.languages || []);
             }
 
-            // On Load Initialization and Deep Link Handling
             const urlParams = new URLSearchParams(window.location.search);
             const viewId = urlParams.get('v');
             
@@ -1408,7 +1407,7 @@
                     Object.assign(userData, data);
                     populateUIFromData(data);
                     
-                    // Fire instant preview for fetched data
+                    // Directly fire preview generator for the loaded data
                     prepareFinalData(true);
                 }).catch(e => {
                     showError("Could not load digital profile. It may have expired.");
@@ -1416,7 +1415,7 @@
                     updateUI();
                 });
             } else {
-                updateUI(); // Normal start
+                updateUI(); // Normal setup
             }
         });
     </script>
