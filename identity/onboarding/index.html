@@ -1,1 +1,1423 @@
-test
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Identity | Advanced Biodata Generator</title>
+
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&family=Playfair+Display:ital,wght@0,600;1,600&display=swap" rel="stylesheet">
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Outfit', 'sans-serif'], serif: ['Playfair Display', 'serif'] },
+                    colors: { brand: { 50: '#f0fdfa', 100: '#ccfbf1', 500: '#14b8a6', 600: '#0d9488', 900: '#134e4a' } },
+                    animation: { 'slide-in': 'slideIn 0.4s cubic-bezier(0.4, 0, 0.2, 1) forwards' },
+                    keyframes: { slideIn: { '0%': { transform: 'translateX(30px)', opacity: '0' }, '100%': { transform: 'translateX(0)', opacity: '1' } } }
+                }
+            }
+        }
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.min.js"></script>
+    <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
+
+    <style>
+        body { background-color: #f8fafc; color: #1e293b; overflow-x: hidden; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s; }
+        ::-webkit-scrollbar { width: 4px; background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+
+        .smart-input {
+            width: 100%; background: #ffffff; border: 2px solid #e2e8f0; border-radius: 0.75rem;
+            padding: 1rem 1.25rem; font-size: 1.125rem; font-weight: 500; color: #0f172a; transition: all 0.3s ease;
+        }
+        .smart-input:focus { outline: none; border-color: #14b8a6; box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15); transform: translateY(-2px); }
+        .smart-input::placeholder { color: #94a3b8; font-weight: 400; }
+
+        .pill-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(110px, 1fr)); gap: 0.75rem; }
+        .smart-pill {
+            background: #ffffff; border: 2px solid #e2e8f0; border-radius: 0.75rem; padding: 0.75rem;
+            text-align: center; font-weight: 500; cursor: pointer; transition: all 0.2s ease; user-select: none;
+        }
+        .smart-pill:hover { border-color: #99f6e4; background: #f0fdfa; }
+        .smart-pill.active { background: #14b8a6; border-color: #14b8a6; color: #ffffff; transform: scale(1.02); }
+
+        .step-container { display: none; }
+        .step-container.active { display: block; animation: slideIn 0.4s ease forwards; }
+
+        .toast {
+            position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #ef4444; color: white;
+            padding: 1rem 2rem; border-radius: 9999px; font-weight: 500; box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
+            transition: top 0.4s cubic-bezier(0.68, -0.55, 0.26, 1.55); z-index: 99999; display: flex; align-items: center; gap: 0.5rem;
+        }
+        .toast.show { top: 2rem; }
+
+        .photo-upload-area {
+            border: 2px dashed #cbd5e1; border-radius: 50%; width: 140px; height: 140px; display: flex;
+            align-items: center; justify-content: center; margin: 0 auto; cursor: pointer; position: relative; overflow: hidden;
+            background: #f8fafc; transition: all 0.3s;
+        }
+        .photo-upload-area:hover { border-color: #14b8a6; background: #f0fdfa; }
+        .photo-preview { width: 100%; height: 100%; object-fit: cover; position: absolute; top: 0; left: 0; z-index: 10; display: none; }
+        
+        #cropper-modal { display: none; background: rgba(15, 23, 42, 0.9); backdrop-filter: blur(5px); }
+        #cropper-modal.active { display: flex; }
+        .img-container { max-height: 60vh; width: 100%; background: #000; }
+        .cropper-view-box, .cropper-face { border-radius: 50%; }
+
+        .smart-table { width: 100%; border-collapse: separate; border-spacing: 0; border-radius: 0.75rem; overflow: hidden; border: 1px solid #e2e8f0; }
+        .smart-table th { background: #f1f5f9; padding: 0.75rem; text-align: left; font-size: 0.875rem; font-weight: 600; color: #475569; text-transform: uppercase; }
+        .smart-table td { padding: 0.5rem; border-top: 1px solid #e2e8f0; background: #fff; vertical-align: middle; }
+        .table-input { width: 100%; padding: 0.5rem; border: 1px solid #cbd5e1; border-radius: 0.5rem; font-size: 0.9rem; transition: border-color 0.2s; }
+        .table-input:focus { outline: none; border-color: #14b8a6; }
+        .table-readonly { background: transparent; border: none; font-weight: 600; color: #0f172a; text-align: center; }
+
+        .tag-container { display: flex; flex-wrap: wrap; gap: 0.5rem; padding: 0.5rem; border: 2px solid #e2e8f0; border-radius: 0.75rem; background: #fff; min-height: 56px; align-items: center; }
+        .tag-container:focus-within { border-color: #14b8a6; box-shadow: 0 0 0 4px rgba(20, 184, 166, 0.15); }
+        .tag-pill { background: #f1f5f9; color: #0f172a; padding: 0.25rem 0.75rem; border-radius: 999px; font-size: 0.875rem; font-weight: 500; display: flex; align-items: center; gap: 0.25rem; }
+        .tag-remove { cursor: pointer; color: #64748b; font-weight: bold; }
+        .tag-remove:hover { color: #ef4444; }
+        .tag-input { border: none; outline: none; flex: 1; min-width: 100px; padding: 0.25rem; font-size: 1rem; }
+
+        /* Strict Mathematical PDF Blueprint */
+        #pdf-template { 
+            display: none; 
+            width: 794px;         /* Strict Mathematical A4 Width */
+            height: 1123px;       /* Strict Mathematical A4 Height */
+            padding: 35px 40px;   
+            background: #ffffff; 
+            color: #1e293b; 
+            position: relative; 
+            box-sizing: border-box; 
+            overflow: hidden;     /* Force strict 1-page boundary */
+            flex-direction: column;
+            word-spacing: normal; /* Fix whitespace bug */
+            letter-spacing: normal;
+        }
+        
+        .pdf-header { border-bottom: 3px solid #14b8a6; padding-bottom: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
+        .pdf-photo { width: 110px; height: 110px; object-fit: cover; border: 4px solid #14b8a6; border-radius: 50%; box-shadow: 0 4px 10px rgba(20, 184, 166, 0.15); flex-shrink: 0; }
+        .pdf-section { margin-bottom: 12px; }
+        .pdf-section-title { font-size: 1.05rem; color: #14b8a6; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0px; }
+        .pdf-grid { display: grid; gap: 6px; font-size: 0.85rem; }
+        .pdf-label { font-weight: 600; color: #475569; }
+        .pdf-value { color: #0f172a; font-weight: 500; }
+        
+        .pdf-table { width: 100%; border-collapse: collapse; margin-top: 6px; font-size: 0.8rem; }
+        .pdf-table th, .pdf-table td { border: 1px solid #cbd5e1; padding: 5px 6px; text-align: left; }
+        .pdf-table th { background-color: #f1f5f9; font-weight: 600; color: #334155; }
+        .pdf-tags { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.85rem; }
+        .pdf-tag-item { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
+
+        /* Dual QR Code Footer CSS */
+        .qr-footer {
+            margin-top: auto; 
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            border-top: 2px solid #e2e8f0;
+            padding-top: 10px;
+        }
+        .qr-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
+        .qr-code { width: 60px; height: 60px; background: #fff; padding: 2px; border: 1px solid #cbd5e1; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
+        .qr-code img { width: 100% !important; height: 100% !important; object-fit: contain; image-rendering: pixelated; display: block; }
+        .qr-text { font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; }
+
+        /* === EDIT MODE CSS OVERRIDES === */
+        body.is-edit-mode {
+            background-color: #f1f5f9;
+            padding-bottom: 100px; /* Space for the sticky bottom bar */
+        }
+        body.is-edit-mode .step-container {
+            display: block !important;
+            opacity: 1 !important;
+            animation: none !important;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        body.is-edit-mode .step-container:last-of-type {
+            margin-bottom: 2rem;
+        }
+        body.is-edit-mode main {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+        body.is-edit-mode header { display: none !important; }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center relative py-6">
+
+    <div id="error-toast" class="toast">
+        <i class="ph-fill ph-warning-circle text-xl"></i>
+        <span id="error-msg">Error</span>
+    </div>
+
+    <div id="cropper-modal" class="fixed inset-0 z-[9999] items-center justify-center p-4">
+        <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col">
+            <div class="p-4 border-b border-slate-200 flex justify-between items-center">
+                <h3 class="font-bold text-lg">Adjust Profile Photo</h3>
+                <button id="btn-close-cropper" class="text-slate-400 hover:text-red-500"><i class="ph-bold ph-x text-xl"></i></button>
+            </div>
+            <div class="img-container p-4">
+                <img id="cropper-image" src="" alt="Picture">
+            </div>
+            <div class="p-4 bg-slate-50 flex justify-end gap-3">
+                <button id="btn-crop-save" class="bg-brand-500 hover:bg-brand-600 text-white px-6 py-2 rounded-lg font-bold transition-colors">Confirm Photo</button>
+            </div>
+        </div>
+    </div>
+
+    <div class="w-full max-w-3xl mx-auto px-4 relative z-10 flex-1 flex flex-col justify-center transition-all">
+        <header class="text-center mb-8">
+            <h1 class="font-serif text-4xl font-bold text-brand-900 tracking-tight text-center flex items-center justify-center gap-2">
+                <i class="ph-fill ph-leaf text-brand-500"></i> Identity.
+            </h1>
+            <div class="w-full bg-slate-200 rounded-full h-2 mt-6 overflow-hidden">
+                <div id="progress-bar" class="bg-brand-500 h-2 rounded-full transition-all duration-500" style="width: 10%"></div>
+            </div>
+            <p class="text-xs text-slate-400 mt-2 font-semibold uppercase tracking-wider" id="step-counter">Step 1 of 10</p>
+        </header>
+
+        <main id="form-main-container" class="bg-white border border-slate-100 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] p-6 md:p-10 min-h-[450px] relative transition-all">
+            
+            <!-- STEP 1: Name & Photo -->
+            <div class="step-container active" data-step="1">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6 text-center">Let's build your profile.</h2>
+                <div class="mb-8 text-center">
+                    <label class="block text-sm font-semibold text-slate-700 mb-3">Professional Photo</label>
+                    <div class="photo-upload-area" id="photo-trigger">
+                        <i class="ph-fill ph-camera text-4xl text-slate-300 z-0"></i>
+                        <img id="final-photo-preview" class="photo-preview rounded-full" src="" alt="Profile">
+                        <div class="absolute inset-0 bg-black/40 hidden items-center justify-center text-white text-sm font-bold opacity-0 hover:opacity-100 transition-opacity z-20 rounded-full" id="photo-hover-edit">Edit</div>
+                    </div>
+                    <input type="file" id="input-photo" accept="image/png, image/jpeg, image/jpg" class="hidden">
+                    <p class="text-xs text-slate-500 mt-2">Click to upload & frame your photo</p>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Full Legal Name</label>
+                    <input type="text" id="input-fullname" class="smart-input" placeholder="e.g. Rahul Sharma" autocomplete="name" maxlength="50">
+                </div>
+            </div>
+
+            <!-- STEP 2: Basic Details -->
+            <div class="step-container" data-step="2">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Basic Details</h2>
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-slate-700 mb-3 uppercase tracking-wide">Gender</label>
+                    <div class="pill-grid" id="gender-selection">
+                        <div class="smart-pill" data-value="Male">Male</div>
+                        <div class="smart-pill" data-value="Female">Female</div>
+                    </div>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2 uppercase tracking-wide">Date of Birth</label>
+                    <input type="date" id="input-dob" class="smart-input">
+                </div>
+            </div>
+
+            <!-- STEP 3: Physical -->
+            <div class="step-container" data-step="3">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Physical Attributes</h2>
+                <div class="grid md:grid-cols-2 gap-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Height</label>
+                        <select id="input-height" class="smart-input cursor-pointer">
+                            <option value="" disabled selected>Select Height...</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Blood Group</label>
+                        <select id="input-blood" class="smart-input cursor-pointer">
+                            <option value="" disabled selected>Select Group...</option>
+                            <option value="A+">A+</option><option value="A-">A-</option>
+                            <option value="B+">B+</option><option value="B-">B-</option>
+                            <option value="O+">O+</option><option value="O-">O-</option>
+                            <option value="AB+">AB+</option><option value="AB-">AB-</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 4: Contact -->
+            <div class="step-container" data-step="4">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Contact Information</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Mobile Number</label>
+                        <div class="flex relative">
+                            <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400">+91</span>
+                            <input type="tel" id="input-phone" class="smart-input pl-14" placeholder="9876543210" maxlength="10">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Email Address</label>
+                        <input type="email" id="input-email" class="smart-input" placeholder="rahul@example.com" maxlength="60">
+                    </div>
+                    <div class="pt-4 border-t border-slate-100">
+                        <label class="block text-sm font-semibold text-slate-800 mb-3">Emergency Contact Details</label>
+                        <div class="grid md:grid-cols-2 gap-4">
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Contact No.</label>
+                                <div class="flex relative">
+                                    <span class="absolute left-3 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-sm">+91</span>
+                                    <input type="tel" id="input-emergency" class="smart-input pl-11 text-sm py-2.5" placeholder="9876543210" maxlength="10">
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Full Name</label>
+                                <input type="text" id="input-emergency-name" class="smart-input text-sm py-2.5" placeholder="e.g. Ramesh Sharma" maxlength="40">
+                            </div>
+                            <div class="md:col-span-2">
+                                <label class="block text-xs font-semibold text-slate-500 mb-1">Relation</label>
+                                <input type="text" id="input-emergency-relation" class="smart-input text-sm py-2.5" placeholder="e.g. Father, Mother" maxlength="25">
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 5: Background -->
+            <div class="step-container" data-step="5">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Background</h2>
+                <div class="mb-6">
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Religion</label>
+                    <select id="input-religion" class="smart-input cursor-pointer">
+                        <option value="" disabled selected>Select Religion...</option>
+                        <option value="Hindu">Hindu</option><option value="Muslim">Muslim</option>
+                        <option value="Sikh">Sikh</option><option value="Christian">Christian</option>
+                        <option value="Jain">Jain</option><option value="Buddhist">Buddhist</option><option value="Other">Other</option>
+                    </select>
+                </div>
+                <div>
+                    <label class="block text-sm font-semibold text-slate-700 mb-2">Caste / Community (Optional)</label>
+                    <input type="text" id="input-caste" class="smart-input" placeholder="e.g. Brahmin, Kayastha, etc." maxlength="30">
+                </div>
+            </div>
+
+            <!-- STEP 6: Career Status -->
+            <div class="step-container" data-step="6">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Current Status</h2>
+                <div class="pill-grid mb-6" id="status-selection">
+                    <div class="smart-pill" data-value="Student">Student</div>
+                    <div class="smart-pill" data-value="Employed">Employed</div>
+                    <div class="smart-pill" data-value="Business">Business</div>
+                </div>
+                
+                <div id="dynamic-status-fields" class="hidden space-y-4 bg-slate-50 p-4 rounded-xl border border-slate-200">
+                    <div id="wrapper-student-type" class="hidden">
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Education Level</label>
+                        <select id="input-student-type" class="smart-input cursor-pointer">
+                            <option value="" disabled selected>Select Level...</option>
+                            <option value="School">School</option>
+                            <option value="College">College</option>
+                            <option value="University">University</option>
+                            <option value="Institution">Other Institution</option>
+                        </select>
+                    </div>
+                    <div class="mt-4">
+                        <label id="label-institution" class="block text-sm font-semibold text-slate-700 mb-2">Institution Name</label>
+                        <input type="text" id="input-institution" class="smart-input" placeholder="Enter Name" maxlength="60">
+                    </div>
+                    <div id="wrapper-role" class="hidden">
+                        <label id="label-role" class="block text-sm font-semibold text-slate-700 mb-2">Job Title / Role</label>
+                        <input type="text" id="input-role" class="smart-input" placeholder="e.g. Software Engineer" maxlength="40">
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 7: Academic Dynamic Engine -->
+            <div class="step-container" data-step="7">
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Academic Records</h2>
+                <div class="mb-5 p-3 bg-brand-50 border border-brand-100 rounded-xl">
+                    <label class="block text-sm font-bold text-brand-900 mb-2">Highest Qualification</label>
+                    <select id="input-highest-qual" class="smart-input !border-brand-200 cursor-pointer text-brand-900">
+                        <option value="" disabled selected>Select Highest Level...</option>
+                        <option value="10">10th / Secondary</option>
+                        <option value="12">12th / Higher Secondary / Diploma</option>
+                        <option value="UG">Bachelor's Degree / UG</option>
+                        <option value="PG">Master's Degree / PG</option>
+                    </select>
+                </div>
+                
+                <div class="overflow-x-auto pb-2 hidden" id="academic-table-container">
+                    <table class="smart-table min-w-[600px]">
+                        <thead>
+                            <tr>
+                                <th>Exam Level</th>
+                                <th>Board / University</th>
+                                <th class="w-20">Total</th>
+                                <th class="w-24">Obtained</th>
+                                <th class="w-16">%</th>
+                                <th class="w-16">Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="academic-tbody">
+                            <!-- Rows injected dynamically -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+
+            <!-- STEP 8: Professional Traits -->
+            <div class="step-container" data-step="8">
+                <h2 class="text-2xl font-bold text-slate-800 mb-2">Professional Traits</h2>
+                <p class="text-slate-500 mb-6 text-sm">Add skills, hobbies or languages known. Press 'Enter' or comma to add.</p>
+                <div class="space-y-6">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Key Skills (Max 5)</label>
+                        <div class="tag-container" id="skills-container">
+                            <input type="text" id="input-skill" class="tag-input" placeholder="e.g. JavaScript, Public Speaking...">
+                        </div>
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Languages Known</label>
+                        <div class="tag-container" id="languages-container">
+                            <input type="text" id="input-language" class="tag-input" placeholder="e.g. English, Hindi, Bengali...">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 9: Family Details -->
+            <div class="step-container" data-step="9">
+                <h2 class="text-2xl font-bold text-slate-800 mb-6">Family Details</h2>
+                <div class="space-y-4">
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Father's Name</label>
+                        <input type="text" id="input-father" class="smart-input" placeholder="Enter full name" maxlength="50">
+                    </div>
+                    <div>
+                        <label class="block text-sm font-semibold text-slate-700 mb-2">Mother's Name</label>
+                        <input type="text" id="input-mother" class="smart-input" placeholder="Enter full name" maxlength="50">
+                    </div>
+                </div>
+            </div>
+
+            <!-- STEP 10: Location -->
+            <div class="step-container" data-step="10">
+                <div class="text-center">
+                    <div class="w-16 h-16 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                        <i class="ph-fill ph-map-pin text-3xl text-brand-500"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-slate-800 mb-2">Residential Address</h2>
+                    <p class="text-slate-500 mb-6 text-sm">Let our AI fetch and format your exact address flawlessly.</p>
+                    
+                    <button id="btn-fetch-location" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 rounded-xl shadow-md transition-all flex items-center justify-center gap-2">
+                        <i class="ph-bold ph-crosshair text-lg"></i> Auto-Fetch Address
+                    </button>
+                    
+                    <div id="location-error-msg" class="hidden mt-3 text-xs text-red-500 font-medium p-2 bg-red-50 rounded-lg border border-red-100"></div>
+
+                    <div class="mt-6 mb-4 flex items-center gap-4">
+                        <div class="h-px bg-slate-200 flex-1"></div>
+                        <span class="text-xs text-slate-400 font-bold uppercase">Address Details</span>
+                        <div class="h-px bg-slate-200 flex-1"></div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-3 text-left" id="address-grid">
+                        <div class="col-span-2">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">House No. / Street</label>
+                            <input type="text" id="addr-house" class="smart-input text-sm py-2.5" placeholder="e.g. 12B, Park Street" maxlength="60">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Village / Locality</label>
+                            <input type="text" id="addr-village" class="smart-input text-sm py-2.5" placeholder="e.g. Salt Lake Sector V" maxlength="60">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Post Office (PO)</label>
+                            <input type="text" id="addr-po" class="smart-input text-sm py-2.5" placeholder="e.g. Bidhannagar" maxlength="40">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Police Station (PS)</label>
+                            <input type="text" id="addr-ps" class="smart-input text-sm py-2.5" placeholder="e.g. Electronic Complex" maxlength="40">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">District</label>
+                            <input type="text" id="addr-district" class="smart-input text-sm py-2.5" placeholder="e.g. North 24 Parganas" maxlength="40">
+                        </div>
+                        <div>
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">State</label>
+                            <input type="text" id="addr-state" class="smart-input text-sm py-2.5" placeholder="e.g. West Bengal" maxlength="40">
+                        </div>
+                        <div class="col-span-2">
+                            <label class="block text-xs font-semibold text-slate-500 mb-1">Pincode</label>
+                            <input type="text" id="addr-pin" class="smart-input text-sm py-2.5" placeholder="e.g. 700091" maxlength="6">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Loader Overlay -->
+            <div id="loader-overlay" class="absolute inset-0 bg-white/90 backdrop-blur z-50 flex flex-col items-center justify-center hidden rounded-3xl">
+                <i class="ph-bold ph-spinner-gap text-4xl text-brand-500 animate-spin mb-4"></i>
+                <h3 id="loader-text" class="text-lg font-bold text-slate-800">Processing...</h3>
+            </div>
+        </main>
+
+        <div class="mt-6 flex justify-between items-center" id="nav-buttons">
+            <button id="btn-prev" class="text-slate-500 hover:text-slate-800 font-bold py-2 px-4 rounded-lg transition-colors flex items-center gap-1 invisible">
+                <i class="ph-bold ph-arrow-left"></i> Back
+            </button>
+            <button id="btn-next" class="bg-brand-500 hover:bg-brand-600 text-white font-bold py-3 px-8 rounded-xl shadow-md transition-all flex items-center gap-2">
+                Continue <i class="ph-bold ph-arrow-right"></i>
+            </button>
+        </div>
+    </div>
+
+    <!-- Sticky Bottom Bar for Edit Mode -->
+    <div id="edit-action-bar" class="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-10px_30px_rgba(0,0,0,0.1)] p-4 flex justify-center z-[90] hidden">
+        <button id="btn-update-pdf" class="w-full max-w-2xl bg-brand-500 hover:bg-brand-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-lg">
+            <i class="ph-bold ph-magic-wand text-2xl"></i> Update Profile & View PDF
+        </button>
+    </div>
+
+    <!-- The PDF Preview Modal Overlay (Canvas version) -->
+    <div id="pdf-preview-modal" class="fixed inset-0 bg-slate-900/95 backdrop-blur-sm z-[9999] hidden flex-col">
+        <div class="flex items-center justify-between p-4 bg-slate-900 border-b border-slate-800 shadow-lg shrink-0">
+            <button id="btn-preview-edit" class="flex items-center gap-2 text-white bg-slate-800 hover:bg-slate-700 px-4 py-2.5 rounded-xl font-medium transition-colors border border-slate-700 shadow-sm">
+                <i class="ph-bold ph-pencil-simple text-lg"></i> <span class="hidden sm:inline">Edit Details</span>
+            </button>
+            <h3 class="font-bold text-white text-lg tracking-wide hidden sm:block font-serif flex items-center gap-2">
+                <i class="ph-fill ph-check-circle text-brand-500"></i> Secure Digital Profile
+            </h3>
+            <button id="btn-preview-download" class="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-5 py-2.5 rounded-xl font-bold transition-colors shadow-[0_0_15px_rgba(20,184,166,0.3)]">
+                <i class="ph-bold ph-download-simple text-lg"></i> Download PDF
+            </button>
+        </div>
+        <div class="flex-1 w-full p-4 overflow-y-auto flex justify-center items-start" id="pdf-canvas-container">
+            <!-- Used pdf.js rendering canvas to avoid mobile iframe blocking -->
+            <canvas id="pdf-canvas" class="max-w-full h-auto shadow-2xl bg-white border border-slate-300 rounded-sm"></canvas>
+        </div>
+    </div>
+
+    <div id="pdf-container" class="hidden">
+        <div id="pdf-template">
+            <div style="flex: 1;">
+                <div class="pdf-header">
+                    <div>
+                        <h1 id="pdf-name" style="font-size: 2.1rem; font-weight: 700; color: #0f172a; margin-bottom: 2px; font-family: 'Playfair Display', serif;">Name</h1>
+                        <p id="pdf-subtitle" style="color: #64748b; font-size: 0.95rem; letter-spacing: 1px; text-transform: uppercase;">BIODATA</p>
+                        <div style="margin-top: 12px; font-size: 0.85rem; color: #334155; line-height: 1.4;">
+                            <div><i class="ph-fill ph-phone" style="position:relative; top:2px"></i> <span id="pdf-phone"></span></div>
+                            <div><i class="ph-fill ph-envelope" style="position:relative; top:2px"></i> <span id="pdf-email"></span></div>
+                            <div><i class="ph-fill ph-map-pin" style="position:relative; top:2px"></i> <span id="pdf-address-short"></span></div>
+                        </div>
+                    </div>
+                    <img id="pdf-photo-img" class="pdf-photo" src="" alt="Photo" style="display: none;">
+                </div>
+
+                <!-- Compact Personal Info -->
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Personal Information</div>
+                    <div class="pdf-grid" style="grid-template-columns: 120px 1fr 120px 1fr;">
+                        <div class="pdf-label">Date of Birth:</div><div class="pdf-value" id="pdf-dob"></div>
+                        <div class="pdf-label">Gender:</div><div class="pdf-value" id="pdf-gender"></div>
+                        <div class="pdf-label">Blood Group:</div><div class="pdf-value" id="pdf-blood"></div>
+                        <div class="pdf-label">Height:</div><div class="pdf-value" id="pdf-height"></div>
+                        <div class="pdf-label">Religion:</div><div class="pdf-value" id="pdf-religion"></div>
+                        <div class="pdf-label" id="pdf-label-caste">Caste:</div><div class="pdf-value" id="pdf-caste"></div>
+                    </div>
+                </div>
+
+                <!-- Dynamic Academic Table -->
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Academic Qualifications</div>
+                    <table class="pdf-table">
+                        <thead>
+                            <tr>
+                                <th>Examination</th>
+                                <th>Board / University</th>
+                                <th>Total</th>
+                                <th>Obtained</th>
+                                <th>Percentage</th>
+                                <th>Grade</th>
+                            </tr>
+                        </thead>
+                        <tbody id="pdf-academic-tbody"></tbody>
+                    </table>
+                </div>
+
+                <!-- Professional Traits -->
+                <div class="pdf-section" id="pdf-traits-section">
+                    <div class="pdf-section-title">Skills & Languages</div>
+                    <div class="pdf-grid" style="grid-template-columns: 100px 1fr;">
+                        <div class="pdf-label" id="pdf-label-skills">Key Skills:</div>
+                        <div class="pdf-tags" id="pdf-skills"></div>
+                        <div class="pdf-label mt-1" id="pdf-label-langs">Languages:</div>
+                        <div class="pdf-tags mt-1" id="pdf-langs"></div>
+                    </div>
+                </div>
+
+                <!-- Current Status -->
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Current Status</div>
+                    <div class="pdf-grid" style="grid-template-columns: 120px 1fr 120px 1fr;">
+                        <div class="pdf-label">Primary Status:</div><div class="pdf-value" id="pdf-status"></div>
+                        <div class="pdf-label" id="pdf-label-inst">Institution:</div><div class="pdf-value" id="pdf-inst"></div>
+                        <div class="pdf-label" id="pdf-label-role">Role/Job:</div><div class="pdf-value" id="pdf-role"></div>
+                    </div>
+                </div>
+
+                <!-- Family & Emergency -->
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Family Details</div>
+                    <div class="pdf-grid" style="grid-template-columns: 120px 1fr 120px 1fr;">
+                        <div class="pdf-label">Father's Name:</div><div class="pdf-value" id="pdf-father"></div>
+                        <div class="pdf-label">Mother's Name:</div><div class="pdf-value" id="pdf-mother"></div>
+                        <div class="pdf-label">Emergency Contact:</div><div class="pdf-value col-span-3" id="pdf-emergency"></div>
+                    </div>
+                </div>
+
+                <!-- Permanent Address -->
+                <div class="pdf-section">
+                    <div class="pdf-section-title">Permanent Address</div>
+                    <div class="pdf-value" id="pdf-address" style="line-height: 1.4; font-size: 0.85rem; white-space: pre-line;"></div>
+                </div>
+            </div>
+
+            <!-- The Dual QR Code Footer -->
+            <div class="qr-footer">
+                <div class="qr-box">
+                    <div class="qr-code" id="qr-vcard-container"></div>
+                    <div class="qr-text">Scan for Contact</div>
+                </div>
+                <div style="text-align: center; color: #94a3b8; font-size: 0.85rem; font-weight: 500; align-self: center; padding-bottom: 5px;">
+                    Made with <i class="ph-fill ph-leaf" style="color: #14b8a6; position: relative; top: 2px;"></i> Identity.
+                </div>
+                <div class="qr-box">
+                    <div class="qr-code" id="qr-digital-container"></div>
+                    <div class="qr-text">Digital Profile</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Initialize robust PDF.js worker for mobile previews
+            pdfjsLib.GlobalWorkerOptions.workerSrc = 'https://cdnjs.cloudflare.com/ajax/libs/pdf.js/3.11.174/pdf.worker.min.js';
+
+            const TOTAL_STEPS = 10;
+            let currentStep = 1;
+            let generatedPdfBlob = null;
+            let cropper = null;
+
+            // Global State
+            const userData = {
+                photoUrl: '', fullname: '', gender: '', dob: '', height: '', bloodGroup: '',
+                phone: '', email: '', emergency: '', religion: '', caste: '',
+                status: '', institution: '', role: '',
+                education: [], skills: [], languages: [],
+                father: '', mother: '', 
+                address: { house: '', village: '', po: '', ps: '', district: '', state: '', pin: '' }
+            };
+
+            // Height Generator
+            const heightSelect = document.getElementById('input-height');
+            for(let f=4; f<=7; f++) {
+                for(let i=0; i<12; i++) {
+                    if(f===7 && i>0) break;
+                    let cm = Math.round((f*30.48) + (i*2.54));
+                    heightSelect.add(new Option(`${f}'${i}" (${cm} cm)`, `${f}'${i}" (${cm} cm)`));
+                }
+            }
+
+            // Sanitizer & Utilities
+            const Sanitizer = {
+                cleanString: (str) => {
+                    if(!str) return '';
+                    let div = document.createElement('div'); div.innerText = str;
+                    return div.innerHTML.replace(/<[^>]*>?/gm, '')
+                                        .replace(/[\u{1F600}-\u{1F6FF}\u{2600}-\u{26FF}\u{2700}-\u{27BF}\u{1F300}-\u{1F5FF}\u{1F900}-\u{1F9FF}\u{1FA70}-\u{1FAFF}]/gu, '')
+                                        .replace(/\s+/g, ' ').trim();
+                },
+                isValidName: (str) => {
+                    if (!/^[a-zA-Z\s\.]+$/.test(str)) return false;
+                    let parts = str.trim().split(/\s+/);
+                    if (parts.length < 2) return false;
+                    let p1 = parts[0].toLowerCase().replace(/\./g,'');
+                    let p2 = parts[1].toLowerCase().replace(/\./g,'');
+                    if (p1 === p2 || p1.length < 2 || p2.length < 2) return false;
+                    const dummies = ['abc', 'xyz', 'test', 'dummy', 'qwer', 'asdf'];
+                    if (dummies.includes(p1) || dummies.includes(p2)) return false;
+                    return true;
+                },
+                isValidPhone: (str) => {
+                    if (!/^[6-9]\d{9}$/.test(str)) return false;
+                    if (/^(\d)\1{9}$/.test(str)) return false;
+                    if (/^(\d)\1(\d)\2(\d)\3(\d)\4(\d)\5$/.test(str)) return false;
+                    const seq = "0123456789 9876543210 1234567890";
+                    if (seq.includes(str)) return false;
+                    return true;
+                },
+                isValidEmail: (str) => {
+                    const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+                    if(!emailRegex.test(str)) return false;
+                    let parts = str.split('@');
+                    if(parts[0].length < 3 || parts[1].length < 4) return false;
+                    return true;
+                },
+                forceTitleCase: (str) => {
+                    if (!str) return '';
+                    return str.toString().toLowerCase().replace(/(?:^|\s|-|\/|\(|\[|{)\w/g, match => match.toUpperCase());
+                },
+                formatDate: (ds) => ds ? new Date(ds).toLocaleDateString('en-IN', {day:'2-digit', month:'long', year:'numeric'}) : ''
+            };
+
+            function showError(msg) {
+                const toast = document.getElementById('error-toast');
+                document.getElementById('error-msg').textContent = msg;
+                toast.classList.add('show');
+                if(navigator.vibrate) navigator.vibrate([50,50]);
+                setTimeout(() => toast.classList.remove('show'), 3500);
+            }
+
+            const steps = document.querySelectorAll('.step-container');
+            const btnNext = document.getElementById('btn-next');
+            const btnPrev = document.getElementById('btn-prev');
+            const navButtons = document.getElementById('nav-buttons');
+            const progressBar = document.getElementById('progress-bar');
+            
+            function updateUI() {
+                // If we are in edit mode, standard UI updates for step progress are disabled
+                if(document.body.classList.contains('is-edit-mode')) return;
+
+                progressBar.style.width = `${(currentStep / TOTAL_STEPS) * 100}%`;
+                document.getElementById('step-counter').textContent = `Step ${currentStep} of ${TOTAL_STEPS}`;
+                
+                steps.forEach(s => s.classList.remove('active'));
+                const targetStep = document.querySelector(`.step-container[data-step="${currentStep}"]`);
+                if(targetStep) targetStep.classList.add('active');
+
+                btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
+                
+                if (currentStep === TOTAL_STEPS) {
+                    btnNext.innerHTML = 'Generate Profile <i class="ph-bold ph-magic-wand"></i>';
+                } else {
+                    btnNext.innerHTML = 'Continue <i class="ph-bold ph-arrow-right"></i>';
+                }
+            }
+
+            // One-Page Inline Editor Mode
+            function enterEditMode() {
+                document.body.classList.add('is-edit-mode');
+                document.getElementById('nav-buttons').style.display = 'none';
+                document.getElementById('edit-action-bar').classList.remove('hidden');
+                
+                // Ensure all steps are accessible for scrolling
+                window.scrollTo({ top: 0, behavior: 'smooth' });
+            }
+
+            // UI Listeners
+            document.querySelectorAll('.pill-grid').forEach(grid => {
+                grid.addEventListener('click', (e) => {
+                    if(e.target.classList.contains('smart-pill')) {
+                        Array.from(grid.children).forEach(c => c.classList.remove('active'));
+                        e.target.classList.add('active');
+                        if(grid.id === 'status-selection') handleStatusChange(e.target.dataset.value);
+                    }
+                });
+            });
+
+            function handleStatusChange(status) {
+                const fields = document.getElementById('dynamic-status-fields');
+                const lblInst = document.getElementById('label-institution');
+                const wrapRole = document.getElementById('wrapper-role');
+                const wrapStudType = document.getElementById('wrapper-student-type');
+                
+                fields.classList.remove('hidden');
+                document.getElementById('input-institution').value = '';
+                document.getElementById('input-role').value = '';
+                
+                if(status === 'Student') {
+                    wrapStudType.classList.remove('hidden');
+                    lblInst.textContent = 'Institution Name';
+                    wrapRole.classList.add('hidden');
+                } else {
+                    wrapStudType.classList.add('hidden');
+                    lblInst.textContent = 'Company/Business Name';
+                    wrapRole.classList.remove('hidden');
+                    if(status === 'Business') document.getElementById('label-role').textContent = 'Your Role (e.g. Founder, Owner)';
+                    else document.getElementById('label-role').textContent = 'Job Title / Designation';
+                }
+            }
+
+            function setupTagInput(containerId, inputId, arrayRef, maxTags) {
+                const container = document.getElementById(containerId);
+                const input = document.getElementById(inputId);
+                
+                function renderTags() {
+                    container.querySelectorAll('.tag-pill').forEach(e => e.remove());
+                    arrayRef.forEach((tag, idx) => {
+                        const span = document.createElement('span'); span.className = 'tag-pill';
+                        span.innerHTML = `${Sanitizer.forceTitleCase(tag)} <i class="ph-bold ph-x tag-remove" data-idx="${idx}"></i>`;
+                        container.insertBefore(span, input);
+                    });
+                }
+                container.addEventListener('click', (e) => {
+                    if(e.target.classList.contains('tag-remove')) { arrayRef.splice(e.target.dataset.idx, 1); renderTags(); }
+                });
+                input.addEventListener('keydown', (e) => {
+                    if(e.key === 'Enter' || e.key === ',') {
+                        e.preventDefault();
+                        const val = Sanitizer.cleanString(input.value);
+                        if(val && !arrayRef.includes(val) && arrayRef.length < maxTags) {
+                            arrayRef.push(val); input.value = ''; renderTags();
+                        } else if (arrayRef.length >= maxTags) {
+                            showError(`Maximum ${maxTags} entries allowed here.`);
+                        }
+                    }
+                });
+            }
+            setupTagInput('skills-container', 'input-skill', userData.skills, 5);
+            setupTagInput('languages-container', 'input-language', userData.languages, 5);
+
+            const academicTbody = document.getElementById('academic-tbody');
+            const qualSelect = document.getElementById('input-highest-qual');
+            const acadTableContainer = document.getElementById('academic-table-container');
+
+            const getBoardOptions10 = () => `<option value="" disabled selected>Select Board</option><option value="WBBSE" data-tot="700">WBBSE (West Bengal) - 700</option><option value="CBSE" data-tot="500">CBSE - 500</option><option value="ICSE" data-tot="500">ICSE - 500</option><option value="UPMSP" data-tot="600">UP Board - 600</option><option value="BSEB" data-tot="500">BSEB (Bihar) - 500</option><option value="MSBSHSE" data-tot="500">Maharashtra SSC - 500</option><option value="Other" data-tot="">Other Board</option>`;
+            const getBoardOptions12 = () => `<option value="" disabled selected>Select Board</option><option value="WBCHSE" data-tot="500">WBCHSE (West Bengal) - 500</option><option value="CBSE" data-tot="500">CBSE - 500</option><option value="ISC" data-tot="500">ISC - 500</option><option value="UPMSP" data-tot="500">UP Board - 500</option><option value="BSEB" data-tot="500">BSEB (Bihar) - 500</option><option value="MSBSHSE" data-tot="600">Maharashtra HSC - 600</option><option value="Other" data-tot="">Other Board</option>`;
+
+            const rowTemplates = {
+                10: `<tr><td><input type="text" class="table-input font-semibold" value="10th (Secondary)" readonly></td><td><select class="table-input cursor-pointer board-selector">${getBoardOptions10()}</select></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Marks" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`,
+                12: `<tr><td><input type="text" class="table-input font-semibold" value="12th / Diploma" readonly></td><td><select class="table-input cursor-pointer board-selector">${getBoardOptions12()}</select></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Marks" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`,
+                UG: `<tr><td><input type="text" class="table-input font-semibold" placeholder="Degree (e.g. B.Tech)" maxlength="20"></td><td><input type="text" class="table-input" placeholder="University Name" maxlength="40"></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Obtained" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`,
+                PG: `<tr><td><input type="text" class="table-input font-semibold" placeholder="Degree (e.g. M.Tech)" maxlength="20"></td><td><input type="text" class="table-input" placeholder="University Name" maxlength="40"></td><td><input type="number" class="table-input calc-trigger t-tot" placeholder="Total" min="1"></td><td><input type="number" class="table-input calc-trigger t-obt" placeholder="Obtained" min="0"></td><td><input type="text" class="table-readonly t-perc" readonly tabindex="-1"></td><td><input type="text" class="table-readonly t-grd" readonly tabindex="-1"></td></tr>`
+            };
+
+            qualSelect.addEventListener('change', (e) => {
+                acadTableContainer.classList.remove('hidden');
+                academicTbody.innerHTML = '';
+                const v = e.target.value;
+                academicTbody.insertAdjacentHTML('beforeend', rowTemplates[10]);
+                if(['12','UG','PG'].includes(v)) academicTbody.insertAdjacentHTML('beforeend', rowTemplates[12]);
+                if(['UG','PG'].includes(v)) academicTbody.insertAdjacentHTML('beforeend', rowTemplates['UG']);
+                if(v === 'PG') academicTbody.insertAdjacentHTML('beforeend', rowTemplates['PG']);
+                attachAcademicListeners();
+            });
+
+            function calculateGrade(perc) {
+                if(isNaN(perc) || perc === '') return '';
+                if(perc >= 90) return 'A+'; if(perc >= 80) return 'A';
+                if(perc >= 70) return 'B+'; if(perc >= 60) return 'B';
+                if(perc >= 50) return 'C';  if(perc >= 40) return 'D'; return 'F';
+            }
+
+            function attachAcademicListeners() {
+                academicTbody.querySelectorAll('.board-selector').forEach(sel => {
+                    sel.addEventListener('change', (e) => {
+                        const tr = e.target.closest('tr');
+                        const totalBox = tr.querySelector('.t-tot');
+                        const selectedOption = e.target.options[e.target.selectedIndex];
+                        if (selectedOption.dataset.tot) {
+                            totalBox.value = selectedOption.dataset.tot;
+                            tr.querySelector('.t-obt').dispatchEvent(new Event('input')); 
+                        } else if (e.target.value === 'Other') totalBox.value = '';
+                    });
+                });
+
+                academicTbody.querySelectorAll('.calc-trigger').forEach(input => {
+                    input.addEventListener('input', (e) => {
+                        const tr = e.target.closest('tr');
+                        const totalBox = tr.querySelector('.t-tot');
+                        const obtBox = tr.querySelector('.t-obt');
+                        const percBox = tr.querySelector('.t-perc');
+                        const gradeBox = tr.querySelector('.t-grd');
+
+                        const total = parseFloat(totalBox.value);
+                        const obt = parseFloat(obtBox.value);
+
+                        if(total > 0 && obt >= 0) {
+                            if(obt > total) { 
+                                percBox.value = 'Err'; gradeBox.value = '-'; percBox.style.color = '#ef4444';
+                            } else {
+                                percBox.style.color = '#0f172a';
+                                let p = (total <= 10) ? (obt/total)*100 : (obt/total)*100;
+                                if(total === 10) p = obt * 9.5; 
+                                percBox.value = p > 100 ? 100 : p.toFixed(1) + '%';
+                                gradeBox.value = calculateGrade(p);
+                            }
+                        } else { percBox.value = ''; gradeBox.value = ''; }
+                    });
+                });
+            }
+
+            const fileInput = document.getElementById('input-photo');
+            const cropModal = document.getElementById('cropper-modal');
+            const cropImage = document.getElementById('cropper-image');
+            const previewImg = document.getElementById('final-photo-preview');
+            
+            document.getElementById('photo-trigger').addEventListener('click', () => fileInput.click());
+            fileInput.addEventListener('change', (e) => {
+                const file = e.target.files[0];
+                if(file) {
+                    if(file.size > 5 * 1024 * 1024) { showError("Image too large. Max 5MB."); return; }
+                    const reader = new FileReader();
+                    reader.onload = (event) => {
+                        cropImage.src = event.target.result;
+                        cropModal.classList.add('active');
+                        if(cropper) cropper.destroy();
+                        cropper = new Cropper(cropImage, { aspectRatio: 1, viewMode: 1, dragMode: 'move', autoCropArea: 0.8, guides: false });
+                    };
+                    reader.readAsDataURL(file);
+                }
+            });
+
+            document.getElementById('btn-crop-save').addEventListener('click', () => {
+                if (!cropper) return;
+                const canvas = cropper.getCroppedCanvas({ width: 400, height: 400, imageSmoothingEnabled: true, imageSmoothingQuality: 'high' });
+                const dataUrl = canvas.toDataURL('image/jpeg', 0.9);
+                userData.photoUrl = dataUrl;
+                previewImg.src = dataUrl;
+                previewImg.style.display = 'block';
+                document.querySelector('#photo-trigger i').style.display = 'none';
+                document.getElementById('photo-hover-edit').classList.replace('hidden', 'flex');
+                cropModal.classList.remove('active');
+            });
+            document.getElementById('btn-close-cropper').addEventListener('click', () => cropModal.classList.remove('active'));
+
+            function validateStep(stepIndex) {
+                let s = Sanitizer;
+                switch(stepIndex) {
+                    case 1:
+                        if(!userData.photoUrl) { showError("Please confirm a professional photo."); return false; }
+                        let name = s.cleanString(document.getElementById('input-fullname').value);
+                        if(!s.isValidName(name)) { showError("Please enter a valid First and Last Name."); return false; }
+                        userData.fullname = name;
+                        break;
+                    case 2:
+                        let gen = document.querySelector('#gender-selection .active');
+                        let dob = document.getElementById('input-dob').value;
+                        if(!gen) { showError("Select Gender."); return false; }
+                        if(!dob) { showError("Select DOB."); return false; }
+                        let age = new Date().getFullYear() - new Date(dob).getFullYear();
+                        if(age < 15 || age > 100) { showError("Age must be between 15 and 100."); return false; }
+                        userData.gender = gen.dataset.value; userData.dob = dob;
+                        break;
+                    case 3:
+                        let h = document.getElementById('input-height').value;
+                        let b = document.getElementById('input-blood').value;
+                        if(!h || !b) { showError("Select Height and Blood Group."); return false; }
+                        userData.height = h; userData.bloodGroup = b;
+                        break;
+                    case 4:
+                        let ph = document.getElementById('input-phone').value;
+                        let em = document.getElementById('input-email').value;
+                        let eph = document.getElementById('input-emergency').value;
+                        let eName = s.cleanString(document.getElementById('input-emergency-name').value);
+                        let eRel = s.cleanString(document.getElementById('input-emergency-relation').value);
+                        
+                        if(!s.isValidPhone(ph)) { showError("Valid 10-digit mobile number required."); return false; }
+                        if(!s.isValidEmail(em)) { showError("Valid email address required."); return false; }
+                        if(eph || eName || eRel) {
+                            if(!s.isValidPhone(eph)) { showError("Valid 10-digit emergency number required."); return false; }
+                            if(!eName || !eRel) { showError("Emergency Name & Relation required."); return false; }
+                            userData.emergency = `+91 ${eph} | ${eName} - ${eRel}`;
+                        } else { userData.emergency = 'Not Provided'; }
+                        userData.phone = ph; userData.email = em; 
+                        break;
+                    case 5:
+                        let rel = document.getElementById('input-religion').value;
+                        if(!rel) { showError("Select Religion."); return false; }
+                        userData.religion = rel; userData.caste = s.cleanString(document.getElementById('input-caste').value) || 'Not Specified';
+                        break;
+                    case 6:
+                        let stat = document.querySelector('#status-selection .active');
+                        if(!stat) { showError("Select Current Status."); return false; }
+                        userData.status = stat.dataset.value;
+                        let inst = s.cleanString(document.getElementById('input-institution').value);
+                        if(inst.length < 3) { showError("Enter valid Institution/Company name."); return false; }
+                        userData.institution = inst;
+                        if(userData.status !== 'Student') {
+                            let role = s.cleanString(document.getElementById('input-role').value);
+                            if(role.length < 2) { showError("Enter valid Role/Designation."); return false; }
+                            userData.role = role;
+                        }
+                        break;
+                    case 7:
+                        if(!qualSelect.value) { showError("Please select Highest Qualification."); return false; }
+                        userData.education = [];
+                        let hasMathError = false;
+                        academicTbody.querySelectorAll('tr').forEach(tr => {
+                            const levelBox = tr.querySelector('td:nth-child(1) input');
+                            const boardSel = tr.querySelector('td:nth-child(2) select, td:nth-child(2) input');
+                            const totalBox = tr.querySelector('.t-tot');
+                            const obtBox = tr.querySelector('.t-obt');
+                            const percBox = tr.querySelector('.t-perc');
+                            const gradeBox = tr.querySelector('.t-grd');
+
+                            if(levelBox.value && boardSel.value && obtBox.value) { 
+                                if(parseFloat(obtBox.value) > parseFloat(totalBox.value) || !percBox.value || percBox.value === 'Err') {
+                                    hasMathError = true;
+                                }
+                                userData.education.push({ level: levelBox.value, board: boardSel.value, total: totalBox.value, obt: obtBox.value, perc: percBox.value, grade: gradeBox.value });
+                            }
+                        });
+                        if(hasMathError) { showError("Check Marks. Obtained cannot exceed Total."); return false; }
+                        if(userData.education.length === 0) { showError("Please enter at least 1st row marks."); return false; }
+                        break;
+                    case 8:
+                        if(userData.skills.length === 0) { showError("Please add at least one key skill."); return false; }
+                        if(userData.languages.length === 0) { showError("Please add at least one language."); return false; }
+                        break;
+                    case 9:
+                        let fat = s.cleanString(document.getElementById('input-father').value);
+                        let mot = s.cleanString(document.getElementById('input-mother').value);
+                        if(!s.isValidName(fat) || !s.isValidName(mot)) { showError("Valid parent names required."); return false; }
+                        userData.father = fat; userData.mother = mot;
+                        break;
+                    case 10:
+                        let hs = s.cleanString(document.getElementById('addr-house').value);
+                        let vi = s.cleanString(document.getElementById('addr-village').value);
+                        let po = s.cleanString(document.getElementById('addr-po').value);
+                        let ps = s.cleanString(document.getElementById('addr-ps').value);
+                        let dt = s.cleanString(document.getElementById('addr-district').value);
+                        let st = s.cleanString(document.getElementById('addr-state').value);
+                        let pi = s.cleanString(document.getElementById('addr-pin').value);
+                        if(!dt || !st || !pi) { showError("District, State, and Pincode are strictly required."); return false; }
+                        if(!/^\d{6}$/.test(pi)) { showError("Valid 6-digit Pincode required."); return false; }
+                        userData.address = { house: hs, village: vi, po: po, ps: ps, district: dt, state: st, pin: pi };
+                        break;
+                }
+                return true;
+            }
+
+            function validateAll() {
+                for(let i=1; i<=TOTAL_STEPS; i++) {
+                    if(!validateStep(i)) {
+                        const stepEl = document.querySelector(`.step-container[data-step="${i}"]`);
+                        if(stepEl) {
+                            const y = stepEl.getBoundingClientRect().top + window.scrollY - 30;
+                            window.scrollTo({top: y, behavior: 'smooth'});
+                        }
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            // Button Routing Events
+            btnNext.addEventListener('click', () => { 
+                if(validateStep(currentStep)) { 
+                    if(currentStep === TOTAL_STEPS) {
+                        prepareFinalData(true); // Triggers PDF Gen and Instantly shows the Preview Modal
+                    } else {
+                        currentStep++; 
+                        updateUI(); 
+                    }
+                } 
+            });
+            btnPrev.addEventListener('click', () => { if(currentStep > 1) { currentStep--; updateUI(); } });
+
+            // Editing Submit Event
+            document.getElementById('btn-update-pdf').addEventListener('click', () => {
+                if(validateAll()) {
+                    prepareFinalData(true); // Generates updated PDF and re-opens Modal
+                }
+            });
+
+            document.getElementById('btn-fetch-location').addEventListener('click', async () => {
+                const btn = document.getElementById('btn-fetch-location');
+                const errMsg = document.getElementById('location-error-msg');
+                btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Fetching Securely...`;
+                errMsg.classList.add('hidden');
+
+                if (!navigator.geolocation) {
+                    btn.innerHTML = `<i class="ph-bold ph-crosshair text-lg"></i> Auto-Fetch`;
+                    errMsg.textContent = "Geolocation not supported. Type manually."; errMsg.classList.remove('hidden'); return;
+                }
+
+                navigator.geolocation.getCurrentPosition(
+                    async (pos) => {
+                        const lat = pos.coords.latitude; const lon = pos.coords.longitude;
+                        let foundData = false;
+
+                        try {
+                            const bdcRes = await fetch(`https://api.bigdatacloud.net/data/reverse-geocode-client?latitude=${lat}&longitude=${lon}&localityLanguage=en`);
+                            if(bdcRes.ok) {
+                                const ad = await bdcRes.json();
+                                document.getElementById('addr-village').value = ad.locality || ad.city || '';
+                                document.getElementById('addr-district').value = ad.principalSubdivision || ''; 
+                                document.getElementById('addr-state').value = ad.principalSubdivision || '';
+                                document.getElementById('addr-pin').value = ad.postcode || '';
+                                foundData = true;
+                            }
+                        } catch(e) {}
+
+                        if(!foundData) {
+                            try {
+                                const nomRes = await fetch(`https://nominatim.openstreetmap.org/reverse?format=jsonv2&lat=${lat}&lon=${lon}&addressdetails=1`);
+                                if(nomRes.ok) {
+                                    const ad = (await nomRes.json()).address;
+                                    document.getElementById('addr-house').value = ad.house_number || '';
+                                    document.getElementById('addr-village').value = ad.neighbourhood || ad.suburb || ad.village || ad.town || '';
+                                    document.getElementById('addr-district').value = ad.state_district || ad.county || ad.city || '';
+                                    document.getElementById('addr-state').value = ad.state || '';
+                                    document.getElementById('addr-pin').value = ad.postcode || '';
+                                    foundData = true;
+                                }
+                            } catch(e) {}
+                        }
+
+                        if (foundData) {
+                            btn.innerHTML = `<i class="ph-bold ph-check text-green-400"></i> Success`;
+                            setTimeout(()=> { btn.innerHTML = `<i class="ph-bold ph-crosshair text-lg"></i> Auto-Fetch Address`; }, 2000);
+                        } else {
+                            btn.innerHTML = `<i class="ph-bold ph-crosshair text-lg"></i> Auto-Fetch Address`;
+                            showError("Network blocked by browser security. Please type manually.");
+                        }
+                    },
+                    (err) => { btn.innerHTML = `<i class="ph-bold ph-crosshair text-lg"></i> Auto-Fetch Address`; showError("GPS Access Denied."); },
+                    { enableHighAccuracy: true, timeout: 8000 }
+                );
+            });
+
+            async function generateHash(str) {
+                const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
+                return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 10);
+            }
+
+            function compressImageProxy(dataUrl, quality = 0.6) {
+                return new Promise((resolve) => {
+                    const img = new Image();
+                    img.onload = () => {
+                        const canvas = document.createElement('canvas');
+                        canvas.width = 150; canvas.height = 150; 
+                        const ctx = canvas.getContext('2d');
+                        ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+                        resolve(canvas.toDataURL('image/webp', quality));
+                    };
+                    img.src = dataUrl;
+                });
+            }
+
+            const generateSafeQR = (text, containerId) => {
+                return new Promise((resolve) => {
+                    const tempDiv = document.createElement('div');
+                    new QRCode(tempDiv, { text: text, width: 256, height: 256, correctLevel: QRCode.CorrectLevel.L });
+                    
+                    setTimeout(() => {
+                        const canvas = tempDiv.querySelector('canvas');
+                        if(canvas) {
+                            const img = document.createElement('img');
+                            img.src = canvas.toDataURL("image/png");
+                            const container = document.getElementById(containerId);
+                            container.innerHTML = ''; 
+                            container.appendChild(img);
+                        }
+                        resolve();
+                    }, 100);
+                });
+            };
+
+            async function prepareFinalData(showPreview = false) {
+                const ldr = document.getElementById('loader-overlay');
+                ldr.classList.remove('hidden');
+                document.getElementById('loader-text').textContent = "Securing Identity...";
+                
+                // Wait for external fonts to fully load to prevent measurement glitches
+                await document.fonts.ready; 
+
+                const tf = Sanitizer.forceTitleCase;
+                
+                // Clean Helper (No '\u00A0' hacks, standard text content mapped securely)
+                const setSafeText = (id, str) => {
+                    const el = document.getElementById(id);
+                    if(el && typeof str !== 'undefined') el.textContent = str.toString();
+                };
+
+                // Map standard values
+                setSafeText('pdf-name', tf(userData.fullname));
+                setSafeText('pdf-phone', "+91 " + userData.phone);
+                setSafeText('pdf-email', userData.email.toLowerCase()); 
+                
+                let shortAddr = [];
+                if(userData.address.district) shortAddr.push(tf(userData.address.district));
+                if(userData.address.state) shortAddr.push(tf(userData.address.state));
+                setSafeText('pdf-address-short', shortAddr.join(", "));
+                
+                document.getElementById('pdf-photo-img').src = userData.photoUrl; 
+                document.getElementById('pdf-photo-img').style.display = 'block';
+
+                setSafeText('pdf-dob', tf(Sanitizer.formatDate(userData.dob)));
+                setSafeText('pdf-gender', tf(userData.gender));
+                setSafeText('pdf-blood', userData.bloodGroup.toUpperCase()); 
+                setSafeText('pdf-height', userData.height); 
+                setSafeText('pdf-religion', tf(userData.religion));
+                
+                if(userData.caste === 'Not Specified' || !userData.caste) {
+                    document.getElementById('pdf-label-caste').style.display = 'none';
+                    document.getElementById('pdf-caste').style.display = 'none';
+                } else {
+                    document.getElementById('pdf-label-caste').style.display = 'block';
+                    document.getElementById('pdf-caste').style.display = 'block';
+                    setSafeText('pdf-caste', tf(userData.caste));
+                }
+
+                const ptbody = document.getElementById('pdf-academic-tbody');
+                ptbody.innerHTML = '';
+                userData.education.forEach(edu => {
+                    const tr = document.createElement('tr');
+                    // No space replacements used here. Standard geometrical text layout will flow correctly
+                    tr.innerHTML = `<td>${tf(edu.level)}</td><td>${tf(edu.board)}</td><td>${edu.total}</td><td>${edu.obt}</td><td>${edu.perc}</td><td style="font-weight:bold">${edu.grade.toUpperCase()}</td>`;
+                    ptbody.appendChild(tr);
+                });
+
+                const sContainer = document.getElementById('pdf-skills');
+                const lContainer = document.getElementById('pdf-langs');
+                sContainer.innerHTML = ''; lContainer.innerHTML = '';
+                userData.skills.forEach(s => sContainer.innerHTML += `<div class="pdf-tag-item">${tf(s)}</div>`);
+                userData.languages.forEach(l => lContainer.innerHTML += `<div class="pdf-tag-item">${tf(l)}</div>`);
+
+                setSafeText('pdf-status', tf(userData.status));
+                setSafeText('pdf-inst', tf(userData.institution));
+                if(userData.status === 'Student') {
+                    document.getElementById('pdf-label-role').style.display = 'none';
+                    document.getElementById('pdf-role').style.display = 'none';
+                } else {
+                    document.getElementById('pdf-label-role').style.display = 'block';
+                    document.getElementById('pdf-role').style.display = 'block';
+                    setSafeText('pdf-role', tf(userData.role));
+                }
+
+                setSafeText('pdf-father', tf(userData.father));
+                setSafeText('pdf-mother', tf(userData.mother));
+                setSafeText('pdf-emergency', tf(userData.emergency));
+                
+                const adr = userData.address;
+                let addrLines = [];
+                let line1 = [adr.house, adr.village].filter(Boolean).map(x => tf(x)).join(", ");
+                if(line1) addrLines.push(line1);
+                let poPs = [];
+                if(adr.po) poPs.push("PO: " + tf(adr.po));
+                if(adr.ps) poPs.push("PS: " + tf(adr.ps));
+                if(poPs.length > 0) addrLines.push(poPs.join(", "));
+                addrLines.push(`${tf(adr.district)}, ${tf(adr.state)} - ${adr.pin}.`);
+                
+                setSafeText('pdf-address', addrLines.join("\n"));
+
+                // QR Encryption Logic
+                try {
+                    document.getElementById('loader-text').textContent = "Encrypting Data...";
+                    const proxyPhoto = await compressImageProxy(userData.photoUrl);
+                    const cloudPayload = { ...userData, photoUrl: proxyPhoto };
+                    const payloadString = JSON.stringify(cloudPayload);
+                    const hashId = await generateHash(payloadString);
+                    const digitalDeepLink = window.location.origin + window.location.pathname + '?v=' + hashId;
+                    
+                    const vcardData = `BEGIN:VCARD\nVERSION:3.0\nFN:${tf(userData.fullname)}\nTEL:+91${userData.phone}\nEMAIL:${userData.email.toLowerCase()}\nEND:VCARD`;
+                    
+                    await generateSafeQR(vcardData, 'qr-vcard-container');
+                    await generateSafeQR(digitalDeepLink, 'qr-digital-container');
+                    
+                    fetch('https://identity.devteam-circuitbreakers.workers.dev/api/save', {
+                        method: 'POST', headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ id: hashId, payload: cloudPayload })
+                    }).catch(console.error);
+
+                } catch(e) { console.error("QR Engine Error: ", e); }
+
+                document.getElementById('loader-text').textContent = "Compiling PDF...";
+                
+                const pdfContainer = document.getElementById('pdf-container');
+                const pdfTemplate = document.getElementById('pdf-template');
+                
+                pdfContainer.classList.remove('hidden');
+                pdfContainer.style.position = 'absolute';
+                pdfContainer.style.top = '-10000px';
+                pdfContainer.style.left = '0px';
+                pdfContainer.style.width = '794px'; 
+                pdfContainer.style.maxWidth = 'none'; 
+                pdfContainer.style.display = 'block';
+                pdfContainer.style.zIndex = '-9999';
+                
+                pdfTemplate.style.display = 'flex';
+
+                setTimeout(() => {
+                    const opt = {
+                        margin: 0,
+                        filename: `${Sanitizer.forceTitleCase(userData.fullname).replace(/\s+/g, '_')}_BioData.pdf`,
+                        image: { type: 'jpeg', quality: 1.0 },
+                        html2canvas: { 
+                            scale: 2, 
+                            useCORS: true, 
+                            windowWidth: 794, 
+                            width: 794, 
+                            height: 1123, 
+                            scrollY: 0, 
+                            x: 0, 
+                            y: 0
+                            // Removed letterRendering: true specifically to fix the PushkarBose missing whitespace bug
+                        },
+                        jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait', hotfixes: ['px_scaling'] }
+                    };
+
+                    html2pdf().set(opt).from(pdfTemplate).outputPdf('blob').then((blob) => {
+                        generatedPdfBlob = blob;
+                        ldr.classList.add('hidden');
+                        pdfTemplate.style.display = 'none';
+                        pdfContainer.style.display = 'none';
+                        pdfContainer.classList.add('hidden');
+                        
+                        if (showPreview) {
+                            const url = URL.createObjectURL(blob);
+                            const modal = document.getElementById('pdf-preview-modal');
+                            modal.classList.remove('hidden');
+                            modal.classList.add('flex');
+                            
+                            // Load Canvas Preview
+                            pdfjsLib.getDocument(url).promise.then(pdf => {
+                                pdf.getPage(1).then(page => {
+                                    const canvas = document.getElementById('pdf-canvas');
+                                    const ctx = canvas.getContext('2d');
+                                    
+                                    // Make scalable high-res format
+                                    const viewport = page.getViewport({ scale: 2 }); 
+                                    canvas.width = viewport.width;
+                                    canvas.height = viewport.height;
+                                    
+                                    page.render({ canvasContext: ctx, viewport: viewport });
+                                });
+                            }).catch(err => {
+                                console.error("PDF Preview Error:", err);
+                                document.getElementById('pdf-canvas-container').innerHTML = `<p class="text-slate-400 text-center mt-10 font-medium">Preview engine failed. Please click "Download PDF" to view.</p>`;
+                            });
+                        }
+                    }).catch(err => {
+                        ldr.classList.add('hidden');
+                        pdfTemplate.style.display = 'none';
+                        pdfContainer.style.display = 'none';
+                        pdfContainer.classList.add('hidden');
+                        showError("Failed to generate PDF. Please try again.");
+                    });
+                }, 500); 
+            }
+
+            document.getElementById('btn-preview-download').addEventListener('click', () => {
+                if(generatedPdfBlob) {
+                    const url = URL.createObjectURL(generatedPdfBlob);
+                    const a = document.createElement('a');
+                    a.href = url; 
+                    a.download = `${Sanitizer.forceTitleCase(userData.fullname).replace(/\s+/g, '_')}_BioData.pdf`;
+                    document.body.appendChild(a); a.click(); document.body.removeChild(a);
+                }
+            });
+
+            document.getElementById('btn-preview-edit').addEventListener('click', () => {
+                document.getElementById('pdf-preview-modal').classList.add('hidden');
+                document.getElementById('pdf-preview-modal').classList.remove('flex');
+                enterEditMode();
+            });
+
+            // Populate logic when parsing returning visitor ID
+            function populateUIFromData(d) {
+                if(d.photoUrl) {
+                    document.getElementById('final-photo-preview').src = d.photoUrl;
+                    document.getElementById('final-photo-preview').style.display = 'block';
+                    document.querySelector('#photo-trigger i').style.display = 'none';
+                    document.getElementById('photo-hover-edit').classList.replace('hidden', 'flex');
+                }
+                const setVal = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ''; };
+                setVal('input-fullname', d.fullname);
+                setVal('input-dob', d.dob);
+                setVal('input-height', d.height);
+                setVal('input-blood', d.bloodGroup);
+                setVal('input-phone', d.phone);
+                setVal('input-email', d.email);
+                setVal('input-religion', d.religion);
+                setVal('input-caste', d.caste !== 'Not Specified' ? d.caste : '');
+                setVal('input-institution', d.institution);
+                setVal('input-role', d.role);
+                setVal('input-father', d.father);
+                setVal('input-mother', d.mother);
+                
+                if(d.emergency && d.emergency !== 'Not Provided') {
+                    const parts = d.emergency.split(' | ');
+                    if(parts.length === 2) {
+                        setVal('input-emergency', parts[0].replace('+91 ', ''));
+                        const sub = parts[1].split(' - ');
+                        if(sub.length === 2) {
+                            setVal('input-emergency-name', sub[0]);
+                            setVal('input-emergency-relation', sub[1]);
+                        }
+                    }
+                }
+
+                if (d.address && typeof d.address === 'object') {
+                    setVal('addr-house', d.address.house);
+                    setVal('addr-village', d.address.village);
+                    setVal('addr-po', d.address.po);
+                    setVal('addr-ps', d.address.ps);
+                    setVal('addr-district', d.address.district);
+                    setVal('addr-state', d.address.state);
+                    setVal('addr-pin', d.address.pin);
+                }
+                
+                const activatePill = (gridId, val) => {
+                    if(!val) return;
+                    Array.from(document.getElementById(gridId).children).forEach(c => {
+                        if(c.dataset.value === val) c.classList.add('active'); else c.classList.remove('active');
+                    });
+                };
+                activatePill('gender-selection', d.gender);
+                activatePill('status-selection', d.status);
+                if(d.status) handleStatusChange(d.status);
+
+                const renderTags = (containerId, inputId, arrayRef) => {
+                    const container = document.getElementById(containerId);
+                    const input = document.getElementById(inputId);
+                    container.querySelectorAll('.tag-pill').forEach(e => e.remove());
+                    arrayRef.forEach((tag, idx) => {
+                        const span = document.createElement('span'); span.className = 'tag-pill';
+                        span.innerHTML = `${Sanitizer.forceTitleCase(tag)} <i class="ph-bold ph-x tag-remove" data-idx="${idx}"></i>`;
+                        container.insertBefore(span, input);
+                    });
+                };
+                renderTags('skills-container', 'input-skill', d.skills || []);
+                renderTags('languages-container', 'input-language', d.languages || []);
+            }
+
+            const urlParams = new URLSearchParams(window.location.search);
+            const viewId = urlParams.get('v');
+            
+            if (viewId) {
+                const ldr = document.getElementById('loader-overlay');
+                ldr.classList.remove('hidden');
+                document.getElementById('loader-text').textContent = "Fetching Secure Profile...";
+                
+                fetch(`https://identity.devteam-circuitbreakers.workers.dev/api/data/${viewId}`)
+                .then(res => res.json())
+                .then(data => {
+                    if(data.error) throw new Error();
+                    Object.assign(userData, data);
+                    populateUIFromData(data);
+                    
+                    // Directly fire preview generator for the loaded data
+                    prepareFinalData(true);
+                }).catch(e => {
+                    showError("Could not load digital profile. It may have expired.");
+                    ldr.classList.add('hidden');
+                    updateUI();
+                });
+            } else {
+                updateUI(); // Normal setup
+            }
+        });
+    </script>
+</body>
+</html>
