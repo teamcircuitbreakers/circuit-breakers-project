@@ -27,11 +27,10 @@
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css" />
     <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
-    <!-- Essential for Dual QR generation -->
     <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <style>
-        body { background-color: #f8fafc; color: #1e293b; overflow-x: hidden; -webkit-tap-highlight-color: transparent; }
+        body { background-color: #f8fafc; color: #1e293b; overflow-x: hidden; -webkit-tap-highlight-color: transparent; transition: background-color 0.3s; }
         ::-webkit-scrollbar { width: 4px; background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
 
@@ -56,7 +55,7 @@
         .toast {
             position: fixed; top: -100px; left: 50%; transform: translateX(-50%); background: #ef4444; color: white;
             padding: 1rem 2rem; border-radius: 9999px; font-weight: 500; box-shadow: 0 10px 15px -3px rgba(239, 68, 68, 0.3);
-            transition: top 0.4s cubic-bezier(0.68, -0.55, 0.26, 1.55); z-index: 9999; display: flex; align-items: center; gap: 0.5rem;
+            transition: top 0.4s cubic-bezier(0.68, -0.55, 0.26, 1.55); z-index: 99999; display: flex; align-items: center; gap: 0.5rem;
         }
         .toast.show { top: 2rem; }
 
@@ -99,12 +98,14 @@
             box-sizing: border-box; 
             overflow: hidden;     /* Force strict 1-page boundary */
             flex-direction: column;
+            letter-spacing: 0px !important;
+            word-spacing: normal !important;
         }
         
         .pdf-header { border-bottom: 3px solid #14b8a6; padding-bottom: 12px; margin-bottom: 14px; display: flex; justify-content: space-between; align-items: center; gap: 20px; }
         .pdf-photo { width: 110px; height: 110px; object-fit: cover; border: 4px solid #14b8a6; border-radius: 50%; box-shadow: 0 4px 10px rgba(20, 184, 166, 0.15); flex-shrink: 0; }
         .pdf-section { margin-bottom: 12px; }
-        .pdf-section-title { font-size: 1.05rem; color: #14b8a6; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0.05em; }
+        .pdf-section-title { font-size: 1.05rem; color: #14b8a6; font-weight: 700; border-bottom: 1px solid #e2e8f0; padding-bottom: 3px; margin-bottom: 8px; text-transform: uppercase; letter-spacing: 0px; }
         .pdf-grid { display: grid; gap: 6px; font-size: 0.85rem; }
         .pdf-label { font-weight: 600; color: #475569; }
         .pdf-value { color: #0f172a; font-weight: 500; }
@@ -115,7 +116,7 @@
         .pdf-tags { display: flex; flex-wrap: wrap; gap: 6px; font-size: 0.85rem; }
         .pdf-tag-item { background: #f1f5f9; border: 1px solid #e2e8f0; padding: 2px 8px; border-radius: 4px; font-weight: 500; }
 
-        /* Dual QR Code Footer CSS - Strictly locked dimensions to prevent mobile canvas explosion */
+        /* Dual QR Code Footer CSS */
         .qr-footer {
             margin-top: auto; 
             display: flex;
@@ -126,9 +127,35 @@
         }
         .qr-box { display: flex; flex-direction: column; align-items: center; gap: 4px; }
         .qr-code { width: 60px; height: 60px; background: #fff; padding: 2px; border: 1px solid #cbd5e1; border-radius: 4px; display: flex; justify-content: center; align-items: center; overflow: hidden; }
-        /* Caged img tag for extracted base64 QR */
         .qr-code img { width: 100% !important; height: 100% !important; object-fit: contain; image-rendering: pixelated; display: block; }
-        .qr-text { font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; }
+        .qr-text { font-size: 0.65rem; color: #64748b; font-weight: 700; text-transform: uppercase; }
+
+        /* === EDIT MODE CSS OVERRIDES === */
+        body.is-edit-mode {
+            background-color: #f1f5f9;
+            padding-bottom: 100px; /* Space for the sticky bottom bar */
+        }
+        body.is-edit-mode .step-container {
+            display: block !important;
+            opacity: 1 !important;
+            animation: none !important;
+            background: #ffffff;
+            border-radius: 1.5rem;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            box-shadow: 0 4px 15px -5px rgba(0, 0, 0, 0.05);
+            border: 1px solid #e2e8f0;
+        }
+        body.is-edit-mode .step-container:last-of-type {
+            margin-bottom: 2rem;
+        }
+        body.is-edit-mode main {
+            background: transparent !important;
+            border: none !important;
+            box-shadow: none !important;
+            padding: 0 !important;
+        }
+        body.is-edit-mode header { display: none !important; }
     </style>
 </head>
 <body class="min-h-screen flex flex-col items-center justify-center relative py-6">
@@ -138,7 +165,6 @@
         <span id="error-msg">Error</span>
     </div>
 
-    <!-- Image Cropper Modal -->
     <div id="cropper-modal" class="fixed inset-0 z-[9999] items-center justify-center p-4">
         <div class="bg-white rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl flex flex-col">
             <div class="p-4 border-b border-slate-200 flex justify-between items-center">
@@ -154,18 +180,18 @@
         </div>
     </div>
 
-    <div class="w-full max-w-3xl mx-auto px-4 relative z-10 flex-1 flex flex-col justify-center">
+    <div class="w-full max-w-3xl mx-auto px-4 relative z-10 flex-1 flex flex-col justify-center transition-all">
         <header class="text-center mb-8">
             <h1 class="font-serif text-4xl font-bold text-brand-900 tracking-tight text-center flex items-center justify-center gap-2">
                 <i class="ph-fill ph-leaf text-brand-500"></i> Identity.
             </h1>
             <div class="w-full bg-slate-200 rounded-full h-2 mt-6 overflow-hidden">
-                <div id="progress-bar" class="bg-brand-500 h-2 rounded-full transition-all duration-500" style="width: 9%"></div>
+                <div id="progress-bar" class="bg-brand-500 h-2 rounded-full transition-all duration-500" style="width: 10%"></div>
             </div>
-            <p class="text-xs text-slate-400 mt-2 font-semibold uppercase tracking-wider" id="step-counter">Step 1 of 11</p>
+            <p class="text-xs text-slate-400 mt-2 font-semibold uppercase tracking-wider" id="step-counter">Step 1 of 10</p>
         </header>
 
-        <main class="bg-white border border-slate-100 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] p-6 md:p-10 min-h-[450px] relative">
+        <main id="form-main-container" class="bg-white border border-slate-100 rounded-3xl shadow-[0_20px_50px_-12px_rgba(0,0,0,0.1)] p-6 md:p-10 min-h-[450px] relative transition-all">
             
             <!-- STEP 1: Name & Photo -->
             <div class="step-container active" data-step="1">
@@ -339,7 +365,7 @@
                             </tr>
                         </thead>
                         <tbody id="academic-tbody">
-                            <!-- Rows injected dynamically based on qualification -->
+                            <!-- Rows injected dynamically -->
                         </tbody>
                     </table>
                 </div>
@@ -434,42 +460,6 @@
                 </div>
             </div>
 
-            <!-- STEP 11: Final (Original Generation Screen) -->
-            <div class="step-container text-center" data-step="11">
-                <div class="w-20 h-20 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="ph-fill ph-check-circle text-4xl text-green-500"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-slate-800 mb-3">Profile Complete</h2>
-                <p class="text-slate-500 mb-8 max-w-sm mx-auto text-sm">Your data has been verified, encrypted, and compiled. Generating high-resolution PDF...</p>
-                
-                <div class="flex flex-col gap-3" id="final-action-buttons" style="display: none;">
-                    <button id="btn-download" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
-                        <i class="ph-bold ph-file-pdf text-xl"></i> Download PDF
-                    </button>
-                    <button id="btn-share" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
-                        <i class="ph-bold ph-share-network text-xl"></i> Quick Share
-                    </button>
-                </div>
-            </div>
-
-            <!-- STEP 12: Digital View / Edit Routing Screen -->
-            <div class="step-container text-center" data-step="12">
-                <div class="w-20 h-20 bg-brand-100 rounded-full flex items-center justify-center mx-auto mb-4">
-                    <i class="ph-fill ph-identification-card text-4xl text-brand-500"></i>
-                </div>
-                <h2 class="text-2xl font-bold text-slate-800 mb-3">Digital Profile Loaded</h2>
-                <p class="text-slate-500 mb-8 max-w-sm mx-auto text-sm">You are viewing a secure digital copy of this Biodata. You can download it directly or edit the details to generate a new copy.</p>
-                
-                <div class="flex flex-col gap-3">
-                    <button id="btn-view-download" class="w-full bg-slate-800 hover:bg-slate-900 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
-                        <i class="ph-bold ph-download-simple text-xl"></i> Download As-Is
-                    </button>
-                    <button id="btn-view-edit" class="w-full bg-brand-500 hover:bg-brand-600 text-white font-bold py-3.5 rounded-xl transition-all flex items-center justify-center gap-2">
-                        <i class="ph-bold ph-pencil-simple text-xl"></i> Edit Details
-                    </button>
-                </div>
-            </div>
-
             <!-- Loader Overlay -->
             <div id="loader-overlay" class="absolute inset-0 bg-white/90 backdrop-blur z-50 flex flex-col items-center justify-center hidden rounded-3xl">
                 <i class="ph-bold ph-spinner-gap text-4xl text-brand-500 animate-spin mb-4"></i>
@@ -487,7 +477,32 @@
         </div>
     </div>
 
-    <!-- The 1-Page PDF Blueprint -->
+    <!-- Sticky Bottom Bar for Edit Mode -->
+    <div id="edit-action-bar" class="fixed bottom-0 left-0 right-0 bg-white shadow-[0_-10px_30px_rgba(0,0,0,0.1)] p-4 flex justify-center z-[90] hidden">
+        <button id="btn-update-pdf" class="w-full max-w-2xl bg-brand-500 hover:bg-brand-600 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 text-lg">
+            <i class="ph-bold ph-magic-wand text-2xl"></i> Update Profile & View PDF
+        </button>
+    </div>
+
+    <!-- The PDF Preview Modal Overlay -->
+    <div id="pdf-preview-modal" class="fixed inset-0 bg-slate-900/95 backdrop-blur-sm z-[9999] hidden flex-col">
+        <div class="flex items-center justify-between p-4 bg-slate-900 border-b border-slate-800 shadow-lg shrink-0">
+            <button id="btn-preview-edit" class="flex items-center gap-2 text-white bg-slate-800 hover:bg-slate-700 px-4 py-2.5 rounded-xl font-medium transition-colors border border-slate-700 shadow-sm">
+                <i class="ph-bold ph-pencil-simple text-lg"></i> <span class="hidden sm:inline">Edit Details</span>
+            </button>
+            <h3 class="font-bold text-white text-lg tracking-wide hidden sm:block font-serif flex items-center gap-2">
+                <i class="ph-fill ph-check-circle text-brand-500"></i> Secure Digital Profile
+            </h3>
+            <button id="btn-preview-download" class="flex items-center gap-2 bg-brand-500 hover:bg-brand-600 text-white px-5 py-2.5 rounded-xl font-bold transition-colors shadow-[0_0_15px_rgba(20,184,166,0.3)]">
+                <i class="ph-bold ph-download-simple text-lg"></i> Download PDF
+            </button>
+        </div>
+        <div class="flex-1 w-full max-w-4xl mx-auto p-2 md:p-6 overflow-hidden relative">
+            <iframe id="pdf-iframe" class="w-full h-full rounded-xl shadow-2xl bg-white border-0" title="PDF Preview"></iframe>
+        </div>
+    </div>
+
+    <!-- The 1-Page PDF Blueprint (Used as source for html2pdf) -->
     <div id="pdf-container" class="hidden">
         <div id="pdf-template">
             <div style="flex: 1;">
@@ -573,7 +588,7 @@
                 </div>
             </div>
 
-            <!-- The Dual QR Code Footer (Caged Img tags to prevent canvas explosion) -->
+            <!-- The Dual QR Code Footer -->
             <div class="qr-footer">
                 <div class="qr-box">
                     <div class="qr-code" id="qr-vcard-container"></div>
@@ -592,7 +607,7 @@
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
-            const TOTAL_STEPS = 11;
+            const TOTAL_STEPS = 10;
             let currentStep = 1;
             let generatedPdfBlob = null;
             let cropper = null;
@@ -675,13 +690,11 @@
             const progressBar = document.getElementById('progress-bar');
             
             function updateUI() {
-                if (currentStep <= TOTAL_STEPS) {
-                    progressBar.style.width = `${((currentStep - 1) / (TOTAL_STEPS - 1)) * 100}%`;
-                    document.getElementById('step-counter').textContent = `Step ${currentStep} of ${TOTAL_STEPS}`;
-                } else {
-                    progressBar.style.width = '100%';
-                    document.getElementById('step-counter').textContent = `Digital View`;
-                }
+                // If we are in edit mode, standard UI updates for step progress are disabled
+                if(document.body.classList.contains('is-edit-mode')) return;
+
+                progressBar.style.width = `${(currentStep / TOTAL_STEPS) * 100}%`;
+                document.getElementById('step-counter').textContent = `Step ${currentStep} of ${TOTAL_STEPS}`;
                 
                 steps.forEach(s => s.classList.remove('active'));
                 const targetStep = document.querySelector(`.step-container[data-step="${currentStep}"]`);
@@ -689,13 +702,20 @@
 
                 btnPrev.style.visibility = currentStep === 1 ? 'hidden' : 'visible';
                 
-                if (currentStep >= TOTAL_STEPS) {
-                    navButtons.style.display = 'none';
-                    if (currentStep === TOTAL_STEPS) prepareFinalData();
+                if (currentStep === TOTAL_STEPS) {
+                    btnNext.innerHTML = 'Generate Profile <i class="ph-bold ph-magic-wand"></i>';
                 } else {
-                    navButtons.style.display = 'flex';
-                    btnNext.innerHTML = currentStep === TOTAL_STEPS - 1 ? 'Generate Profile <i class="ph-bold ph-magic-wand"></i>' : 'Continue <i class="ph-bold ph-arrow-right"></i>';
+                    btnNext.innerHTML = 'Continue <i class="ph-bold ph-arrow-right"></i>';
                 }
+            }
+
+            function enterEditMode() {
+                document.body.classList.add('is-edit-mode');
+                document.getElementById('nav-buttons').style.display = 'none';
+                document.getElementById('edit-action-bar').classList.remove('hidden');
+                
+                // Ensure all steps are accessible for scrolling
+                window.scrollTo({ top: 0, behavior: 'smooth' });
             }
 
             // UI Listeners
@@ -762,7 +782,6 @@
             setupTagInput('skills-container', 'input-skill', userData.skills, 5);
             setupTagInput('languages-container', 'input-language', userData.languages, 5);
 
-            // Academic Logic
             const academicTbody = document.getElementById('academic-tbody');
             const qualSelect = document.getElementById('input-highest-qual');
             const acadTableContainer = document.getElementById('academic-table-container');
@@ -783,8 +802,8 @@
                 const v = e.target.value;
                 academicTbody.insertAdjacentHTML('beforeend', rowTemplates[10]);
                 if(['12','UG','PG'].includes(v)) academicTbody.insertAdjacentHTML('beforeend', rowTemplates[12]);
-                if(['UG','PG'].includes(v)) academicTbody.insertAdjacentHTML('beforeend', rowTemplates[UG]);
-                if(v === 'PG') academicTbody.insertAdjacentHTML('beforeend', rowTemplates[PG]);
+                if(['UG','PG'].includes(v)) academicTbody.insertAdjacentHTML('beforeend', rowTemplates['UG']);
+                if(v === 'PG') academicTbody.insertAdjacentHTML('beforeend', rowTemplates['PG']);
                 attachAcademicListeners();
             });
 
@@ -834,7 +853,7 @@
                 });
             }
 
-            // Cropper
+            // Cropper Implementation
             const fileInput = document.getElementById('input-photo');
             const cropModal = document.getElementById('cropper-modal');
             const cropImage = document.getElementById('cropper-image');
@@ -869,10 +888,9 @@
             });
             document.getElementById('btn-close-cropper').addEventListener('click', () => cropModal.classList.remove('active'));
 
-            // Validation Engine
-            function validateStep() {
+            function validateStep(stepIndex) {
                 let s = Sanitizer;
-                switch(currentStep) {
+                switch(stepIndex) {
                     case 1:
                         if(!userData.photoUrl) { showError("Please confirm a professional photo."); return false; }
                         let name = s.cleanString(document.getElementById('input-fullname').value);
@@ -976,10 +994,39 @@
                 return true;
             }
 
-            btnNext.addEventListener('click', () => { if(validateStep()) { currentStep++; updateUI(); } });
+            function validateAll() {
+                for(let i=1; i<=TOTAL_STEPS; i++) {
+                    if(!validateStep(i)) {
+                        const stepEl = document.querySelector(`.step-container[data-step="${i}"]`);
+                        if(stepEl) {
+                            const y = stepEl.getBoundingClientRect().top + window.scrollY - 30;
+                            window.scrollTo({top: y, behavior: 'smooth'});
+                        }
+                        return false;
+                    }
+                }
+                return true;
+            }
+
+            btnNext.addEventListener('click', () => { 
+                if(validateStep(currentStep)) { 
+                    if(currentStep === TOTAL_STEPS) {
+                        prepareFinalData(true); // Triggers Modal Preview
+                    } else {
+                        currentStep++; 
+                        updateUI(); 
+                    }
+                } 
+            });
             btnPrev.addEventListener('click', () => { if(currentStep > 1) { currentStep--; updateUI(); } });
 
-            // Geo-Location
+            // Button Event for Edit Mode
+            document.getElementById('btn-update-pdf').addEventListener('click', () => {
+                if(validateAll()) {
+                    prepareFinalData(true); // Generates updated PDF and opens Modal
+                }
+            });
+
             document.getElementById('btn-fetch-location').addEventListener('click', async () => {
                 const btn = document.getElementById('btn-fetch-location');
                 const errMsg = document.getElementById('location-error-msg');
@@ -1036,13 +1083,11 @@
                 );
             });
 
-            // Cryptographic Hashing
             async function generateHash(str) {
                 const buf = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(str));
                 return Array.from(new Uint8Array(buf)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 10);
             }
 
-            // Image Proxy Generator (For lightweight cloud storage)
             function compressImageProxy(dataUrl, quality = 0.6) {
                 return new Promise((resolve) => {
                     const img = new Image();
@@ -1057,7 +1102,6 @@
                 });
             }
 
-            // Safe Base64 QR Extractor (Prevents canvas explosion in html2canvas)
             const generateSafeQR = (text, containerId) => {
                 return new Promise((resolve) => {
                     const tempDiv = document.createElement('div');
@@ -1077,65 +1121,79 @@
                 });
             };
 
-            async function prepareFinalData() {
+            async function prepareFinalData(showPreview = false) {
                 const ldr = document.getElementById('loader-overlay');
                 ldr.classList.remove('hidden');
                 document.getElementById('loader-text').textContent = "Securing Identity...";
                 
-                // 1. Format text mappings
+                // CRITICAL FIX: HTML2Canvas Word-Spacing & Font Bug Solutions
+                // Wait for external fonts to fully load before allowing PDF paint
+                await document.fonts.ready; 
+
                 const tf = Sanitizer.forceTitleCase;
-                document.getElementById('pdf-name').textContent = tf(userData.fullname);
-                document.getElementById('pdf-phone').textContent = "+91 " + userData.phone; 
-                document.getElementById('pdf-email').textContent = userData.email.toLowerCase(); 
+                // Helper to inject non-breaking spaces (\u00A0) to guarantee html2canvas spacing accuracy
+                const setSafeText = (id, str) => {
+                    const el = document.getElementById(id);
+                    if(el && typeof str !== 'undefined') el.textContent = str.toString().replace(/ /g, '\u00A0');
+                };
+
+                // Map safely to blueprint
+                setSafeText('pdf-name', tf(userData.fullname));
+                setSafeText('pdf-phone', "+91 " + userData.phone);
+                setSafeText('pdf-email', userData.email.toLowerCase()); 
                 
                 let shortAddr = [];
                 if(userData.address.district) shortAddr.push(tf(userData.address.district));
                 if(userData.address.state) shortAddr.push(tf(userData.address.state));
-                document.getElementById('pdf-address-short').textContent = shortAddr.join(", ");
+                setSafeText('pdf-address-short', shortAddr.join(", "));
                 
-                document.getElementById('pdf-photo-img').src = userData.photoUrl; // Original High-Res for Print
+                document.getElementById('pdf-photo-img').src = userData.photoUrl; 
                 document.getElementById('pdf-photo-img').style.display = 'block';
 
-                document.getElementById('pdf-dob').textContent = tf(Sanitizer.formatDate(userData.dob));
-                document.getElementById('pdf-gender').textContent = tf(userData.gender);
-                document.getElementById('pdf-blood').textContent = userData.bloodGroup.toUpperCase(); 
-                document.getElementById('pdf-height').textContent = userData.height; 
-                document.getElementById('pdf-religion').textContent = tf(userData.religion);
-                if(userData.caste === 'Not Specified') {
+                setSafeText('pdf-dob', tf(Sanitizer.formatDate(userData.dob)));
+                setSafeText('pdf-gender', tf(userData.gender));
+                setSafeText('pdf-blood', userData.bloodGroup.toUpperCase()); 
+                setSafeText('pdf-height', userData.height); 
+                setSafeText('pdf-religion', tf(userData.religion));
+                
+                if(userData.caste === 'Not Specified' || !userData.caste) {
                     document.getElementById('pdf-label-caste').style.display = 'none';
                     document.getElementById('pdf-caste').style.display = 'none';
                 } else {
-                    document.getElementById('pdf-caste').textContent = tf(userData.caste);
+                    document.getElementById('pdf-label-caste').style.display = 'block';
+                    document.getElementById('pdf-caste').style.display = 'block';
+                    setSafeText('pdf-caste', tf(userData.caste));
                 }
 
                 const ptbody = document.getElementById('pdf-academic-tbody');
                 ptbody.innerHTML = '';
                 userData.education.forEach(edu => {
                     const tr = document.createElement('tr');
-                    tr.innerHTML = `<td>${tf(edu.level)}</td><td>${tf(edu.board)}</td><td>${edu.total}</td><td>${edu.obt}</td><td>${edu.perc}</td><td style="font-weight:bold">${edu.grade.toUpperCase()}</td>`;
+                    // Applying replace spaces to \u00A0 heavily ensures no structural compression in html2canvas tables
+                    tr.innerHTML = `<td>${tf(edu.level).replace(/ /g, '\u00A0')}</td><td>${tf(edu.board).replace(/ /g, '\u00A0')}</td><td>${edu.total}</td><td>${edu.obt}</td><td>${edu.perc}</td><td style="font-weight:bold">${edu.grade.toUpperCase()}</td>`;
                     ptbody.appendChild(tr);
                 });
 
                 const sContainer = document.getElementById('pdf-skills');
                 const lContainer = document.getElementById('pdf-langs');
                 sContainer.innerHTML = ''; lContainer.innerHTML = '';
-                userData.skills.forEach(s => sContainer.innerHTML += `<div class="pdf-tag-item">${tf(s)}</div>`);
-                userData.languages.forEach(l => lContainer.innerHTML += `<div class="pdf-tag-item">${tf(l)}</div>`);
+                userData.skills.forEach(s => sContainer.innerHTML += `<div class="pdf-tag-item">${tf(s).replace(/ /g, '\u00A0')}</div>`);
+                userData.languages.forEach(l => lContainer.innerHTML += `<div class="pdf-tag-item">${tf(l).replace(/ /g, '\u00A0')}</div>`);
 
-                document.getElementById('pdf-status').textContent = tf(userData.status);
-                document.getElementById('pdf-inst').textContent = tf(userData.institution);
+                setSafeText('pdf-status', tf(userData.status));
+                setSafeText('pdf-inst', tf(userData.institution));
                 if(userData.status === 'Student') {
                     document.getElementById('pdf-label-role').style.display = 'none';
                     document.getElementById('pdf-role').style.display = 'none';
                 } else {
                     document.getElementById('pdf-label-role').style.display = 'block';
                     document.getElementById('pdf-role').style.display = 'block';
-                    document.getElementById('pdf-role').textContent = tf(userData.role);
+                    setSafeText('pdf-role', tf(userData.role));
                 }
 
-                document.getElementById('pdf-father').textContent = tf(userData.father);
-                document.getElementById('pdf-mother').textContent = tf(userData.mother);
-                document.getElementById('pdf-emergency').textContent = tf(userData.emergency);
+                setSafeText('pdf-father', tf(userData.father));
+                setSafeText('pdf-mother', tf(userData.mother));
+                setSafeText('pdf-emergency', tf(userData.emergency));
                 
                 const adr = userData.address;
                 let addrLines = [];
@@ -1146,9 +1204,9 @@
                 if(adr.ps) poPs.push("PS: " + tf(adr.ps));
                 if(poPs.length > 0) addrLines.push(poPs.join(", "));
                 addrLines.push(`${tf(adr.district)}, ${tf(adr.state)} - ${adr.pin}.`);
-                document.getElementById('pdf-address').textContent = addrLines.join("\n");
+                
+                setSafeText('pdf-address', addrLines.join("\n"));
 
-                // 2. Cryptographic Logic & Dual QR Generation
                 try {
                     document.getElementById('loader-text').textContent = "Encrypting Data...";
                     const proxyPhoto = await compressImageProxy(userData.photoUrl);
@@ -1159,11 +1217,10 @@
                     
                     const vcardData = `BEGIN:VCARD\nVERSION:3.0\nFN:${tf(userData.fullname)}\nTEL:+91${userData.phone}\nEMAIL:${userData.email.toLowerCase()}\nEND:VCARD`;
                     
-                    // Await the generation of the locked PNG images
                     await generateSafeQR(vcardData, 'qr-vcard-container');
                     await generateSafeQR(digitalDeepLink, 'qr-digital-container');
                     
-                    // Non-blocking background sync to Cloudflare KV
+                    // Background non-blocking sync
                     fetch('https://identity.devteam-circuitbreakers.workers.dev/api/save', {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
                         body: JSON.stringify({ id: hashId, payload: cloudPayload })
@@ -1171,7 +1228,6 @@
 
                 } catch(e) { console.error("QR Engine Error: ", e); }
 
-                // 3. Absolute Virtual Monitor PDF Rendering
                 document.getElementById('loader-text').textContent = "Compiling PDF...";
                 
                 const pdfContainer = document.getElementById('pdf-container');
@@ -1191,10 +1247,18 @@
                 setTimeout(() => {
                     const opt = {
                         margin: 0,
-                        filename: `${tf(userData.fullname).replace(/\s+/g, '_')}_BioData.pdf`,
+                        filename: `${Sanitizer.forceTitleCase(userData.fullname).replace(/\s+/g, '_')}_BioData.pdf`,
                         image: { type: 'jpeg', quality: 1.0 },
                         html2canvas: { 
-                            scale: 2, useCORS: true, windowWidth: 794, width: 794, height: 1123, scrollY: 0, x: 0, y: 0
+                            scale: 2, 
+                            useCORS: true, 
+                            windowWidth: 794, 
+                            width: 794, 
+                            height: 1123, 
+                            scrollY: 0, 
+                            x: 0, 
+                            y: 0,
+                            letterRendering: true // Forces rigorous font space calculations
                         },
                         jsPDF: { unit: 'px', format: [794, 1123], orientation: 'portrait', hotfixes: ['px_scaling'] }
                     };
@@ -1202,14 +1266,16 @@
                     html2pdf().set(opt).from(pdfTemplate).outputPdf('blob').then((blob) => {
                         generatedPdfBlob = blob;
                         ldr.classList.add('hidden');
-                        document.getElementById('final-action-buttons').style.display = 'flex';
-                        
                         pdfTemplate.style.display = 'none';
                         pdfContainer.style.display = 'none';
                         pdfContainer.classList.add('hidden');
                         
-                        if (!navigator.canShare || !navigator.canShare({ files: [new File([blob], opt.filename, { type: 'application/pdf' })] })) {
-                            if(!navigator.share) document.getElementById('btn-share').style.display = 'none';
+                        if (showPreview) {
+                            const url = URL.createObjectURL(blob);
+                            document.getElementById('pdf-iframe').src = url;
+                            const modal = document.getElementById('pdf-preview-modal');
+                            modal.classList.remove('hidden');
+                            modal.classList.add('flex');
                         }
                     }).catch(err => {
                         ldr.classList.add('hidden');
@@ -1221,39 +1287,21 @@
                 }, 500); 
             }
 
-            // Buttons
-            document.getElementById('btn-download').addEventListener('click', () => {
+            document.getElementById('btn-preview-download').addEventListener('click', () => {
                 if(generatedPdfBlob) {
                     const url = URL.createObjectURL(generatedPdfBlob);
                     const a = document.createElement('a');
-                    a.href = url; a.download = `${Sanitizer.forceTitleCase(userData.fullname).replace(/\s+/g, '_')}_BioData.pdf`;
+                    a.href = url; 
+                    a.download = `${Sanitizer.forceTitleCase(userData.fullname).replace(/\s+/g, '_')}_BioData.pdf`;
                     document.body.appendChild(a); a.click(); document.body.removeChild(a);
-                    URL.revokeObjectURL(url);
+                    // Retain blob url lifecycle for iframe continuation
                 }
             });
 
-            document.getElementById('btn-share').addEventListener('click', async () => {
-                const fn = `${Sanitizer.forceTitleCase(userData.fullname).replace(/\s+/g, '_')}_BioData.pdf`;
-                try {
-                    const file = new File([generatedPdfBlob], fn, { type: 'application/pdf' });
-                    if (navigator.canShare && navigator.canShare({ files: [file] })) {
-                        await navigator.share({ files: [file], title: 'My Biodata', text: 'Please find attached.' });
-                    } else throw new Error();
-                } catch (e) {
-                    if(navigator.share) navigator.share({ title: 'Biodata', text: `Name: ${Sanitizer.forceTitleCase(userData.fullname)}\nStatus: ${userData.status}` }).catch(console.error);
-                    else showError("Sharing not supported on this device.");
-                }
-            });
-
-            // Step 12 Routing Buttons
-            document.getElementById('btn-view-download').addEventListener('click', () => {
-                currentStep = TOTAL_STEPS;
-                updateUI();
-            });
-
-            document.getElementById('btn-view-edit').addEventListener('click', () => {
-                currentStep = 1;
-                updateUI();
+            document.getElementById('btn-preview-edit').addEventListener('click', () => {
+                document.getElementById('pdf-preview-modal').classList.add('hidden');
+                document.getElementById('pdf-preview-modal').classList.remove('flex');
+                enterEditMode();
             });
 
             function populateUIFromData(d) {
@@ -1323,7 +1371,7 @@
                 renderTags('languages-container', 'input-language', d.languages || []);
             }
 
-            // On Load Check for Deep Link
+            // On Load Initialization and Deep Link Handling
             const urlParams = new URLSearchParams(window.location.search);
             const viewId = urlParams.get('v');
             
@@ -1339,10 +1387,8 @@
                     Object.assign(userData, data);
                     populateUIFromData(data);
                     
-                    currentStep = 12; // Force to Digital View Screen
-                    updateUI();
-                    ldr.classList.add('hidden');
-                    document.getElementById('loader-text').textContent = "Processing...";
+                    // Fire instant preview for fetched data
+                    prepareFinalData(true);
                 }).catch(e => {
                     showError("Could not load digital profile. It may have expired.");
                     ldr.classList.add('hidden');
