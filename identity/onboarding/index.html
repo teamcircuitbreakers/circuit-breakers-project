@@ -504,6 +504,21 @@
         </div>
     </div>
 
+    <!-- ADDED: The Fullscreen Expired Warning -->
+    <div id="expired-screen" class="fixed inset-0 bg-slate-50 z-[99999] hidden flex-col items-center justify-center p-6 text-center">
+        <div class="w-24 h-24 bg-red-100 rounded-full flex items-center justify-center mb-6 shadow-inner">
+            <i class="ph-fill ph-warning-circle text-5xl text-red-500"></i>
+        </div>
+        <h2 class="text-3xl md:text-4xl font-bold text-slate-800 mb-4 font-serif">Profile Expired</h2>
+        <p class="text-slate-500 max-w-md text-sm md:text-base leading-relaxed">
+            This physical QR code points to an outdated version of the biodata. The owner has recently updated their profile.<br><br>
+            <span class="font-bold text-slate-700">Please request the latest QR code from the owner.</span>
+        </p>
+        <button onclick="window.location.href=window.location.pathname" class="mt-8 bg-slate-800 hover:bg-slate-900 text-white font-bold py-3 px-8 rounded-xl transition-all shadow-lg">
+            Create Your Own Profile
+        </button>
+    </div>
+
     <div id="pdf-container" class="hidden">
         <div id="pdf-template">
             <div style="flex: 1;">
@@ -615,6 +630,7 @@
             let currentStep = 1;
             let generatedPdfBlob = null;
             let cropper = null;
+            let loadedDigitalId = null; // ADDED: Tracks the old ID so we know what to delete!
 
             // Global State
             const userData = {
@@ -1274,9 +1290,17 @@
                     await generateSafeQR(vcardData, 'qr-vcard-container');
                     await generateSafeQR(digitalDeepLink, 'qr-digital-container');
                     
+                    // ADDED: Prepare payload with "previousId" if we are editing an old profile
+                    const finalSavePayload = { id: hashId, payload: cloudPayload };
+                    if (loadedDigitalId && loadedDigitalId !== hashId) {
+                        finalSavePayload.previousId = loadedDigitalId;
+                    }
+
                     fetch('https://identity.devteam-circuitbreakers.workers.dev/api/save', {
                         method: 'POST', headers: { 'Content-Type': 'application/json' },
-                        body: JSON.stringify({ id: hashId, payload: cloudPayload })
+                        body: JSON.stringify(finalSavePayload)
+                    }).then(() => {
+                        loadedDigitalId = hashId; // Update tracking to the newest ID
                     }).catch(console.error);
 
                 } catch(e) { console.error("QR Engine Error: ", e); }
@@ -1442,6 +1466,8 @@
             const viewId = urlParams.get('v');
             
             if (viewId) {
+                loadedDigitalId = viewId; // ADDED: Remember the ID we loaded!
+
                 const ldr = document.getElementById('loader-overlay');
                 ldr.classList.remove('hidden');
                 document.getElementById('loader-text').textContent = "Fetching Secure Profile...";
@@ -1449,6 +1475,14 @@
                 fetch(`https://identity.devteam-circuitbreakers.workers.dev/api/data/${viewId}`)
                 .then(res => res.json())
                 .then(data => {
+                    // ADDED: Instantly block access if the tombstone is found
+                    if(data.expired === true) {
+                        ldr.classList.add('hidden');
+                        document.getElementById('expired-screen').classList.remove('hidden');
+                        document.getElementById('expired-screen').classList.add('flex');
+                        return;
+                    }
+
                     if(data.error) throw new Error();
                     Object.assign(userData, data);
                     populateUIFromData(data);
