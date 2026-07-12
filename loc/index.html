@@ -8,6 +8,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@400;500;600;700&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@phosphor-icons/web"></script>
+    <!-- Add QR Code library for the handoff -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcodejs/1.0.0/qrcode.min.js"></script>
 
     <script>
         tailwind.config = {
@@ -34,9 +36,25 @@
         <h1 class="text-2xl font-bold text-slate-800 mb-2">Geolocation Tester</h1>
         <p class="text-slate-500 text-sm mb-8">Test the pinpoint accuracy of the HTML5 Geolocation API before building the Operator Onboarding module.</p>
 
-        <button id="btn-fetch" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 mb-6">
-            <i class="ph-bold ph-map-pin text-xl"></i> Fetch My Coordinates
-        </button>
+        <div class="flex flex-col gap-3 mb-6">
+            <button id="btn-fetch" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-4 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                <i class="ph-bold ph-map-pin text-xl"></i> Fetch On This Device
+            </button>
+            
+            <button id="btn-handoff" class="w-full bg-brand-50 hover:bg-brand-100 text-brand-700 border border-brand-200 font-bold py-4 rounded-xl transition-all flex items-center justify-center gap-2">
+                <i class="ph-bold ph-qr-code text-xl"></i> Fetch via Mobile Phone (PC Mode)
+            </button>
+        </div>
+
+        <!-- Handoff QR Code UI -->
+        <div id="handoff-box" class="hidden flex-col items-center bg-slate-50 border border-slate-200 rounded-xl p-6 mb-6">
+            <h3 class="font-bold text-slate-800 mb-2">Cross-Device Handoff</h3>
+            <p class="text-xs text-slate-500 mb-4">Scan this with your mobile phone to use its internal GPS chip. Waiting for sync...</p>
+            <div id="qr-container" class="bg-white p-3 rounded-lg shadow-sm border border-slate-100 mb-3"></div>
+            <div class="flex items-center gap-2 text-brand-600 text-sm font-semibold animate-pulse">
+                <i class="ph-bold ph-spinner-gap animate-spin"></i> Listening for phone...
+            </div>
+        </div>
 
         <div id="error-box" class="hidden bg-red-50 text-red-600 text-sm font-medium p-4 rounded-xl mb-6 border border-red-100">
             <!-- Error messages go here -->
@@ -68,13 +86,26 @@
             </div>
         </div>
 
+        <!-- NEW: Mobile Sender UI (Only shows on phone) -->
+        <div id="mobile-sender-box" class="hidden flex-col items-center text-center bg-brand-50 border border-brand-200 rounded-xl p-8 mb-6">
+            <div class="w-20 h-20 bg-white rounded-full shadow flex items-center justify-center mb-4">
+                <i id="mobile-icon" class="ph-bold ph-broadcast text-4xl text-brand-500 animate-pulse"></i>
+            </div>
+            <h3 id="mobile-title" class="font-bold text-slate-800 text-xl mb-2">Connecting to PC...</h3>
+            <p id="mobile-desc" class="text-sm text-slate-500">Please accept the location permission popup to beam your GPS chip data to the PC.</p>
+        </div>
+
     </div>
 
     <script>
         document.addEventListener('DOMContentLoaded', () => {
             const btn = document.getElementById('btn-fetch');
+            const btnHandoff = document.getElementById('btn-handoff');
             const errorBox = document.getElementById('error-box');
             const resultsBox = document.getElementById('results-box');
+            const handoffBox = document.getElementById('handoff-box');
+            const mobileSenderBox = document.getElementById('mobile-sender-box');
+            const qrContainer = document.getElementById('qr-container');
             
             const elLat = document.getElementById('res-lat');
             const elLon = document.getElementById('res-lon');
@@ -83,12 +114,79 @@
             const linkPin = document.getElementById('link-pin');
             const linkDir = document.getElementById('link-dir');
 
+            let mockPollingInterval;
+
+            // --- THE REAL HANDOFF LOGIC --- //
+            
+            // 1. Check if this page was opened via QR Code on the Mobile Phone
+            const urlParams = new URLSearchParams(window.location.search);
+            const isMobileMode = urlParams.get('mobile') === 'true';
+            const sessionId = urlParams.get('session');
+
+            if (isMobileMode && sessionId) {
+                // HIDE the normal PC buttons
+                btn.style.display = 'none';
+                btnHandoff.style.display = 'none';
+                document.querySelector('p.text-slate-500').style.display = 'none';
+                
+                // SHOW the mobile beaming UI
+                mobileSenderBox.classList.remove('hidden');
+                mobileSenderBox.classList.add('flex');
+
+                if (!navigator.geolocation) {
+                    document.getElementById('mobile-title').textContent = "Failed";
+                    document.getElementById('mobile-desc').textContent = "Your phone browser doesn't support GPS.";
+                    document.getElementById('mobile-icon').className = "ph-fill ph-warning-circle text-4xl text-red-500";
+                    return;
+                }
+
+                // Fire the GPS hardware immediately
+                navigator.geolocation.getCurrentPosition(
+                    (position) => {
+                        const payload = {
+                            lat: position.coords.latitude,
+                            lon: position.coords.longitude,
+                            acc: position.coords.accuracy,
+                            source: "Mobile GPS"
+                        };
+
+                        document.getElementById('mobile-desc').textContent = "GPS locked! Uploading to Cloudflare...";
+
+                        // Push the GPS data to your Cloudflare Worker using the Session ID!
+                        fetch('https://delicate-brook-31a9.devteam-circuitbreakers.workers.dev/api/save', {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ id: sessionId, payload: payload })
+                        })
+                        .then(() => {
+                            document.getElementById('mobile-title').textContent = "Success!";
+                            document.getElementById('mobile-desc').textContent = "Data beamed. Look at your PC screen!";
+                            document.getElementById('mobile-icon').className = "ph-bold ph-check text-4xl text-green-500";
+                            document.getElementById('mobile-icon').classList.remove('animate-pulse');
+                        })
+                        .catch(() => {
+                            document.getElementById('mobile-title').textContent = "Upload Failed";
+                            document.getElementById('mobile-icon').className = "ph-fill ph-warning-circle text-4xl text-red-500";
+                        });
+                    },
+                    (error) => {
+                        document.getElementById('mobile-title').textContent = "GPS Denied";
+                        document.getElementById('mobile-desc').textContent = "You must allow location access to sync.";
+                        document.getElementById('mobile-icon').className = "ph-fill ph-warning-circle text-4xl text-red-500";
+                    },
+                    { enableHighAccuracy: true, timeout: 15000, maximumAge: 0 }
+                );
+
+                return; // Stop executing the rest of the PC code
+            }
+
+            // 2. Standard Fetch on Current Device (PC Mode)
             btn.addEventListener('click', () => {
                 // Reset UI
                 errorBox.classList.add('hidden');
                 resultsBox.classList.add('hidden');
-                btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin text-xl"></i> Fetching...`;
-                btn.disabled = true;
+                handoffBox.classList.add('hidden');
+                clearInterval(mockPollingInterval);
 
                 if (!navigator.geolocation) {
                     showError("Geolocation is not supported by your browser.");
@@ -136,6 +234,79 @@
                         maximumAge: 0             // Do not use cached data, get fresh coordinates
                     }
                 );
+            });
+
+            // 3. The REAL PC-to-Mobile Handoff Trick
+            btnHandoff.addEventListener('click', () => {
+                errorBox.classList.add('hidden');
+                resultsBox.classList.add('hidden');
+                handoffBox.classList.remove('hidden');
+                qrContainer.innerHTML = ''; // Clear old QR
+                
+                // Generate a random 6-character session ID
+                const randomSession = 'SYNC-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+                
+                // CRITICAL: Construct the URL for the phone to scan. 
+                // Note: To test this, you MUST upload this file to Render so the phone can access it!
+                // We grab the base URL (e.g. https://teamcircuitbreakers.in/identity/location_tester.html)
+                const baseUrl = window.location.href.split('?')[0]; 
+                const mobileUrl = `${baseUrl}?mobile=true&session=${randomSession}`;
+                
+                // Generate QR Code
+                new QRCode(qrContainer, {
+                    text: mobileUrl,
+                    width: 160,
+                    height: 160,
+                    colorDark : "#0f172a",
+                    colorLight : "#ffffff",
+                    correctLevel : QRCode.CorrectLevel.L
+                });
+
+                // Start polling the Cloudflare Worker to see if the phone has uploaded data
+                clearInterval(mockPollingInterval);
+                let attempts = 0;
+                
+                mockPollingInterval = setInterval(() => {
+                    attempts++;
+                    if (attempts > 60) { // Stop after 2 minutes of waiting
+                        clearInterval(mockPollingInterval);
+                        showError("Timeout: Did not receive data from phone.");
+                        handoffBox.classList.add('hidden');
+                        return;
+                    }
+
+                    // Ask the Worker: "Hey, did anyone upload data to this randomSession ID yet?"
+                    fetch(`https://delicate-brook-31a9.devteam-circuitbreakers.workers.dev/api/data/${randomSession}`)
+                    .then(res => {
+                        if (res.ok) return res.json();
+                        throw new Error("No data yet");
+                    })
+                    .then(data => {
+                        // WE GOT IT!
+                        clearInterval(mockPollingInterval);
+                        
+                        // Update UI with real Mobile Data
+                        elLat.textContent = `${data.lat} (From Mobile)`;
+                        elLon.textContent = `${data.lon} (From Mobile)`;
+                        elAcc.textContent = `Within ~${Math.round(data.acc)} meters`;
+                        
+                        linkPin.href = `https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lon}`;
+                        linkDir.href = `https://www.google.com/maps/dir/?api=1&destination=${data.lat},${data.lon}`;
+
+                        handoffBox.innerHTML = `
+                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                <i class="ph-bold ph-check text-3xl text-green-500"></i>
+                            </div>
+                            <h3 class="font-bold text-slate-800">Phone Synced Successfully!</h3>
+                        `;
+                        
+                        resultsBox.classList.remove('hidden');
+                    })
+                    .catch(err => {
+                        // No data yet, do nothing, the setInterval will check again in 2 seconds
+                    });
+
+                }, 2000); // Check every 2 seconds
             });
 
             function showError(message) {
