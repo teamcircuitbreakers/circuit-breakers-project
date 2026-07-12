@@ -276,7 +276,10 @@
                     }
 
                     // Ask the Worker: "Hey, did anyone upload data to this randomSession ID yet?"
-                    fetch(`https://delicate-brook-31a9.devteam-circuitbreakers.workers.dev/api/data/${randomSession}`)
+                    // CRITICAL FIX: Added cache-busting (?_t=timestamp) and 'no-store' to stop browser caching 404s
+                    const cacheBusterUrl = `https://delicate-brook-31a9.devteam-circuitbreakers.workers.dev/api/data/${randomSession}?_t=${Date.now()}`;
+                    
+                    fetch(cacheBusterUrl, { cache: 'no-store' })
                     .then(res => {
                         if (res.ok) return res.json();
                         throw new Error("No data yet");
