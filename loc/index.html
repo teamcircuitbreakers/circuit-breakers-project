@@ -114,7 +114,7 @@
             const linkPin = document.getElementById('link-pin');
             const linkDir = document.getElementById('link-dir');
 
-            let syncPollingInterval; // Renamed from mockPollingInterval to reflect reality
+            let isPolling = false; // Replaced syncPollingInterval with a state boolean
 
             // --- THE REAL HANDOFF LOGIC --- //
             
@@ -142,7 +142,7 @@
 
                 // Fire the GPS hardware immediately
                 navigator.geolocation.getCurrentPosition(
-                    (position) => {
+                    async (position) => {
                         const payload = {
                             lat: position.coords.latitude,
                             lon: position.coords.longitude,
@@ -150,24 +150,34 @@
                             source: "Mobile GPS"
                         };
 
-                        document.getElementById('mobile-desc').textContent = "GPS locked! Uploading to Cloudflare...";
+                        document.getElementById('mobile-desc').textContent = "GPS locked! Beaming to PC...";
 
-                        // Push the GPS data to your Cloudflare Worker using the Session ID!
-                        fetch('https://delicate-brook-31a9.devteam-circuitbreakers.workers.dev/api/save', {
-                            method: 'POST',
-                            headers: { 'Content-Type': 'application/json' },
-                            body: JSON.stringify({ id: sessionId, payload: payload })
-                        })
-                        .then(() => {
+                        // NEW: Robust Auto-Retry Logic for unstable mobile networks
+                        let uploadSuccess = false;
+                        for(let attempts = 1; attempts <= 3; attempts++) {
+                            try {
+                                const res = await fetch('https://delicate-brook-31a9.devteam-circuitbreakers.workers.dev/api/save', {
+                                    method: 'POST',
+                                    headers: { 'Content-Type': 'application/json' },
+                                    body: JSON.stringify({ id: sessionId, payload: payload })
+                                });
+                                if(res.ok) { uploadSuccess = true; break; }
+                            } catch (err) {
+                                document.getElementById('mobile-desc').textContent = `Network glitch. Retrying (${attempts}/3)...`;
+                                await new Promise(r => setTimeout(r, 1000)); // wait 1 second before retry
+                            }
+                        }
+
+                        if(uploadSuccess) {
                             document.getElementById('mobile-title').textContent = "Success!";
                             document.getElementById('mobile-desc').textContent = "Data beamed. Look at your PC screen!";
                             document.getElementById('mobile-icon').className = "ph-bold ph-check text-4xl text-green-500";
                             document.getElementById('mobile-icon').classList.remove('animate-pulse');
-                        })
-                        .catch(() => {
+                        } else {
                             document.getElementById('mobile-title').textContent = "Upload Failed";
+                            document.getElementById('mobile-desc').textContent = "Your network connection dropped. Please refresh the PC and scan again.";
                             document.getElementById('mobile-icon').className = "ph-fill ph-warning-circle text-4xl text-red-500";
-                        });
+                        }
                     },
                     (error) => {
                         document.getElementById('mobile-title').textContent = "GPS Denied";
@@ -186,7 +196,7 @@
                 errorBox.classList.add('hidden');
                 resultsBox.classList.add('hidden');
                 handoffBox.classList.add('hidden');
-                clearInterval(syncPollingInterval);
+                isPolling = false; // Stop any ongoing PC-to-Mobile syncs
 
                 if (!navigator.geolocation) {
                     showError("Geolocation is not supported by your browser.");
@@ -242,6 +252,7 @@
                 resultsBox.classList.add('hidden');
                 handoffBox.classList.remove('hidden');
                 qrContainer.innerHTML = ''; // Clear old QR
+                isPolling = false; // Kill previous polling loops if user clicked twice
                 
                 // Generate a random 6-character session ID
                 const randomSession = 'SYNC-' + Math.random().toString(36).substring(2, 8).toUpperCase();
@@ -262,54 +273,64 @@
                     correctLevel : QRCode.CorrectLevel.L
                 });
 
-                // Start polling the Cloudflare Worker to see if the phone has uploaded data
-                clearInterval(syncPollingInterval);
+                // NEW: Recursive Polling (Waits for network response before asking again)
+                isPolling = true;
                 let attempts = 0;
                 
-                syncPollingInterval = setInterval(() => {
+                const pollWorker = async () => {
+                    if (!isPolling) return; // Exit if user cancelled or it already succeeded
+                    
                     attempts++;
-                    if (attempts > 60) { // Stop after 2 minutes of waiting
-                        clearInterval(syncPollingInterval);
+                    if (attempts > 60) { // Timeout after ~2 minutes
                         showError("Timeout: Did not receive data from phone.");
                         handoffBox.classList.add('hidden');
+                        isPolling = false;
                         return;
                     }
 
-                    // Ask the Worker: "Hey, did anyone upload data to this randomSession ID yet?"
-                    // CRITICAL FIX: Added cache-busting (?_t=timestamp) and 'no-store' to stop browser caching 404s
-                    const cacheBusterUrl = `https://delicate-brook-31a9.devteam-circuitbreakers.workers.dev/api/data/${randomSession}?_t=${Date.now()}`;
-                    
-                    fetch(cacheBusterUrl, { cache: 'no-store' })
-                    .then(res => {
-                        if (res.ok) return res.json();
-                        throw new Error("No data yet");
-                    })
-                    .then(data => {
-                        // WE GOT IT!
-                        clearInterval(syncPollingInterval);
+                    try {
+                        const cacheBusterUrl = `https://delicate-brook-31a9.devteam-circuitbreakers.workers.dev/api/data/${randomSession}?_t=${Date.now()}`;
                         
-                        // Update UI with real Mobile Data
-                        elLat.textContent = `${data.lat} (From Mobile)`;
-                        elLon.textContent = `${data.lon} (From Mobile)`;
-                        elAcc.textContent = `Within ~${Math.round(data.acc)} meters`;
-                        
-                        linkPin.href = `https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lon}`;
-                        linkDir.href = `https://www.google.com/maps/dir/?api=1&destination=${data.lat},${data.lon}`;
+                        // Added strict Pragma and Cache-Control headers to the frontend fetch too
+                        const res = await fetch(cacheBusterUrl, { 
+                            cache: 'no-store',
+                            headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
+                        });
 
-                        handoffBox.innerHTML = `
-                            <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
-                                <i class="ph-bold ph-check text-3xl text-green-500"></i>
-                            </div>
-                            <h3 class="font-bold text-slate-800">Phone Synced Successfully!</h3>
-                        `;
-                        
-                        resultsBox.classList.remove('hidden');
-                    })
-                    .catch(err => {
-                        // No data yet, do nothing, the setInterval will check again in 2 seconds
-                    });
+                        if (res.ok) {
+                            const data = await res.json();
+                            isPolling = false; // We got the data, kill the loop!
+                            
+                            // Update UI with real Mobile Data
+                            elLat.textContent = `${data.lat} (From Mobile)`;
+                            elLon.textContent = `${data.lon} (From Mobile)`;
+                            elAcc.textContent = `Within ~${Math.round(data.acc)} meters`;
+                            
+                            linkPin.href = `https://www.google.com/maps/search/?api=1&query=${data.lat},${data.lon}`;
+                            linkDir.href = `https://www.google.com/maps/dir/?api=1&destination=${data.lat},${data.lon}`;
 
-                }, 2000); // Check every 2 seconds
+                            handoffBox.innerHTML = `
+                                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mb-3">
+                                    <i class="ph-bold ph-check text-3xl text-green-500"></i>
+                                </div>
+                                <h3 class="font-bold text-slate-800">Phone Synced Successfully!</h3>
+                            `;
+                            
+                            resultsBox.classList.remove('hidden');
+                            return; // Stop the function here
+                        }
+                    } catch (err) {
+                        // Network error or 404 (data not there yet). Do nothing and let it loop.
+                    }
+
+                    // If we made it here, data isn't ready. Wait exactly 2 seconds, then call itself again.
+                    if (isPolling) {
+                        setTimeout(pollWorker, 2000);
+                    }
+                };
+
+                // Start the loop
+                pollWorker();
             });
 
             function showError(message) {
