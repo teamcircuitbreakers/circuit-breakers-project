@@ -114,7 +114,7 @@
             const linkPin = document.getElementById('link-pin');
             const linkDir = document.getElementById('link-dir');
 
-            let mockPollingInterval;
+            let syncPollingInterval; // Renamed from mockPollingInterval to reflect reality
 
             // --- THE REAL HANDOFF LOGIC --- //
             
@@ -186,7 +186,7 @@
                 errorBox.classList.add('hidden');
                 resultsBox.classList.add('hidden');
                 handoffBox.classList.add('hidden');
-                clearInterval(mockPollingInterval);
+                clearInterval(syncPollingInterval);
 
                 if (!navigator.geolocation) {
                     showError("Geolocation is not supported by your browser.");
@@ -263,13 +263,13 @@
                 });
 
                 // Start polling the Cloudflare Worker to see if the phone has uploaded data
-                clearInterval(mockPollingInterval);
+                clearInterval(syncPollingInterval);
                 let attempts = 0;
                 
-                mockPollingInterval = setInterval(() => {
+                syncPollingInterval = setInterval(() => {
                     attempts++;
                     if (attempts > 60) { // Stop after 2 minutes of waiting
-                        clearInterval(mockPollingInterval);
+                        clearInterval(syncPollingInterval);
                         showError("Timeout: Did not receive data from phone.");
                         handoffBox.classList.add('hidden');
                         return;
@@ -283,7 +283,7 @@
                     })
                     .then(data => {
                         // WE GOT IT!
-                        clearInterval(mockPollingInterval);
+                        clearInterval(syncPollingInterval);
                         
                         // Update UI with real Mobile Data
                         elLat.textContent = `${data.lat} (From Mobile)`;
