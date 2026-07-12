@@ -114,7 +114,7 @@
             const linkPin = document.getElementById('link-pin');
             const linkDir = document.getElementById('link-dir');
 
-            let isPolling = false; // Replaced syncPollingInterval with a state boolean
+            let currentPollId = 0; // REPLACED isPolling with a strict session ID lock
 
             // --- THE REAL HANDOFF LOGIC --- //
             
@@ -196,7 +196,7 @@
                 errorBox.classList.add('hidden');
                 resultsBox.classList.add('hidden');
                 handoffBox.classList.add('hidden');
-                isPolling = false; // Stop any ongoing PC-to-Mobile syncs
+                currentPollId++; // Stop any ongoing PC-to-Mobile syncs
 
                 if (!navigator.geolocation) {
                     showError("Geolocation is not supported by your browser.");
@@ -252,14 +252,14 @@
                 resultsBox.classList.add('hidden');
                 handoffBox.classList.remove('hidden');
                 qrContainer.innerHTML = ''; // Clear old QR
-                isPolling = false; // Kill previous polling loops if user clicked twice
+                
+                currentPollId++; // Increment ID to instantly kill any old background loops
+                const myPollId = currentPollId; // Lock this loop to the current ID
                 
                 // Generate a random 6-character session ID
                 const randomSession = 'SYNC-' + Math.random().toString(36).substring(2, 8).toUpperCase();
                 
                 // CRITICAL: Construct the URL for the phone to scan. 
-                // Note: To test this, you MUST upload this file to Render so the phone can access it!
-                // We grab the base URL (e.g. https://teamcircuitbreakers.in/identity/location_tester.html)
                 const baseUrl = window.location.href.split('?')[0]; 
                 const mobileUrl = `${baseUrl}?mobile=true&session=${randomSession}`;
                 
@@ -273,33 +273,29 @@
                     correctLevel : QRCode.CorrectLevel.L
                 });
 
-                // NEW: Recursive Polling (Waits for network response before asking again)
-                isPolling = true;
                 let attempts = 0;
                 
                 const pollWorker = async () => {
-                    if (!isPolling) return; // Exit if user cancelled or it already succeeded
+                    if (myPollId !== currentPollId) return; // Exit if user clicked Handoff again
                     
                     attempts++;
                     if (attempts > 60) { // Timeout after ~2 minutes
                         showError("Timeout: Did not receive data from phone.");
                         handoffBox.classList.add('hidden');
-                        isPolling = false;
                         return;
                     }
 
                     try {
                         const cacheBusterUrl = `https://delicate-brook-31a9.devteam-circuitbreakers.workers.dev/api/data/${randomSession}?_t=${Date.now()}`;
                         
-                        // Added strict Pragma and Cache-Control headers to the frontend fetch too
+                        // Removed the strict headers that were causing the CORS block!
                         const res = await fetch(cacheBusterUrl, { 
-                            cache: 'no-store',
-                            headers: { 'Pragma': 'no-cache', 'Cache-Control': 'no-cache' }
+                            cache: 'no-store'
                         });
 
                         if (res.ok) {
                             const data = await res.json();
-                            isPolling = false; // We got the data, kill the loop!
+                            if (myPollId !== currentPollId) return; // Double check before updating UI
                             
                             // Update UI with real Mobile Data
                             elLat.textContent = `${data.lat} (From Mobile)`;
@@ -317,14 +313,15 @@
                             `;
                             
                             resultsBox.classList.remove('hidden');
-                            return; // Stop the function here
+                            currentPollId++; // Kill the loop completely now that it succeeded
+                            return; 
                         }
                     } catch (err) {
                         // Network error or 404 (data not there yet). Do nothing and let it loop.
                     }
 
-                    // If we made it here, data isn't ready. Wait exactly 2 seconds, then call itself again.
-                    if (isPolling) {
+                    // Wait exactly 2 seconds, then call itself again safely.
+                    if (myPollId === currentPollId) {
                         setTimeout(pollWorker, 2000);
                     }
                 };
