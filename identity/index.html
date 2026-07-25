@@ -140,11 +140,14 @@
             </div>
         </div>
         
-        <!-- Main Action Button -->
-        <div class="flex items-center w-full sm:w-auto animate-fade-in-up stagger-3">
+        <!-- Main Action Buttons -->
+        <div class="flex flex-col sm:flex-row items-center justify-center gap-4 w-full sm:w-auto animate-fade-in-up stagger-3">
             <a href="https://teamcircuitbreakers.in/identity/onboarding" class="w-full sm:w-auto px-10 py-4 bg-slate-900 hover:bg-slate-800 text-white font-bold rounded-2xl shadow-xl shadow-slate-900/20 transition-all flex items-center justify-center gap-2 hover:-translate-y-1 group text-lg">
                 Make Yours Now <i class="ph-bold ph-arrow-right group-hover:translate-x-1 transition-transform"></i>
             </a>
+            <button data-modal="partner" class="modal-trigger w-full sm:w-auto px-8 py-4 bg-brand-50 hover:bg-brand-100 border border-brand-200 text-brand-700 font-bold rounded-2xl shadow-sm transition-all flex items-center justify-center gap-2 hover:-translate-y-1 text-lg">
+                <i class="ph-bold ph-storefront"></i> Become a Partner
+            </button>
         </div>
     </main>
     
@@ -161,10 +164,10 @@
             </div>
 
             <div class="flex flex-wrap justify-center items-center gap-4 md:gap-6 text-sm font-medium text-slate-500">
-                <button class="footer-link hover:text-slate-800 transition-colors cursor-pointer" data-modal="privacy">Privacy Policy</button>
-                <button class="footer-link hover:text-slate-800 transition-colors cursor-pointer" data-modal="terms">Terms of Service</button>
-                <button class="footer-link hover:text-slate-800 transition-colors cursor-pointer" data-modal="faq">FAQ</button>
-                <button class="footer-link hover:text-brand-600 transition-colors cursor-pointer font-bold" data-modal="contact">Contact & Support</button>
+                <button class="modal-trigger hover:text-slate-800 transition-colors cursor-pointer" data-modal="privacy">Privacy Policy</button>
+                <button class="modal-trigger hover:text-slate-800 transition-colors cursor-pointer" data-modal="terms">Terms of Service</button>
+                <button class="modal-trigger hover:text-slate-800 transition-colors cursor-pointer" data-modal="faq">FAQ</button>
+                <button class="modal-trigger hover:text-brand-600 transition-colors cursor-pointer font-bold" data-modal="contact">Contact & Support</button>
             </div>
         </div>
     </footer>
@@ -189,10 +192,8 @@
             </div>
             
             <!-- Modal Footer -->
-            <div class="px-6 py-4 bg-slate-50 border-t border-slate-100 shrink-0 text-center">
-                <button id="btn-close-modal-bottom" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl transition-colors">
-                    Understood
-                </button>
+            <div id="modal-footer" class="px-6 py-4 bg-slate-50 border-t border-slate-100 shrink-0 text-center flex flex-col gap-2">
+                <!-- Buttons injected via JS -->
             </div>
         </div>
     </div>
@@ -204,6 +205,39 @@
 
             // Modal Content Database
             const modalContent = {
+                'partner': {
+                    title: 'Identity Partner Program',
+                    icon: 'ph-storefront',
+                    content: `
+                        <p class="text-slate-700 font-medium mb-4 text-base">Transform your Cyber Cafe or CSC into a certified Identity Partner. Move past outdated MS Word templates and offer your customers India's most advanced digital biodata.</p>
+                        <ul class="space-y-4 text-sm text-slate-600">
+                            <li class="flex items-start gap-3">
+                                <i class="ph-fill ph-check-circle text-emerald-500 text-xl shrink-0"></i> 
+                                <div><strong class="text-slate-800 block">₹25+ Net Profit Per Doc</strong> Pay wholesale rates (₹8/gen, ₹4/edit). Charge retail (₹35) and keep the massive margin.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="ph-fill ph-check-circle text-emerald-500 text-xl shrink-0"></i> 
+                                <div><strong class="text-slate-800 block">Cross-Cafe Network</strong> Edit ANY customer's biodata instantly using their Phone Number + OTP verification.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="ph-fill ph-check-circle text-emerald-500 text-xl shrink-0"></i> 
+                                <div><strong class="text-slate-800 block">Free Store Locator</strong> Get pinned on our "Find a Shop" map. We route local offline customers directly to you.</div>
+                            </li>
+                            <li class="flex items-start gap-3">
+                                <i class="ph-fill ph-check-circle text-emerald-500 text-xl shrink-0"></i> 
+                                <div><strong class="text-slate-800 block">Zero Platform Fees</strong> No monthly subscriptions. Just load your UPI wallet and pay strictly for what you generate.</div>
+                            </li>
+                        </ul>
+                    `,
+                    footerHtml: `
+                        <button onclick="window.location.href='https://teamcircuitbreakers.in/partner/'" class="w-full py-3 bg-brand-500 hover:bg-brand-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-brand-500/30 flex items-center justify-center gap-2 text-base">
+                            Start Journey <i class="ph-bold ph-arrow-right"></i>
+                        </button>
+                        <button id="btn-cancel-partner" class="w-full py-2.5 text-slate-500 hover:bg-slate-100 font-bold rounded-xl transition-colors text-sm">
+                            Maybe Later
+                        </button>
+                    `
+                },
                 'privacy': {
                     title: 'Privacy Policy',
                     icon: 'ph-shield-check',
@@ -268,6 +302,7 @@
             const modalCard = document.getElementById('modal-card');
             const modalTitle = document.getElementById('modal-title');
             const modalContentDiv = document.getElementById('modal-content');
+            const modalFooter = document.getElementById('modal-footer');
             
             // Functions to open/close
             const openModal = (type) => {
@@ -276,6 +311,16 @@
                 
                 modalTitle.innerHTML = `<i class="ph-fill ${data.icon} text-brand-500"></i> ${data.title}`;
                 modalContentDiv.innerHTML = data.content;
+                
+                // Render custom footer if exists, otherwise render default "Understood" button
+                if (data.footerHtml) {
+                    modalFooter.innerHTML = data.footerHtml;
+                    const cancelBtn = document.getElementById('btn-cancel-partner');
+                    if (cancelBtn) cancelBtn.addEventListener('click', closeModal);
+                } else {
+                    modalFooter.innerHTML = `<button id="btn-close-modal-bottom" class="w-full py-3 bg-slate-800 hover:bg-slate-900 text-white font-bold rounded-xl transition-colors">Understood</button>`;
+                    document.getElementById('btn-close-modal-bottom').addEventListener('click', closeModal);
+                }
                 
                 modalOverlay.classList.remove('opacity-0', 'pointer-events-none');
                 modalCard.classList.remove('scale-95', 'opacity-0');
@@ -287,12 +332,14 @@
             };
 
             // Attach Listeners
-            document.querySelectorAll('.footer-link').forEach(btn => {
-                btn.addEventListener('click', (e) => openModal(e.target.dataset.modal));
+            document.querySelectorAll('.modal-trigger').forEach(btn => {
+                btn.addEventListener('click', (e) => {
+                    const type = e.target.closest('.modal-trigger').dataset.modal;
+                    openModal(type);
+                });
             });
             
             document.getElementById('btn-close-modal').addEventListener('click', closeModal);
-            document.getElementById('btn-close-modal-bottom').addEventListener('click', closeModal);
             
             // Close on clicking outside the card
             modalOverlay.addEventListener('click', (e) => {
