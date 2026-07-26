@@ -472,7 +472,7 @@
                 // Only trigger the redirect if we are running on a real HTTP/HTTPS domain
                 // This prevents the "empty string URL" crash in iframe sandboxes!
                 if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-                    window.location.href = '/partner/index.html';
+                    window.location.href = '/identity/onboarding/';
                 }
             } catch(e) {
                 console.error("Redirect blocked by sandbox environment.");
@@ -506,7 +506,7 @@
             localStorage.removeItem('identity_partner');
             try {
                 if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
-                    window.location.href = '/partner/index.html';
+                    window.location.href = '/identity/onboarding/';
                 } else {
                     alert("Logged out successfully! (Redirect bypassed in preview mode)");
                     window.location.reload();
