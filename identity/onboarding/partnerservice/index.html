@@ -52,6 +52,7 @@
             transition: bottom 0.4s cubic-bezier(0.68, -0.55, 0.26, 1.55); z-index: 99999; display: flex; align-items: center; gap: 0.75rem;
         }
         .toast.show { bottom: 24px; }
+        .toast.error { background: #ef4444; }
 
         /* Tabbable UI */
         .tab-btn { transition: all 0.3s ease; }
@@ -115,16 +116,19 @@
             </div>
             <div class="p-6">
                 <label class="block text-sm font-semibold text-slate-500 mb-2">Enter Amount (INR)</label>
-                <div class="relative mb-4">
+                <div class="relative mb-2">
                     <span class="absolute left-4 top-1/2 -translate-y-1/2 font-bold text-slate-400 text-lg">₹</span>
-                    <input type="number" id="topup-amount" class="w-full bg-f8fafc border-2 border-slate-200 rounded-xl py-3 pl-10 pr-4 text-xl font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all" placeholder="500" min="50">
+                    <input type="number" id="topup-amount" class="w-full bg-f8fafc border-2 border-slate-200 rounded-xl py-3 pl-10 pr-4 text-xl font-bold text-slate-800 focus:outline-none focus:border-brand-500 focus:ring-4 focus:ring-brand-500/10 transition-all" placeholder="40" min="40">
                 </div>
-                <div class="grid grid-cols-3 gap-2 mb-6">
+                <!-- Real-time inline error message -->
+                <p id="topup-error" class="text-xs font-bold text-red-500 mb-4 hidden">Minimum recharge amount is ₹40.</p>
+                
+                <div class="grid grid-cols-3 gap-2 mb-6 mt-2">
+                    <button type="button" onclick="setTopupAmount(40)" class="py-2 bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 text-slate-600 hover:text-brand-600 font-bold rounded-lg transition-colors text-sm">+ ₹40</button>
                     <button type="button" onclick="setTopupAmount(100)" class="py-2 bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 text-slate-600 hover:text-brand-600 font-bold rounded-lg transition-colors text-sm">+ ₹100</button>
                     <button type="button" onclick="setTopupAmount(500)" class="py-2 bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 text-slate-600 hover:text-brand-600 font-bold rounded-lg transition-colors text-sm">+ ₹500</button>
-                    <button type="button" onclick="setTopupAmount(1000)" class="py-2 bg-slate-50 hover:bg-brand-50 border border-slate-200 hover:border-brand-200 text-slate-600 hover:text-brand-600 font-bold rounded-lg transition-colors text-sm">+ ₹1000</button>
                 </div>
-                <button id="btn-process-topup" onclick="processTopUpPayment()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2">
+                <button id="btn-process-topup" onclick="processTopUpPayment()" class="w-full bg-slate-900 hover:bg-slate-800 text-white font-bold py-3.5 rounded-xl shadow-lg transition-all flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed">
                     Proceed to Pay <i class="ph-bold ph-arrow-right"></i>
                 </button>
             </div>
@@ -268,16 +272,27 @@
 
                     <!-- Look Up Section for Edit Mode -->
                     <div id="edit-lookup-section" class="hidden mb-8 bg-slate-50 p-6 rounded-2xl border border-slate-200">
-                        <h3 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><i class="ph-bold ph-magnifying-glass text-brand-500"></i> Find Existing Profile</h3>
-                        <p class="text-sm text-slate-500 mb-4">Enter the 10-character Hash ID found on the customer's digital URL link.</p>
-                        <div class="flex flex-col sm:flex-row gap-3">
-                            <div class="relative flex-1 max-w-sm">
-                                <i class="ph-bold ph-hash absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
-                                <input type="text" id="lookup-hash" class="w-full border border-slate-300 rounded-xl py-2.5 pl-9 pr-4 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all" placeholder="e.g. 8f4a2b9c1d">
+                        <h3 class="font-bold text-slate-800 mb-2 flex items-center gap-2"><i class="ph-bold ph-magnifying-glass text-brand-500"></i> Smart Find & Edit</h3>
+                        <p class="text-sm text-slate-500 mb-4">Enter the customer's <strong class="text-slate-700">CXI Hash ID</strong> directly, or type their <strong class="text-slate-700">Email Address</strong> to request an OTP override.</p>
+                        
+                        <div class="flex flex-col gap-3">
+                            <div class="flex flex-col sm:flex-row gap-3">
+                                <div class="relative flex-1 max-w-sm">
+                                    <i id="smart-icon" class="ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"></i>
+                                    <input type="text" id="lookup-smart" class="w-full border border-slate-300 rounded-xl py-2.5 pl-9 pr-4 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all" placeholder="e.g. CXI8F4A2B... or user@mail.com">
+                                </div>
+                                <button type="button" id="btn-smart-lookup" class="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-md flex items-center justify-center gap-2 min-w-[140px]">
+                                    Fetch Data <i class="ph-bold ph-arrow-right"></i>
+                                </button>
                             </div>
-                            <button type="button" onclick="fetchBiodataForEdit()" id="btn-fetch-edit" class="bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-md flex items-center justify-center gap-2">
-                                Fetch Data <i class="ph-bold ph-arrow-right"></i>
-                            </button>
+                            
+                            <!-- Hidden OTP Verification Field -->
+                            <div id="lookup-otp-container" class="hidden flex-col sm:flex-row gap-3 mt-1 animate-fade-in-up">
+                                <div class="relative flex-1 max-w-sm">
+                                    <i class="ph-bold ph-lock-key absolute left-3 top-1/2 -translate-y-1/2 text-brand-500"></i>
+                                    <input type="text" id="lookup-otp" class="w-full border-2 border-brand-200 bg-brand-50 rounded-xl py-2.5 pl-9 pr-4 focus:border-brand-500 focus:ring-1 focus:ring-brand-500 outline-none transition-all font-bold tracking-widest" placeholder="Enter 4-Digit Mail OTP" maxlength="4">
+                                </div>
+                            </div>
                         </div>
                     </div>
 
@@ -549,7 +564,9 @@
                 SAVE_BIODATA: '/api/biodata/save',
                 CREATE_ORDER: '/api/wallet/create-order',
                 VERIFY_ORDER: '/api/wallet/verify',
-                FETCH_DATA: '/api/biodata/data/'
+                FETCH_DATA: '/api/biodata/data/',
+                REQ_EDIT_OTP: '/api/auth/signup', // Simplified routing for now, uses same mailer
+                VERIFY_EDIT_OTP: '/api/auth/verify' // Simplified routing for now
             }
         };
 
@@ -619,16 +636,23 @@
                 if (window.location.protocol === 'http:' || window.location.protocol === 'https:') {
                     window.location.href = '/identity/onboarding/';
                 } else {
-                    alert("Logged out successfully! (Redirect bypassed in preview mode)");
                     window.location.reload();
                 }
             } catch(e) { }
         }
 
-        function showToast(message, isInfo = true) {
+        function showToast(message, isError = false) {
             const toast = document.getElementById('action-toast');
             document.getElementById('toast-msg').textContent = message;
-            document.getElementById('toast-icon').className = isInfo ? 'ph-fill ph-info text-xl text-brand-500' : 'ph-fill ph-check-circle text-xl text-green-500';
+            
+            if(isError) {
+                document.getElementById('toast-icon').className = 'ph-fill ph-warning-circle text-xl text-white';
+                toast.classList.add('error');
+            } else {
+                document.getElementById('toast-icon').className = 'ph-fill ph-check-circle text-xl text-brand-500';
+                toast.classList.remove('error');
+            }
+            
             toast.classList.add('show');
             setTimeout(() => toast.classList.remove('show'), 3500);
         }
@@ -677,12 +701,33 @@
             const input = document.getElementById('topup-amount');
             let current = parseInt(input.value) || 0;
             input.value = current + amt;
+            input.dispatchEvent(new Event('input'));
         }
+
+        // Real-time Top-up Validation
+        const amtInput = document.getElementById('topup-amount');
+        const amtError = document.getElementById('topup-error');
+        const btnTopup = document.getElementById('btn-process-topup');
+
+        amtInput.addEventListener('input', (e) => {
+            let val = parseInt(e.target.value);
+            if (isNaN(val) || val < 40) {
+                amtInput.classList.add('border-red-500', 'focus:ring-red-500/10');
+                amtInput.classList.remove('border-brand-500', 'focus:ring-brand-500/10');
+                amtError.classList.remove('hidden');
+                btnTopup.disabled = true;
+            } else {
+                amtInput.classList.remove('border-red-500', 'focus:ring-red-500/10');
+                amtInput.classList.add('border-brand-500', 'focus:ring-brand-500/10');
+                amtError.classList.add('hidden');
+                btnTopup.disabled = false;
+            }
+        });
 
         async function processTopUpPayment() {
             const amount = parseInt(document.getElementById('topup-amount').value);
-            if (isNaN(amount) || amount < 50) {
-                alert("Please enter a valid amount (Minimum ₹50)."); return;
+            if (isNaN(amount) || amount < 40) {
+                showToast("Minimum recharge amount is ₹40.", true); return;
             }
 
             const btn = document.getElementById('btn-process-topup');
@@ -725,9 +770,9 @@
                         if (verifyData.success) {
                             partnerData.balance = verifyData.newBalance;
                             updateBalanceUI();
-                            showToast(`Top-up successful! New Balance: ₹${partnerData.balance}`, false);
+                            showToast(`Top-up successful! New Balance: ₹${partnerData.balance}`);
                         } else {
-                            alert("Verification Failed. Contact Support.");
+                            showToast("Verification Failed. Contact Support.", true);
                         }
                     },
                     prefill: { email: partnerData.email, contact: partnerData.phone },
@@ -738,7 +783,7 @@
                 rzp.open();
                 
             } catch (err) {
-                alert("Failed to initiate payment: " + err.message);
+                showToast("Failed to initiate payment: " + err.message, true);
             }
             
             btn.innerHTML = `Proceed to Pay <i class="ph-bold ph-arrow-right"></i>`;
@@ -746,45 +791,135 @@
         }
 
         // ==========================================
-        // RAPID NEW / EDIT TAB ENGINE
+        // SMART EDIT LOOKUP ENGINE (Hash vs Email OTP)
         // ==========================================
         function switchFormTab(mode) {
             isEditMode = (mode === 'edit');
+            document.getElementById('tab-form-new').className = `flex-1 py-2 text-sm rounded-lg tab-btn ${mode === 'new' ? 'active' : 'inactive'}`;
+            document.getElementById('tab-form-edit').className = `flex-1 py-2 text-sm rounded-lg tab-btn ${mode === 'edit' ? 'active' : 'inactive'}`;
             
-            document.getElementById('tab-form-new').className = `flex-1 py-2 text-sm rounded-lg tab-btn ${!isEditMode ? 'active' : 'inactive'}`;
-            document.getElementById('tab-form-edit').className = `flex-1 py-2 text-sm rounded-lg tab-btn ${isEditMode ? 'active' : 'inactive'}`;
+            document.getElementById('ui-deduction-cost').textContent = isEditMode ? '- ₹4.00' : '- ₹8.00';
             
-            const form = document.getElementById('rapid-form');
-            const lookup = document.getElementById('edit-lookup-section');
-            const costUI = document.getElementById('ui-deduction-cost');
-            const photoInput = document.getElementById('r-photo');
-            const photoLabel = document.getElementById('photo-label');
-
             if (isEditMode) {
-                form.classList.add('hidden');
-                lookup.classList.remove('hidden');
-                costUI.textContent = '- ₹4.00';
-                photoInput.removeAttribute('required'); // Photo is optional on edit
-                photoLabel.textContent = 'Update Photo (Optional)';
+                document.getElementById('edit-lookup-section').classList.remove('hidden');
+                document.getElementById('rapid-form').classList.add('hidden');
+                document.getElementById('photo-label').textContent = "Update Photo (Leave empty to keep existing)";
+                document.getElementById('r-photo').required = false;
             } else {
-                form.reset();
-                existingBase64Photo = null;
+                document.getElementById('edit-lookup-section').classList.add('hidden');
+                document.getElementById('rapid-form').classList.remove('hidden');
+                document.getElementById('photo-label').textContent = "Customer Passport Photo (JPEG/PNG)";
+                document.getElementById('r-photo').required = true;
                 document.getElementById('edit-photo-container').classList.add('hidden');
-                form.classList.remove('hidden');
-                lookup.classList.add('hidden');
-                costUI.textContent = '- ₹8.00';
-                photoInput.setAttribute('required', 'true');
-                photoLabel.textContent = 'Customer Passport Photo (JPEG/PNG)';
+                document.getElementById('rapid-form').reset();
+                currentEditHashId = null;
+                existingBase64Photo = null;
             }
         }
 
-        async function fetchBiodataForEdit() {
-            const hashId = document.getElementById('lookup-hash').value.trim();
-            if (!hashId || hashId.length < 8) {
-                alert("Please enter a valid Hash ID."); return;
+        let smartLookupMode = 'HASH'; 
+
+        const smartInput = document.getElementById('lookup-smart');
+        const smartBtn = document.getElementById('btn-smart-lookup');
+        const smartIcon = document.getElementById('smart-icon');
+        const otpContainer = document.getElementById('lookup-otp-container');
+
+        // Real-time detection engine
+        smartInput.addEventListener('input', (e) => {
+            const val = e.target.value.trim().toUpperCase();
+            
+            otpContainer.classList.add('hidden');
+            smartInput.disabled = false;
+
+            if (val.includes('@')) {
+                smartLookupMode = 'EMAIL_REQ';
+                smartIcon.className = `ph-bold ph-envelope absolute left-3 top-1/2 -translate-y-1/2 text-brand-500`;
+                smartBtn.innerHTML = `Send OTP <i class="ph-bold ph-paper-plane-right"></i>`;
+                smartBtn.className = `bg-brand-500 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-brand-600 transition-colors shadow-md flex items-center justify-center gap-2 min-w-[140px]`;
+            } else if (val.startsWith('CXI')) {
+                smartLookupMode = 'HASH';
+                smartIcon.className = `ph-bold ph-hash absolute left-3 top-1/2 -translate-y-1/2 text-brand-500`;
+                smartBtn.innerHTML = `Fetch Data <i class="ph-bold ph-arrow-right"></i>`;
+                smartBtn.className = `bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-md flex items-center justify-center gap-2 min-w-[140px]`;
+            } else {
+                smartLookupMode = 'HASH';
+                smartIcon.className = `ph-bold ph-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400`;
+                smartBtn.innerHTML = `Fetch Data <i class="ph-bold ph-arrow-right"></i>`;
+                smartBtn.className = `bg-slate-900 text-white px-6 py-2.5 rounded-xl font-bold hover:bg-slate-800 transition-colors shadow-md flex items-center justify-center gap-2 min-w-[140px]`;
+            }
+        });
+
+        // Smart Button Action Router
+        smartBtn.addEventListener('click', async () => {
+            const val = smartInput.value.trim();
+            
+            if (smartLookupMode === 'HASH') {
+                if(!val.toUpperCase().startsWith('CXI')) {
+                    showToast("Valid Hash IDs must start with CXI.", true); return;
+                }
+                await fetchBiodataForEdit(val);
+                
+            } else if (smartLookupMode === 'EMAIL_REQ') {
+                // Feature reserved for email backend integrations. 
+                // Using alert safely in catch blocks only for dev mock, but keeping UI clean.
+                showToast("Email edit linking requires Mail API integration.", true);
+            }
+        });
+
+        function processFetchedData(data) {
+            currentEditHashId = data.id || data.hashId;
+            existingBase64Photo = data.photoUrl || null;
+            
+            if (existingBase64Photo) {
+                document.getElementById('edit-photo-preview').src = existingBase64Photo;
+                document.getElementById('edit-photo-container').classList.remove('hidden');
             }
 
-            const btn = document.getElementById('btn-fetch-edit');
+            const sv = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ''; };
+            
+            sv('r-name', data.fullname); sv('r-dob', data.dob); sv('r-gender', data.gender);
+            sv('r-blood', data.bloodGroup); sv('r-height', data.height); sv('r-religion', data.religion);
+            sv('r-caste', data.caste !== 'Not Specified' ? data.caste : '');
+            sv('r-phone', data.phone); sv('r-email', data.email);
+            sv('r-father', data.father); sv('r-mother', data.mother);
+            
+            if (typeof data.address === 'object') {
+                const adr = data.address;
+                let arr = [adr.house, adr.village, adr.po ? 'PO: '+adr.po : '', adr.ps ? 'PS: '+adr.ps : '', adr.district, adr.state, adr.pin];
+                sv('r-address', arr.filter(Boolean).join(', '));
+            } else { sv('r-address', data.address); }
+
+            if(data.emergency && data.emergency !== 'Not Provided') {
+                sv('r-emergency', data.emergency.replace('+91 ', '').replace(' | ', ', '));
+            }
+
+            sv('e1-board', ''); sv('e1-tot', ''); sv('e1-obt', ''); sv('e1-perc', '');
+            sv('e2-deg', ''); sv('e2-board', ''); sv('e2-tot', ''); sv('e2-perc', '');
+
+            if (data.education && Array.isArray(data.education)) {
+                data.education.forEach(e => {
+                    const lvl = (e.level || '').toLowerCase();
+                    if (lvl.includes('10') || lvl.includes('second')) {
+                        sv('e1-board', e.board); sv('e1-tot', e.total); sv('e1-obt', e.obt); sv('e1-perc', e.perc);
+                    } else if (lvl.includes('12') || lvl.includes('deg') || lvl.includes('ug') || lvl.includes('pg') || lvl.includes('diploma')) {
+                        sv('e2-deg', e.level); sv('e2-board', e.board); sv('e2-tot', e.total); sv('e2-perc', e.perc);
+                    }
+                });
+            }
+
+            if (data.skills && Array.isArray(data.skills)) sv('r-skills', data.skills.join(', '));
+            if (data.languages && Array.isArray(data.languages)) sv('r-langs', data.languages.join(', '));
+
+            document.getElementById('edit-lookup-section').classList.add('hidden');
+            document.getElementById('rapid-form').classList.remove('hidden');
+            showToast("Profile Data Loaded!");
+            
+            smartInput.value = '';
+            smartInput.dispatchEvent(new Event('input'));
+        }
+
+        async function fetchBiodataForEdit(hashId) {
+            const btn = document.getElementById('btn-smart-lookup');
             btn.innerHTML = `<i class="ph-bold ph-spinner animate-spin"></i> Fetching...`;
             btn.disabled = true;
 
@@ -793,69 +928,15 @@
                 const data = await res.json();
 
                 if (!res.ok || data.error) throw new Error(data.error || "Profile not found.");
-                if (data.expired) throw new Error("This profile has been expired/updated previously. Scan the newest QR.");
+                if (data.expired) throw new Error("This profile is expired. Request the newest QR.");
 
-                // Populate Form
-                currentEditHashId = hashId;
-                existingBase64Photo = data.photoUrl || null;
-                
-                if (existingBase64Photo) {
-                    document.getElementById('edit-photo-preview').src = existingBase64Photo;
-                    document.getElementById('edit-photo-container').classList.remove('hidden');
-                }
-
-                const sv = (id, val) => { if(document.getElementById(id)) document.getElementById(id).value = val || ''; };
-                
-                sv('r-name', data.fullname); sv('r-dob', data.dob); sv('r-gender', data.gender);
-                sv('r-blood', data.bloodGroup); sv('r-height', data.height); sv('r-religion', data.religion);
-                sv('r-caste', data.caste !== 'Not Specified' ? data.caste : '');
-                sv('r-phone', data.phone); sv('r-email', data.email);
-                sv('r-father', data.father); sv('r-mother', data.mother);
-                
-                // Address Handle (Selfservice creates object, old rapid creates string)
-                if (typeof data.address === 'object') {
-                    const adr = data.address;
-                    let arr = [adr.house, adr.village, adr.po ? 'PO: '+adr.po : '', adr.ps ? 'PS: '+adr.ps : '', adr.district, adr.state, adr.pin];
-                    sv('r-address', arr.filter(Boolean).join(', '));
-                } else {
-                    sv('r-address', data.address);
-                }
-
-                if(data.emergency && data.emergency !== 'Not Provided') {
-                    // Extract if formatted via Self Service
-                    sv('r-emergency', data.emergency.replace('+91 ', '').replace(' | ', ', '));
-                }
-
-                // Academics parsing safely
-                sv('e1-board', ''); sv('e1-tot', ''); sv('e1-obt', ''); sv('e1-perc', '');
-                sv('e2-deg', ''); sv('e2-board', ''); sv('e2-tot', ''); sv('e2-perc', '');
-
-                if (data.education && Array.isArray(data.education)) {
-                    data.education.forEach(e => {
-                        const lvl = (e.level || '').toLowerCase();
-                        if (lvl.includes('10') || lvl.includes('second')) {
-                            sv('e1-board', e.board); sv('e1-tot', e.total); sv('e1-obt', e.obt); sv('e1-perc', e.perc);
-                        } else if (lvl.includes('12') || lvl.includes('deg') || lvl.includes('ug') || lvl.includes('pg') || lvl.includes('diploma')) {
-                            // Assign to e2 - might overwrite if multiple higher degrees, but rapid entry is compact
-                            sv('e2-deg', e.level); sv('e2-board', e.board); sv('e2-tot', e.total); sv('e2-perc', e.perc);
-                        }
-                    });
-                }
-
-                // Tags
-                if (data.skills && Array.isArray(data.skills)) sv('r-skills', data.skills.join(', '));
-                if (data.languages && Array.isArray(data.languages)) sv('r-langs', data.languages.join(', '));
-
-                // Switch UI State
-                document.getElementById('edit-lookup-section').classList.add('hidden');
-                document.getElementById('rapid-form').classList.remove('hidden');
-                showToast("Profile Data Loaded!", false);
+                data.id = hashId; 
+                processFetchedData(data);
 
             } catch (e) {
-                alert("Error: " + e.message);
+                showToast(e.message, true);
+                btn.innerHTML = `Fetch Data <i class="ph-bold ph-arrow-right"></i>`;
             }
-
-            btn.innerHTML = `Fetch Data <i class="ph-bold ph-arrow-right"></i>`;
             btn.disabled = false;
         }
 
@@ -865,7 +946,7 @@
         async function processRapidGeneration() {
             const deductionAmt = isEditMode ? 4 : 8;
             if (partnerData.balance < deductionAmt) {
-                alert(`Insufficient Balance! You need ₹${deductionAmt}. Please Top-up.`); return;
+                showToast(`Insufficient Balance! You need ₹${deductionAmt}. Please Top-up.`, true); return;
             }
 
             const btn = document.getElementById('btn-submit-gen');
@@ -888,11 +969,14 @@
 
                 if (!base64Photo) throw new Error("A photo is required.");
 
-                // 2. Generate Hash ID
+                // 2. Generate STRICT CXI Hash ID
                 const name = document.getElementById('r-name').value;
                 const phone = document.getElementById('r-phone').value;
                 const hashBuffer = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(name + phone + Date.now()));
-                const newHashId = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 10);
+                
+                // Generates format: CXI + 10 Hex Characters (Total 13 Chars)
+                const hexStr = Array.from(new Uint8Array(hashBuffer)).map(b => b.toString(16).padStart(2, '0')).join('').slice(0, 10).toUpperCase();
+                const newHashId = 'CXI' + hexStr;
 
                 // 3. Deduct Balance via Worker
                 const deductRes = await fetch(`${CONFIG.API_BASE}${CONFIG.ROUTES.GENERATE}`, {
@@ -959,7 +1043,7 @@
                 document.getElementById('pdf-skills').innerHTML = sk.split(',').map(s => s.trim() ? `<div class="pdf-tag-item">${s.trim()}</div>` : '').join('');
                 document.getElementById('pdf-langs').innerHTML = lg.split(',').map(l => l.trim() ? `<div class="pdf-tag-item">${l.trim()}</div>` : '').join('');
 
-                // QR Codes (Using the newly minted HashID)
+                // QR Codes (Using the newly minted CXI HashID)
                 const vcardData = `BEGIN:VCARD\nVERSION:3.0\nFN:${name}\nTEL:+91${phone}\nEND:VCARD`;
                 const digitalLink = `https://teamcircuitbreakers.in/identity/?v=${newHashId}`;
                 
@@ -967,7 +1051,7 @@
                 await new Promise(r => { new QRCode(document.getElementById('qr-digital-container'), { text: digitalLink, width: 256, height: 256, correctLevel: QRCode.CorrectLevel.L }); setTimeout(r, 100); });
                 
                 // 6. Generate & Download PDF
-                showToast(`Deducted ₹${deductionAmt}. Rendering PDF...`, false);
+                showToast(`Deducted ₹${deductionAmt}. Rendering PDF...`);
                 const pdfContainer = document.getElementById('pdf-container');
                 const pdfTemplate = document.getElementById('pdf-template');
                 pdfContainer.classList.remove('hidden'); pdfContainer.style.position = 'absolute'; pdfContainer.style.top = '-10000px'; pdfTemplate.style.display = 'flex';
@@ -990,11 +1074,11 @@
                     
                     btn.innerHTML = ogBtn; btn.disabled = false;
                     switchView('dashboard');
-                    showToast("Success! Biodata Generated.", false);
+                    showToast("Success! Biodata Generated.");
                 });
 
             } catch (err) {
-                alert("Error generating document: " + err.message);
+                showToast("Error generating document: " + err.message, true);
                 btn.innerHTML = ogBtn; btn.disabled = false;
             }
         }
