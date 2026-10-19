@@ -4,433 +4,224 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<meta name="theme-color" content="#0c1320">
-<title>ESP32 Climate Monitor</title>
+<meta name="theme-color" content="#101827">
+<title>Circuit Breakers | RFID Wallet</title>
 
 <style>
 :root {
   color-scheme: dark;
-  --bg: #0c1320;
-  --panel: #151f30;
-  --line: #29384c;
-  --text: #edf4ff;
-  --muted: #91a2ba;
-  --mint: #6ee7b7;
-  --orange: #ffb66e;
-  --blue: #8cb7ff;
+  --bg:#101827; --panel:#192437; --line:#2c3b51;
+  --text:#eef4ff; --muted:#9eacc2; --mint:#71e0b0;
+  --blue:#87aaff; --red:#ff9999;
 }
-* { box-sizing: border-box; }
-body {
-  margin: 0;
-  padding: 25px 16px 40px;
-  background:
-    radial-gradient(ellipse at 10% 0%, #263958 0, transparent 42%),
-    var(--bg);
-  color: var(--text);
-  font-family: Inter, system-ui, sans-serif;
+*{box-sizing:border-box}
+body{
+  margin:0;padding:24px 16px 40px;
+  background:radial-gradient(ellipse at top,#293c5c 0%,var(--bg) 58%);
+  color:var(--text);font-family:system-ui,sans-serif
 }
-main { max-width: 920px; margin: auto; }
-.eyebrow {
-  color: var(--mint);
-  font-size: 11px;
-  font-weight: 800;
-  letter-spacing: 2.5px;
-}
-h1 { font-size: clamp(28px, 5vw, 43px); margin: 9px 0; }
-h2 { font-size: 17px; margin: 0; }
-p { color: var(--muted); line-height: 1.6; }
-header { margin-bottom: 23px; }
-.header-row, .row {
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 14px;
-  flex-wrap: wrap;
-}
-.panel {
-  background: rgba(21,31,48,.95);
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 21px;
-  margin-top: 15px;
-}
-.status {
-  display: inline-flex;
-  align-items: center;
-  gap: 8px;
-  font-size: 13px;
-  color: var(--muted);
-}
-.dot {
-  width: 9px;
-  height: 9px;
-  background: #65748a;
-  border-radius: 50%;
-}
-.dot.live {
-  background: var(--mint);
-  box-shadow: 0 0 12px #6ee7b780;
-}
-button {
-  font: inherit;
-  padding: 11px 15px;
-  border: 1px solid var(--line);
-  border-radius: 12px;
-  color: var(--text);
-  background: #24334a;
-  cursor: pointer;
-}
-button:disabled { opacity: .4; cursor: not-allowed; }
-button.primary {
-  background: var(--mint);
-  border-color: transparent;
-  color: #09251b;
-  font-weight: 800;
-}
-button.blue { border-color: #3c5b8b; }
-button:hover:not(:disabled) { filter: brightness(1.12); }
-.metrics {
-  display: grid;
-  grid-template-columns: repeat(2,minmax(0,1fr));
-  gap: 15px;
-  margin-top: 15px;
-}
-.metric {
-  position: relative;
-  overflow: hidden;
-  background: var(--panel);
-  border: 1px solid var(--line);
-  border-radius: 20px;
-  padding: 21px;
-  min-width: 0;
-}
-.metric::after {
-  content: "";
-  position: absolute;
-  right: -35px;
-  top: -50px;
-  width: 130px;
-  height: 130px;
-  border-radius: 50%;
-  background: var(--glow);
-  opacity: .09;
-}
-.metric.temp { --glow: var(--orange); }
-.metric.hum { --glow: var(--blue); }
-.metric-label { color: var(--muted); font-size: 13px; }
-.metric-icon { font-size: 25px; }
-.big {
-  font-size: clamp(38px, 7vw, 58px);
-  letter-spacing: -2px;
-  font-weight: 750;
-  margin: 15px 0 4px;
-}
-.big small { font-size: 22px; letter-spacing: 0; }
-.sub { font-size: 13px; color: var(--muted); }
-.bar {
-  height: 7px;
-  background: #263449;
-  border-radius: 20px;
-  overflow: hidden;
-  margin-top: 20px;
-}
-.fill {
-  height: 100%;
-  width: 0%;
-  border-radius: inherit;
-  transition: width .5s;
-}
-.temp .fill { background: var(--orange); }
-.hum .fill { background: var(--blue); }
-.section-title { margin-bottom: 14px; }
-.chip {
-  display: inline-block;
-  padding: 6px 10px;
-  border-radius: 30px;
-  background: #253b3a;
-  color: var(--mint);
-  font-size: 12px;
-}
-.chip.warn { background: #49372a; color: var(--orange); }
-.actions {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 9px;
-}
-.log {
-  background: #0a111c;
-  border: 1px solid #202e41;
-  border-radius: 13px;
-  padding: 12px;
-  min-height: 90px;
-  max-height: 190px;
-  overflow-y: auto;
-  overflow-wrap: anywhere;
-  font: 12px/1.8 ui-monospace, monospace;
-}
-.log div { border-bottom: 1px solid #192538; padding: 3px 0; }
-.muted { color: var(--muted); font-size: 12px; }
-footer { margin-top: 22px; color: var(--muted); font-size: 12px; }
-@media(max-width:480px) {
-  .metrics { grid-template-columns: 1fr; }
-  .panel, .metric { padding: 17px; }
-  .header-row { align-items: flex-start; }
-}
+main{max-width:850px;margin:auto}
+.eyebrow{font-size:11px;letter-spacing:2px;color:var(--mint);font-weight:800}
+h1{font-size:clamp(28px,6vw,42px);margin:8px 0}
+h2{font-size:18px;margin:0 0 15px}
+p{color:var(--muted);line-height:1.6}
+.panel{background:var(--panel);border:1px solid var(--line);border-radius:19px;padding:20px;margin-top:15px}
+.row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+.grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:10px}
+button,input{font:inherit}
+button{padding:12px 14px;border:1px solid var(--line);border-radius:12px;background:#273851;color:var(--text);cursor:pointer}
+button:disabled{opacity:.4;cursor:not-allowed}
+button.primary{background:var(--mint);color:#092218;border-color:transparent;font-weight:800}
+button.selected{outline:2px solid var(--mint);background:#24473e}
+input{width:100%;padding:12px;border:1px solid var(--line);border-radius:11px;background:#101827;color:var(--text)}
+label{display:block;color:var(--muted);font-size:13px;margin:14px 0 7px}
+.small{font-size:12px;color:var(--muted)}
+.big{font-size:30px;font-weight:750;overflow-wrap:anywhere}
+.status{display:flex;align-items:center;gap:8px;color:var(--muted);font-size:13px}
+.dot{width:9px;height:9px;border-radius:50%;background:#728096}
+.dot.live{background:var(--mint);box-shadow:0 0 12px #71e0b088}
+.action{display:flex;gap:10px;flex-wrap:wrap;margin-top:17px}
+.action button{flex:1}
+.notice{padding:12px;border:1px solid var(--line);border-radius:12px;color:var(--muted);font-size:13px;line-height:1.6;overflow-wrap:anywhere}
+.history-item{padding:12px 0;border-bottom:1px solid var(--line)}
+.history-item:last-child{border-bottom:0}
+.credit{color:var(--mint)} .debit{color:var(--red)}
+.log{max-height:150px;overflow:auto;background:#101827;border-radius:10px;padding:12px;font:12px/1.7 monospace;overflow-wrap:anywhere}
+.log div{border-bottom:1px solid #263348;padding:3px 0}
+.hidden{display:none!important}
+@media(max-width:560px){.grid{grid-template-columns:1fr}.panel{padding:16px}}
 </style>
 </head>
-
 <body>
 <main>
-<header>
-  <div class="eyebrow">ENVIRONMENTAL SENSING / BLE</div>
-  <div class="header-row">
-    <div>
-      <h1>Climate Monitor<span style="color:var(--mint)">.</span></h1>
-      <p style="margin:0">A live window into your environment.</p>
-    </div>
-    <span class="chip">DHT11 SENSOR</span>
-  </div>
-</header>
+  <div class="eyebrow">TEAM CIRCUIT BREAKERS / FINTECH LAB</div>
+  <h1>RFID Wallet<span style="color:var(--mint)">.</span></h1>
+  <p>Stored-value card terminal · ESP32 BLE · Cloudflare</p>
 
-<section class="panel">
-  <div class="header-row">
-    <div>
-      <div class="status">
-        <span class="dot" id="dot"></span>
-        <span id="status">Not connected</span>
+  <section class="panel">
+    <div class="row">
+      <div>
+        <div class="status"><span id="dot" class="dot"></span><span id="bleStatus">Scanner disconnected</span></div>
+        <h2 style="margin:10px 0 4px">RFID terminal</h2>
+        <div class="small" id="deviceName">ESP32 not connected</div>
       </div>
-      <h2 style="margin-top:12px">Pushkar-ESP32</h2>
-      <div class="muted" id="device">Waiting for device selection</div>
+      <button id="connect" class="primary">Connect scanner</button>
     </div>
-    <button class="primary" id="connect">Connect via BLE</button>
-  </div>
-</section>
+  </section>
 
-<section class="metrics">
-  <article class="metric temp">
+  <section class="panel">
+    <h2>Operator authentication</h2>
+    <label for="pin">Administrator PIN</label>
+    <input id="pin" type="password" autocomplete="off" placeholder="Enter Worker ADMIN_PIN">
+    <p class="small">Kept in this page's memory only. Use this terminal only on a trusted device.</p>
+  </section>
+
+  <section class="panel">
+    <h2>Choose operation</h2>
+    <div class="grid">
+      <button id="chooseCredit" class="selected">＋ Load money</button>
+      <button id="chooseDebit">− Spend money</button>
+      <button id="chooseHistory">▤ View history</button>
+    </div>
+
+    <div id="amountArea">
+      <label for="amount">Amount (₹)</label>
+      <input id="amount" type="number" min="0.01" max="100000" step="0.01" value="10">
+      <div class="grid" style="margin-top:10px">
+        <button class="quick" data-amount="10">₹10</button>
+        <button class="quick" data-amount="50">₹50</button>
+        <button class="quick" data-amount="100">₹100</button>
+      </div>
+    </div>
+
+    <div class="action">
+      <button id="startScan" class="primary" disabled>Activate scanner</button>
+      <button id="cancelScan" disabled>Cancel scan</button>
+    </div>
+    <div id="message" class="notice" style="margin-top:14px">Connect the ESP32 and enter the administrator PIN to begin.</div>
+  </section>
+
+  <section class="panel">
+    <div class="small">SCANNED CARD UID</div>
+    <div class="big" id="uid">—</div>
+    <div class="small" style="margin-top:8px">AVAILABLE BALANCE</div>
+    <div class="big" id="balance">—</div>
+  </section>
+
+  <section class="panel">
     <div class="row">
-      <span class="metric-label">AIR TEMPERATURE</span>
-      <span class="metric-icon">🌡️</span>
+      <h2>Last five transactions</h2>
+      <button id="refreshHistory" disabled>Refresh</button>
     </div>
-    <div class="big"><span id="temp">--.-</span><small> °C</small></div>
-    <div class="sub">Equivalent: <span id="fahrenheit">--.- °F</span></div>
-    <div class="bar"><div class="fill" id="tempBar"></div></div>
-  </article>
+    <div id="history"><p class="small">Scan a card to display its transaction history.</p></div>
+  </section>
 
-  <article class="metric hum">
-    <div class="row">
-      <span class="metric-label">RELATIVE HUMIDITY</span>
-      <span class="metric-icon">💧</span>
-    </div>
-    <div class="big"><span id="humidity">--</span><small> %</small></div>
-    <div class="sub" id="humidityLabel">Waiting for measurement</div>
-    <div class="bar"><div class="fill" id="humBar"></div></div>
-  </article>
-</section>
+  <section class="panel">
+    <h2>Terminal log</h2>
+    <div id="log" class="log"></div>
+  </section>
 
-<section class="panel">
-  <div class="row section-title">
-    <h2>Sensor status</h2>
-    <span class="chip warn" id="sensorState">Awaiting data</span>
-  </div>
-  <div class="row">
-    <div>
-      <div class="muted">LAST SUCCESSFUL READING</div>
-      <div id="lastUpdate" style="margin-top:7px">—</div>
-    </div>
-    <div>
-      <div class="muted">UPDATE INTERVAL</div>
-      <div style="margin-top:7px">2 seconds</div>
-    </div>
-  </div>
-  <p class="muted" id="sensorNote">
-    Connect to the ESP32 to begin receiving measurements.
-  </p>
-</section>
-
-<section class="panel">
-  <h2 class="section-title">Device controls</h2>
-  <div class="actions">
-    <button class="primary" id="refresh" disabled>↻ Read sensor</button>
-    <button class="blue" id="ping" disabled>Ping ESP32</button>
-    <button id="ledOn" disabled>LED ON</button>
-    <button id="ledOff" disabled>LED OFF</button>
-  </div>
-</section>
-
-<section class="panel">
-  <div class="row section-title">
-    <h2>Bluetooth event log</h2>
-    <button id="clear">Clear</button>
-  </div>
-  <div class="log" id="log" aria-live="polite"></div>
-</section>
-
-<footer>
-  ESP32 DevKit V1 · DHT11 · Web Bluetooth API
-  <br>Measurements are provided by the sensor, not a cloud service.
-</footer>
+  <p class="small">Demonstration stored-value wallet. RFID UID is an identifier, not proof of card authenticity. Do not use for real-money transactions.</p>
 </main>
 
 <script>
 (() => {
+  "use strict";
+
+  // Replace with your actual deployed Worker URL.
+  const API = "https://rfid-wallet-api.YOUR-SUBDOMAIN.workers.dev";
+
   const SERVICE = "12345678-1234-1234-1234-1234567890ab";
   const COMMAND = "abcdefab-1234-1234-1234-abcdefabcdef";
   const TELEMETRY = "abcdefab-1234-1234-1234-abcdefabcdee";
 
   const $ = id => document.getElementById(id);
+
   let device = null;
   let commandChar = null;
   let telemetryChar = null;
+  let operation = "credit";
+  let pending = false;
   let busy = false;
-  let hasReading = false;
-  let latestTemp = null;
-  let latestHum = null;
+  let scanTimeout = null;
+  let selectedUID = null;
 
-  function log(tag, message) {
-    const line = document.createElement("div");
-    line.textContent =
-      `${new Date().toLocaleTimeString()} [${tag}] ${message}`;
-    $("log").prepend(line);
-
-    while ($("log").children.length > 80) {
-      $("log").lastElementChild.remove();
-    }
+  function log(tag, text) {
+    const div = document.createElement("div");
+    div.textContent = `${new Date().toLocaleTimeString()} [${tag}] ${text}`;
+    $("log").prepend(div);
+    while ($("log").children.length > 80) $("log").lastElementChild.remove();
   }
 
-  function connectionUI(connected) {
+  function setMessage(text) {
+    $("message").textContent = text;
+  }
+
+  function isConnected() {
+    return !!device?.gatt?.connected && !!commandChar && !!telemetryChar;
+  }
+
+  function updateControls() {
+    const connected = isConnected();
+
     $("dot").classList.toggle("live", connected);
-    $("status").textContent = connected ? "Connected · BLE active" : "Not connected";
-    $("connect").textContent = connected ? "Disconnect" : "Connect via BLE";
-
-    ["refresh", "ping", "ledOn", "ledOff"].forEach(id => {
-      $(id).disabled = !connected;
-    });
-
-    if (!connected) {
-      hasReading = false;
-      latestTemp = null;
-      latestHum = null;
-      $("temp").textContent = "--.-";
-      $("fahrenheit").textContent = "--.- °F";
-      $("humidity").textContent = "--";
-      $("humidityLabel").textContent = "Waiting for measurement";
-      $("tempBar").style.width = "0%";
-      $("humBar").style.width = "0%";
-      $("sensorState").textContent = "Awaiting data";
-      $("sensorNote").textContent = "Connect to the ESP32 to begin receiving measurements.";
-    }
+    $("bleStatus").textContent = connected ? "BLE connected" : "Scanner disconnected";
+    $("connect").textContent = connected ? "Disconnect scanner" : "Connect scanner";
+    $("startScan").disabled = !connected || pending || busy;
+    $("cancelScan").disabled = !pending;
+    $("refreshHistory").disabled = !selectedUID || busy;
   }
 
-  function disconnectUI() {
+  function stopScan() {
+    pending = false;
+    if (scanTimeout !== null) clearTimeout(scanTimeout);
+    scanTimeout = null;
+    updateControls();
+  }
+
+  function disconnected() {
     commandChar = null;
     telemetryChar = null;
-    connectionUI(false);
-    log("SYS", "Disconnected");
+    stopScan();
+    updateControls();
+    log("BLE", "Scanner disconnected");
+    setMessage("Scanner disconnected. Reconnect to continue.");
   }
 
-  function showReading(t, h) {
-    if (!Number.isFinite(t) || !Number.isFinite(h) ||
-        t < -20 || t > 60 || h < 0 || h > 100) {
-      log("ERR", "Received values outside expected DHT11 range");
-      return;
-    }
-
-    latestTemp = t;
-    latestHum = h;
-    hasReading = true;
-
-    $("temp").textContent = t.toFixed(1);
-    $("fahrenheit").textContent =
-      (t * 9 / 5 + 32).toFixed(1) + " °F";
-    $("humidity").textContent = h.toFixed(1);
-
-    // Visual scales, not safety limits.
-    $("tempBar").style.width =
-      Math.max(0, Math.min(100, (t + 10) / 60 * 100)) + "%";
-    $("humBar").style.width = h + "%";
-
-    let label;
-    if (h < 30) label = "Low humidity";
-    else if (h <= 60) label = "Moderate humidity";
-    else label = "High humidity";
-
-    $("humidityLabel").textContent = label;
-    $("sensorState").textContent = "Sensor online";
-    $("sensorState").classList.remove("warn");
-    $("sensorNote").textContent =
-      "Last received temperature and humidity values are valid.";
-    $("lastUpdate").textContent = new Date().toLocaleTimeString();
-
-    log("DATA", `Temperature ${t.toFixed(1)} °C · Humidity ${h.toFixed(1)} %`);
+  function getPIN() {
+    const pin = $("pin").value;
+    if (!pin) throw new Error("Enter the administrator PIN first.");
+    return pin;
   }
 
-  function handleMessage(message) {
-    log("ESP32", message);
+  async function api(path, options = {}) {
+    const headers = {
+      "X-Admin-Pin": getPIN(),
+      ...(options.body ? {"Content-Type": "application/json"} : {})
+    };
 
-    // Compact firmware protocol: T:25.0,H:55.0
-    const match = message.match(
-      /^T:(-?\d+(?:\.\d+)?),H:(\d+(?:\.\d+)?)$/
-    );
-
-    if (match) {
-      showReading(Number(match[1]), Number(match[2]));
-      return;
-    }
-
-    if (message === "ERR:DHT11") {
-      $("sensorState").textContent = "Sensor error";
-      $("sensorState").classList.add("warn");
-      $("sensorNote").textContent =
-        "No valid DHT11 reading. Check the sensor wiring and power.";
-      log("ERR", "DHT11 reading failed");
-    } else if (message === "PONG") {
-      log("ACK", "ESP32 responded to ping");
-    } else if (message.startsWith("ACK:")) {
-      log("ACK", message.slice(4));
-    } else if (message.startsWith("ERR:")) {
-      log("ERR", message);
-    }
-  }
-
-  async function connect() {
-    if (!navigator.bluetooth) {
-      throw new Error("Web Bluetooth unavailable. Use supported Chrome or Edge over HTTPS.");
-    }
-
-    device = await navigator.bluetooth.requestDevice({
-      filters: [{ services: [SERVICE] }]
+    const response = await fetch(API + path, {
+      ...options,
+      headers,
+      cache: "no-store"
     });
 
-    device.addEventListener("gattserverdisconnected", disconnectUI);
+    let data;
+    try {
+      data = await response.json();
+    } catch {
+      throw new Error("Worker returned a non-JSON response: HTTP " + response.status);
+    }
 
-    $("device").textContent = device.name || "ESP32";
-    log("SYS", "Selected " + (device.name || "ESP32"));
+    if (!response.ok) {
+      throw new Error(data.error || "API error " + response.status);
+    }
 
-    const server = await device.gatt.connect();
-    const service = await server.getPrimaryService(SERVICE);
-
-    commandChar = await service.getCharacteristic(COMMAND);
-    telemetryChar = await service.getCharacteristic(TELEMETRY);
-
-    telemetryChar.addEventListener(
-      "characteristicvaluechanged", event => {
-        const value = event.target.value;
-        handleMessage(new TextDecoder().decode(value));
-      }
-    );
-
-    await telemetryChar.startNotifications();
-
-    connectionUI(true);
-    log("SYS", "Connected; notifications enabled");
-    await send("READ");
+    return data;
   }
 
-  async function send(command) {
-    if (!commandChar || !device?.gatt?.connected) {
-      throw new Error("Connect to the ESP32 first.");
-    }
+  async function sendCommand(command) {
+    if (!isConnected()) throw new Error("Connect the ESP32 first.");
 
     const bytes = new TextEncoder().encode(command);
 
@@ -443,16 +234,187 @@ footer { margin-top: 22px; color: var(--muted); font-size: 12px; }
     log("TX", command);
   }
 
-  async function run(action) {
+  function normalizeUID(raw) {
+    const uid = raw.trim().replace(/[^a-fA-F0-9]/g, "").toUpperCase();
+
+    return /^(?:[0-9A-F]{8}|[0-9A-F]{14}|[0-9A-F]{20})$/.test(uid)
+      ? uid
+      : null;
+  }
+
+  async function refreshBalance(uid) {
+    const data = await api("/api/balance?uid=" + encodeURIComponent(uid));
+    $("balance").textContent = "₹" + (data.balancePaise / 100).toFixed(2);
+    return data;
+  }
+
+  async function showHistory(uid) {
+    const data = await api("/api/history?uid=" + encodeURIComponent(uid));
+    $("history").replaceChildren();
+
+    if (!data.transactions.length) {
+      const p = document.createElement("p");
+      p.className = "small";
+      p.textContent = "No transactions found for this card.";
+      $("history").append(p);
+      return;
+    }
+
+    for (const tx of data.transactions) {
+      const item = document.createElement("div");
+      item.className = "history-item";
+
+      const row = document.createElement("div");
+      row.className = "row";
+
+      const title = document.createElement("strong");
+      title.className = tx.type === "credit" ? "credit" : "debit";
+      title.textContent = tx.type === "credit" ? "Money loaded" : "Money spent";
+
+      const amount = document.createElement("strong");
+      amount.className = title.className;
+      amount.textContent = (tx.type === "credit" ? "+" : "−") +
+        "₹" + (tx.amountPaise / 100).toFixed(2);
+
+      const date = document.createElement("div");
+      date.className = "small";
+      date.textContent = tx.createdAt || tx.created_at || "";
+
+      const after = document.createElement("div");
+      after.className = "small";
+      after.textContent = "Balance after: ₹" +
+        (tx.balanceAfterPaise / 100).toFixed(2);
+
+      row.append(title, amount);
+      item.append(row, date, after);
+      $("history").append(item);
+    }
+  }
+
+  async function processUID(raw) {
+    if (!pending) {
+      log("BLE", "UID received without an active scan");
+      return;
+    }
+
+    const uid = normalizeUID(raw);
+
+    if (!uid) {
+      log("ERR", "Invalid UID received: " + raw);
+      return;
+    }
+
+    const action = operation;
+    stopScan();
+
+    selectedUID = uid;
+    $("uid").textContent = uid;
+    updateControls();
+    log("CARD", "Scanned " + uid);
+
+    try {
+      if (action === "credit" || action === "debit") {
+        const rupees = Number($("amount").value);
+
+        if (!Number.isFinite(rupees) || rupees <= 0 ||
+            rupees > 100000 || !Number.isInteger(rupees * 100)) {
+          throw new Error("Enter an amount from ₹0.01 to ₹100000.");
+        }
+
+        const amountPaise = Math.round(rupees * 100);
+
+        setMessage("Processing " + action + " for card " + uid + "…");
+
+        const result = await api("/api/" + action, {
+          method: "POST",
+          body: JSON.stringify({
+            uid,
+            amountPaise,
+            requestId: crypto.randomUUID()
+          })
+        });
+
+        $("balance").textContent =
+          "₹" + (result.balanceAfterPaise / 100).toFixed(2);
+
+        setMessage(
+          (action === "credit" ? "Money loaded successfully." : "Debit successful.") +
+          " Amount: ₹" + (amountPaise / 100).toFixed(2) +
+          ". Balance: ₹" + (result.balanceAfterPaise / 100).toFixed(2)
+        );
+
+        log("API", action + " successful for " + uid);
+        await showHistory(uid);
+      } else {
+        const result = await refreshBalance(uid);
+        await showHistory(uid);
+
+        setMessage(
+          "History loaded for " + uid +
+          (result.exists
+            ? ". Balance: ₹" + (result.balancePaise / 100).toFixed(2)
+            : ". No account exists for this card yet.")
+        );
+      }
+    } catch (error) {
+      setMessage("Operation failed: " + error.message);
+      log("ERR", error.message);
+      // Check balance/history before retrying an operation
+      // if the network failed during a transaction.
+    } finally {
+      updateControls();
+    }
+  }
+
+  async function beginScan() {
+    if (!isConnected()) throw new Error("Connect the scanner first.");
+    if (pending || busy) return;
+
+    if (operation !== "history") {
+      const rupees = Number($("amount").value);
+
+      if (!Number.isFinite(rupees) || rupees <= 0 ||
+          rupees > 100000 || !Number.isInteger(rupees * 100)) {
+        throw new Error("Enter a valid amount first.");
+      }
+    }
+
+    // Verify API access before opening the scan window.
+    await api("/api/health");
+
+    pending = true;
+    updateControls();
+    setMessage("Scanner active. Tap your RFID card now…");
+
+    try {
+      await sendCommand("SCAN");
+
+      scanTimeout = setTimeout(() => {
+        if (pending) {
+          stopScan();
+          setMessage("Scan timed out. Activate the scanner to try again.");
+          log("SYS", "Scan timed out");
+        }
+      }, 20000);
+    } catch (error) {
+      stopScan();
+      throw error;
+    }
+  }
+
+  async function run(fn) {
     if (busy) return;
     busy = true;
+    updateControls();
+
     try {
-      await action();
+      await fn();
     } catch (error) {
-      log("ERR", error.message || String(error));
-      $("status").textContent = "Error · " + error.message;
+      log("ERR", error.message);
+      setMessage(error.message);
     } finally {
       busy = false;
+      updateControls();
     }
   }
 
@@ -461,23 +423,102 @@ footer { margin-top: 22px; color: var(--muted); font-size: 12px; }
       device.gatt.disconnect();
       return;
     }
-    await connect();
+
+    if (!navigator.bluetooth) {
+      throw new Error("Use a compatible Chrome or Edge browser over HTTPS.");
+    }
+
+    device = await navigator.bluetooth.requestDevice({
+      filters: [{ services: [SERVICE] }]
+    });
+
+    device.addEventListener("gattserverdisconnected", disconnected);
+    $("deviceName").textContent = device.name || "ESP32";
+
+    const server = await device.gatt.connect();
+    const service = await server.getPrimaryService(SERVICE);
+
+    commandChar = await service.getCharacteristic(COMMAND);
+    telemetryChar = await service.getCharacteristic(TELEMETRY);
+
+    telemetryChar.addEventListener("characteristicvaluechanged", event => {
+      const message = new TextDecoder().decode(event.target.value).trim();
+
+      log("RX", message);
+
+      if (/^(?:[0-9A-Fa-f]{8}|[0-9A-Fa-f]{14}|[0-9A-Fa-f]{20})$/.test(message)) {
+        run(() => processUID(message));
+      } else if (message.startsWith("ERR:")) {
+        stopScan();
+        setMessage("Reader error: " + message);
+      } else if (message === "CANCELLED") {
+        stopScan();
+        setMessage("Scan cancelled.");
+      }
+    });
+
+    await telemetryChar.startNotifications();
+
+    updateControls();
+    log("BLE", "Connected; notifications enabled");
+    setMessage("Scanner connected. Choose an operation and activate scanning.");
   });
 
-  $("refresh").onclick = () => run(() => send("READ"));
-  $("ping").onclick = () => run(() => send("PING"));
-  $("ledOn").onclick = () => run(() => send("LED:ON"));
-  $("ledOff").onclick = () => run(() => send("LED:OFF"));
-  $("clear").onclick = () => $("log").replaceChildren();
+  $("chooseCredit").onclick = () => {
+    operation = "credit";
+    $("amountArea").classList.remove("hidden");
 
-  if (!window.isSecureContext) {
-    $("status").textContent = "HTTPS required";
-    log("SYS", "Open this dashboard over HTTPS.");
-  } else if (!navigator.bluetooth) {
-    $("status").textContent = "Unsupported browser";
-    log("SYS", "Use a compatible browser with Web Bluetooth support.");
-  }
+    ["chooseCredit","chooseDebit","chooseHistory"].forEach(id =>
+      $(id).classList.toggle("selected", id === "chooseCredit"));
+
+    setMessage("Load money: enter the amount, then activate the scanner.");
+  };
+
+  $("chooseDebit").onclick = () => {
+    operation = "debit";
+    $("amountArea").classList.remove("hidden");
+
+    ["chooseCredit","chooseDebit","chooseHistory"].forEach(id =>
+      $(id).classList.toggle("selected", id === "chooseDebit"));
+
+    setMessage("Spend money: enter the amount, then activate the scanner.");
+  };
+
+  $("chooseHistory").onclick = () => {
+    operation = "history";
+    $("amountArea").classList.add("hidden");
+
+    ["chooseCredit","chooseDebit","chooseHistory"].forEach(id =>
+      $(id).classList.toggle("selected", id === "chooseHistory"));
+
+    setMessage("View history: activate the scanner and tap the card.");
+  };
+
+  document.querySelectorAll(".quick").forEach(button => {
+    button.onclick = () => {
+      $("amount").value = button.dataset.amount;
+    };
+  });
+
+  $("startScan").onclick = () => run(beginScan);
+
+  $("cancelScan").onclick = () => run(async () => {
+    stopScan();
+    await sendCommand("CANCEL");
+    setMessage("Scan cancelled.");
+  });
+
+  $("refreshHistory").onclick = () => run(async () => {
+    if (!selectedUID) throw new Error("Scan a card first.");
+    await refreshBalance(selectedUID);
+    await showHistory(selectedUID);
+    setMessage("Card balance and history refreshed.");
+  });
+
+  updateControls();
+  log("SYS", "RFID wallet ready");
 })();
 </script>
 </body>
 </html>
+
