@@ -92,19 +92,18 @@
       min-height: 78px; display: flex; align-items: center; justify-content: space-between;
       gap: 2rem;
     }
-    .brand { display: inline-flex; align-items: center; gap: .72rem; text-decoration: none; }
-    .brand-mark {
-      width: 34px; height: 34px; display: grid; place-items: center;
-      border: 1px solid var(--ink); border-radius: 50%;
-      font-weight: 800; font-size: 1.05rem; line-height: 1; position: relative;
-      overflow: hidden; transition: color .3s, background .3s, transform .4s var(--ease);
+    .brand { display: inline-flex; align-items: baseline; gap: .62rem; white-space: nowrap; }
+    .brand-name, .brand-byline { text-decoration: none; }
+    .brand-name {
+      color: var(--ink); font-weight: 800; letter-spacing: .19em; font-size: .8rem;
+      transition: color .2s;
     }
-    .brand-mark::after {
-      content: ""; position: absolute; width: 18px; height: 1px;
-      background: currentColor; transform: rotate(-45deg) translate(7px, 7px);
+    .brand-byline {
+      color: var(--muted); font-family: Georgia, "Times New Roman", serif;
+      font-size: .96rem; font-style: italic; font-weight: 400; line-height: 1;
+      letter-spacing: -.025em; transition: color .2s;
     }
-    .brand:hover .brand-mark { color: var(--paper); background: var(--ink); transform: rotate(-8deg); }
-    .brand-name { font-weight: 800; letter-spacing: .19em; font-size: .8rem; }
+    .brand-name:hover, .brand-byline:hover { color: var(--clay); }
     .nav-links { display: flex; align-items: center; gap: clamp(1.2rem, 3vw, 2.8rem); }
     .nav-links a {
       text-decoration: none; color: var(--ink-soft); font-size: .78rem; font-weight: 600;
@@ -468,10 +467,10 @@
 
   <header class="topbar" id="top">
     <nav class="nav wrap" aria-label="Main navigation">
-      <a class="brand" href="#top" aria-label="SEREK home">
-        <span class="brand-mark" aria-hidden="true">S</span>
-        <span class="brand-name">SEREK</span>
-      </a>
+      <div class="brand">
+        <a class="brand-name" href="#top" aria-label="SEREK home">SEREK</a>
+        <a class="brand-byline" href="/" aria-label="Circuit Breakers home">by teamcircuitbreakers</a>
+      </div>
       <button class="menu-toggle" type="button" aria-label="Open navigation" aria-expanded="false" aria-controls="nav-links">
         <span></span><span></span>
       </button>
@@ -651,14 +650,14 @@
 
   <footer>
     <div class="footer-inner wrap">
-      <a class="brand" href="#top" aria-label="Back to SEREK top">
-        <span class="brand-mark" aria-hidden="true">S</span><span class="brand-name">SEREK</span>
-      </a>
+      <div class="brand">
+        <a class="brand-name" href="#top" aria-label="Back to SEREK top">SEREK</a>
+        <a class="brand-byline" href="/" aria-label="Circuit Breakers home">by teamcircuitbreakers</a>
+      </div>
       <span>Considered connected living.</span>
       <a class="back-top mono" href="#top">Back to top
         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 19V5m-6 6 6-6 6 6"/></svg>
       </a>
-      <a href="/" aria-label="Circuit Breakers home">By teamcircuitbreakers ↗</a>
     </div>
   </footer>
 
