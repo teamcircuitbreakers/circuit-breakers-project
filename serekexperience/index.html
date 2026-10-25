@@ -75,6 +75,11 @@
       text-transform: uppercase; letter-spacing: .14em;
       font-size: .68rem; font-weight: 500;
     }
+    p em {
+      font-family: Georgia, "Times New Roman", serif;
+      font-size: 1.06em; font-style: italic; font-weight: 400;
+      letter-spacing: -.025em;
+    }
 
     /* Navigation */
     .topbar {
@@ -274,6 +279,7 @@
 
     /* Editorial sections */
     .section { padding: clamp(88px, 12vw, 160px) 0; position: relative; }
+    #approach { padding-bottom: clamp(48px, 6vw, 84px); }
     .section-rule { border-top: 1px solid var(--line); }
     .section-head { display: grid; grid-template-columns: .6fr 1.4fr; gap: 2rem; margin-bottom: 4rem; align-items: start; }
     .section-index { color: var(--clay); padding-top: .5rem; }
@@ -342,6 +348,9 @@
     }
     .device-word { position: absolute; top: 22px; left: 25px; font-size: .52rem; letter-spacing: .24em; color: rgba(244,241,232,.48); }
     .switches { display: flex; gap: clamp(14px, 2vw, 28px); align-items: center; }
+    .quad-switches { gap: clamp(8px, 1vw, 14px); }
+    .quad-switches .switch { width: clamp(38px, 3.6vw, 48px); }
+    .quad-switches .switch::after { width: clamp(18px, 1.7vw, 22px); }
     .switch {
       width: clamp(40px, 6vw, 60px); aspect-ratio: .68; border: 1px solid rgba(244,241,232,.25);
       border-radius: 999px; background: linear-gradient(145deg, #262b2a, #111414);
@@ -366,7 +375,7 @@
     .product-ghost.g2 { width: 290px; transform: rotateX(70deg) rotateZ(35deg); opacity: .5; }
 
     /* Download / closing */
-    .closing { padding: clamp(100px, 15vw, 190px) 0; }
+    .closing { padding: clamp(72px, 8vw, 112px) 0; }
     .closing-inner {
       position: relative; overflow: hidden; padding: clamp(2rem, 7vw, 6rem);
       background: var(--paper-deep); border: 1px solid var(--line);
@@ -501,7 +510,7 @@
               <path transform="translate(1309,517)" d="M0 0 C3.12 1.37 5.12 2.92 7.43 5.41 C8.06 6.09 8.69 6.77 9.34 7.47 C9.99 8.18 10.64 8.89 11.31 9.62 C11.95 10.31 12.59 11 13.25 11.71 C16.4 15.11 19.5 18.55 22.54 22.05 C25.94 25.96 29.45 29.74 33 33.5 C37.16 37.93 41.27 42.38 45.23 46.98 C47.61 49.69 50.06 52.35 52.5 55 C56.1 58.91 59.64 62.86 63.12 66.88 C65.55 69.62 68.02 72.31 70.5 75 C74.14 78.96 77.73 82.95 81.26 87.01 C83.32 89.36 85.41 91.68 87.5 94 C88.25 94.84 89.01 95.67 89.78 96.54 C91.22 98.13 92.65 99.72 94.09 101.31 C94.72 102.01 95.35 102.71 96 103.44 C96.56 104.05 97.11 104.67 97.69 105.31 C99 107 99 107 100 110 C89.11 110.28 78.22 110.49 67.32 110.62 C62.26 110.68 57.2 110.77 52.15 110.91 C47.26 111.04 42.37 111.11 37.48 111.14 C35.62 111.16 33.76 111.2 31.9 111.27 C16.61 111.78 16.61 111.78 11.46 107.39 C8.6 104.5 6.31 101.34 4 98 C2.83 96.63 1.65 95.27 0.44 93.94 C-0.1 93.32 -0.64 92.7 -1.19 92.06 C-3.43 89.51 -5.71 87.01 -8 84.5 C-11.43 80.74 -14.82 76.94 -18.16 73.09 C-20.41 70.54 -22.7 68.02 -25 65.5 C-28.44 61.72 -31.84 57.92 -35.2 54.06 C-38.75 50 -42.38 46 -46 42 C-44.76 38.27 -43.27 37.4 -40.19 35 C-35.97 31.64 -31.94 28.18 -28 24.5 C-23.4 20.22 -18.65 16.22 -13.76 12.28 C-9.02 8.36 -4.51 4.18 0 0 Z "/>
             </g>
           </svg>
-          <p class="hero-description">Thoughtful hardware. One calm place to make it all work together. Meet a more intuitive, more personal kind of connected living.</p>
+          <p class="hero-description">Thoughtful hardware. <em>One calm place</em> to make it all work together. Meet a more intuitive, more personal kind of connected living.</p>
           <div class="actions">
             <a class="button button-dark" href="#experience">Discover the experience <span aria-hidden="true">↘</span></a>
             <a class="button button-quiet" href="#devices">Meet the devices <span aria-hidden="true">↗</span></a>
@@ -544,7 +553,7 @@
           <span class="section-index mono">01 / The experience</span>
           <div>
             <h2 class="section-title">Technology should feel like it <em>belongs.</em></h2>
-            <p class="section-lead">SEREK brings your devices into one thoughtful ecosystem: easy to begin with, natural to use, and ready to grow alongside your home.</p>
+            <p class="section-lead">SEREK brings your devices into one thoughtful ecosystem: <em>easy to begin with</em>, natural to use, and ready to grow alongside your home.</p>
           </div>
         </div>
         <div class="principles">
@@ -554,7 +563,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M5 9a10 10 0 0 1 14 0M8 12a6 6 0 0 1 8 0m-5 4a2 2 0 0 1 2 0"/><circle cx="12" cy="19" r="1" fill="currentColor" stroke="none"/></svg>
             </div>
             <h3>A gentle beginning</h3>
-            <p>Bring a SEREK device into your home with a guided setup designed to feel clear from the very first step.</p>
+            <p>Bring a SEREK device into your home with a guided setup designed to feel clear from <em>the very first step</em>.</p>
           </article>
           <article class="principle reveal delay-1">
             <span class="num mono">02 — Control</span>
@@ -562,7 +571,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><rect x="4" y="3" width="16" height="18" rx="3"/><path d="M9 8h6m-6 4h6"/><circle cx="12" cy="17" r="1" fill="currentColor"/></svg>
             </div>
             <h3>Close at hand</h3>
-            <p>Keep everyday controls together in the SEREK Home app, with a clean view of the devices that matter to you.</p>
+            <p>Keep everyday controls together in the SEREK Home app, with a <em>clean view</em> of the devices that matter to you.</p>
           </article>
           <article class="principle reveal delay-2">
             <span class="num mono">03 — Grow</span>
@@ -570,7 +579,7 @@
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5"><path d="M12 20V10m0 0c0-4 2-6 7-7 0 5-2 8-7 8Zm0 3c0-3-2-5-7-6 0 4 2 7 7 7Z"/></svg>
             </div>
             <h3>Room for more</h3>
-            <p>Start with what you need. Add more control, more rooms, and more possibility when the moment feels right.</p>
+            <p>Start with what you need. Add more control, more rooms, and <em>more possibility</em> when the moment feels right.</p>
           </article>
         </div>
       </div>
@@ -582,7 +591,7 @@
           <span class="section-index mono">02 / Made tangible</span>
           <div>
             <h2 class="section-title">Quietly capable.<br><em>Beautifully simple.</em></h2>
-            <p class="section-lead">Considered forms meet dependable control. SEREK devices are designed to feel at home in the spaces you already love.</p>
+            <p class="section-lead">Considered forms meet dependable control. SEREK devices are designed to <em>feel at home</em> in the spaces you already love.</p>
           </div>
         </div>
         <div class="product-grid">
@@ -596,7 +605,7 @@
                 <span class="device-led"></span>
               </div>
             </div>
-            <div class="product-title"><h3>DuoNode</h3><p>Two controls. One considered form.</p></div>
+            <div class="product-title"><h3>DuoNode</h3><p><em>Two controls.</em> One considered form.</p></div>
           </article>
           <article class="product reveal delay-1" data-tilt>
             <div class="product-meta"><span class="mono">SEREK / 04</span><span class="mono">QUADNODE</span></div>
@@ -604,11 +613,11 @@
               <div class="product-ghost g2"></div><div class="product-ghost"></div>
               <div class="node-device">
                 <span class="device-word mono">SEREK</span>
-                <div class="switches"><span class="switch"></span><span class="switch"></span><span class="switch"></span><span class="switch"></span></div>
+                <div class="switches quad-switches"><span class="switch"></span><span class="switch"></span><span class="switch"></span><span class="switch"></span></div>
                 <span class="device-led"></span>
               </div>
             </div>
-            <div class="product-title"><h3>QuadNode</h3><p>More room for the things you control.</p></div>
+            <div class="product-title"><h3>QuadNode</h3><p><em>More room</em> for the things you control.</p></div>
           </article>
         </div>
       </div>
@@ -620,7 +629,7 @@
           <span class="section-index mono">03 / Our approach</span>
           <div>
             <h2 class="section-title">Less to learn.<br><em>More to live.</em></h2>
-            <p class="section-lead">The best connected experience is the one that quietly fits your rhythm. SEREK keeps the setup clear, the details considered, and the technology in its place.</p>
+            <p class="section-lead">The best connected experience is the one that <em>quietly fits your rhythm</em>. SEREK keeps the setup clear, the details considered, and the technology in its place.</p>
           </div>
         </div>
       </div>
@@ -632,12 +641,12 @@
           <div>
             <span class="mono section-index">A thoughtful start</span>
             <h2>Make room for a little more ease.</h2>
-            <p class="closing-copy">Discover the SEREK ecosystem and find the right starting point for your home. The SEREK Home Android download link will appear here when the public release is ready.</p>
+            <p class="closing-copy">Discover the SEREK ecosystem and find the <em>right starting point</em> for your home. The SEREK Home Android download link will appear here when the public release is ready.</p>
           </div>
           <div class="download-card">
             <span class="mono">SEREK HOME / ANDROID</span>
             <h3>Your connected home, in hand.</h3>
-            <p>The Android experience is being prepared for public distribution. Check back here for the official install link.</p>
+            <p>The Android experience is being prepared for <em>public distribution</em>. Check back here for the official install link.</p>
             <a class="button button-dark download-link" href="#android-app" aria-label="SEREK Home for Android, release link coming soon">
               <span>Android app</span><span aria-hidden="true">↗</span>
             </a>
