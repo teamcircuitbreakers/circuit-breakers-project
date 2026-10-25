@@ -225,13 +225,20 @@
     .orbit-core::before {
       content: ""; position: absolute; inset: 13px; border: 1px solid rgba(244,241,232,.18); border-radius: 50%;
     }
-    .core-symbol { width: 40%; height: 40%; }
-    .core-symbol path { fill: none; stroke: var(--paper); stroke-width: 7; stroke-linecap: square; stroke-linejoin: bevel; }
-    .core-caption {
-      position: absolute; bottom: 22%; left: 0; right: 0; text-align: center;
-      font-family: "DM Mono", monospace; color: rgba(244,241,232,.55);
-      font-size: .55rem; letter-spacing: .3em; text-transform: uppercase;
+    .core-symbol { width: 49%; height: 49%; overflow: visible; }
+    .core-orbit {
+      fill: none; stroke: rgba(244,241,232,.37); stroke-width: 1.2;
+      transform-box: fill-box; transform-origin: center;
     }
+    .core-orbit.outer { stroke-dasharray: 2 5; animation: coreOrbit 32s linear infinite; }
+    .core-orbit.inner { stroke: rgba(207,121,88,.62); animation: coreOrbit 24s linear infinite reverse; }
+    .core-link { fill: none; stroke: rgba(244,241,232,.32); stroke-width: 1; stroke-dasharray: 2 4; }
+    .core-glow { fill: rgba(207,121,88,.22); filter: blur(5px); }
+    .core-center { fill: var(--clay-light); stroke: rgba(244,241,232,.7); stroke-width: 1.5; animation: corePulse 3.2s ease-in-out infinite; }
+    .core-node { fill: var(--paper); stroke: rgba(35,39,40,.65); stroke-width: 1.5; }
+    .core-node.accent { fill: var(--clay-light); stroke: var(--paper); }
+    @keyframes coreOrbit { to { transform: rotate(360deg); } }
+    @keyframes corePulse { 50% { r: 9; opacity: .78; } }
     .orbit-label {
       position: absolute; z-index: 2; display: flex; align-items: center; gap: .55rem;
       padding: .65rem .82rem; border: 1px solid rgba(35,39,40,.12);
@@ -484,15 +491,16 @@
         <div class="hero-copy">
           <p class="eyebrow mono"><span class="dot" aria-hidden="true"></span> A more considered way to connect</p>
           <h1 id="hero-title">Experience the world of</h1>
-          <svg class="wordmark" viewBox="0 0 1030 180" role="img" aria-labelledby="wordmark-title">
+          <svg class="wordmark" viewBox="0 0 930 180" role="img" aria-labelledby="wordmark-title">
             <title id="wordmark-title">SEREK</title>
-            <g>
-              <path d="M145 24c0-15-12-24-31-24H52C20 0 0 17 0 45c0 24 15 35 49 43l42 10c15 4 21 9 21 19 0 11-8 17-23 17H55c-14 0-21-7-22-20H1c0 31 19 48 54 48h58c35 0 55-18 55-47 0-26-16-36-48-45l-47-12c-13-3-18-8-18-16 0-9 7-14 21-14h38c11 0 17 5 18 14h23z"/>
-              <path d="M189 0h181l-27 31H238v37h99v29h-99v39h112l27 31H189z"/>
-              <path fill-rule="evenodd" d="M399 0h111c42 0 67 23 67 58 0 27-15 46-40 54l51 55h-59l-46-51h-35v51h-49zm49 31v54h56c16 0 25-9 25-27s-9-27-25-27z"/>
-              <path d="M597 0h181l-27 31H646v37h99v29h-99v39h112l27 31H597z"/>
-              <path d="M807 0h49v66l83-66h75l-111 84 120 83h-77l-90-66v66h-49z"/>
-              <path d="M913 0h101v77l-42 32V68l-61 47z"/>
+            <path d="M148 54C144 20 122 0 81 0 33 0 0 28 0 69c0 35 18 51 51 62l39 12c14 4 21 10 21 20 0 11-9 17-27 17-24 0-37-12-41-32H1c3 21 24 32 74 32 51 0 80-29 80-72 0-36-19-54-54-65L65 34C51 30 44 24 44 16c0-8 8-13 22-13 19 0 31 10 34 28h46z"/>
+            <path d="M170 0h181l-27 31H219v37h99v29h-99v39h112l27 31H170z"/>
+            <path fill-rule="evenodd" d="M362 0h111c42 0 67 23 67 58 0 27-15 46-40 54l51 55h-59l-46-51h-35v51h-49zm49 31v54h56c16 0 25-9 25-27s-9-27-25-27z"/>
+            <path d="M547 0h181l-27 31H596v37h99v29h-99v39h112l27 31H547z"/>
+            <g transform="translate(739 0)">
+              <path d="M0 0h45v180H0z"/>
+              <path d="M38 83 136 0h54v54l-27 24V52l-91 77z"/>
+              <path d="M38 103 106 180h84L85 84z"/>
             </g>
           </svg>
           <p class="hero-description">Thoughtful hardware. One calm place to make it all work together. Meet a more intuitive, more personal kind of connected living.</p>
@@ -509,11 +517,17 @@
           </div>
           <div class="orbit-ring" aria-hidden="true"></div>
           <div class="orbit-core" aria-hidden="true">
-            <svg class="core-symbol" viewBox="0 0 100 100">
-              <path d="M74 21H38c-15 0-24 8-24 21 0 11 7 17 22 21l25 6c8 2 12 6 12 12 0 7-5 11-14 11H28"/>
-              <path d="M57 7h30v30M87 7 59 35"/>
+            <svg class="core-symbol" viewBox="0 0 120 100">
+              <ellipse class="core-orbit outer" cx="60" cy="50" rx="43" ry="24"/>
+              <ellipse class="core-orbit inner" cx="60" cy="50" rx="32" ry="15" transform="rotate(-38 60 50)"/>
+              <path class="core-link" d="M60 50 60 10M60 50 100 50M60 50 60 90M60 50 20 50"/>
+              <circle class="core-glow" cx="60" cy="50" r="15"/>
+              <circle class="core-node accent" cx="60" cy="10" r="3.5"/>
+              <circle class="core-node" cx="100" cy="50" r="3.5"/>
+              <circle class="core-node" cx="60" cy="90" r="3.5"/>
+              <circle class="core-node" cx="20" cy="50" r="3.5"/>
+              <circle class="core-center" cx="60" cy="50" r="6"/>
             </svg>
-            <span class="core-caption">Connected, considered</span>
           </div>
           <div class="orbit-label one"><span></span> One simple setup</div>
           <div class="orbit-label two"><span></span> Control in sync</div>
