@@ -1,0 +1,20 @@
+name = "atmos-api"
+main = "src/index.js"
+compatibility_date = "2026-11-13"
+
+# Fill in a new, dedicated D1 database ID after reviewing the Cloudflare inventory.
+# Do not bind the existing rfid-wallet-db or an unrelated Worker database here.
+[[d1_databases]]
+binding = "DB"
+database_name = "atmos-db"
+database_id = "e523f59e-2e3b-4065-b855-fe5b00758367"
+migrations_dir = "migrations"
+
+[vars]
+# Comma-separated exact dashboard origins. Set this before deployment.
+CORS_ORIGINS = "https://teamcircuitbreakers.in,https://www.teamcircuitbreakers.in,https://teamcircuitbreakers.github.io"
+
+[observability]
+enabled = true
+head_sampling_rate = 0.1
+
