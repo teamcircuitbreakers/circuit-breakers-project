@@ -26,8 +26,9 @@
     .data-empty{position:absolute;inset:0 0 0 35px;display:grid;place-items:center;padding:20px;text-align:center;border:1px dashed #e3e9e2;border-radius:8px;background:rgba(250,252,249,.9);color:#7f8c81;font-size:11px;line-height:1.6}
     .data-empty[hidden]{display:none}
     .waiting-card{grid-column:1/-1;background:#f9fbf8;border:1px dashed #dfe7df}
+    .insight-row[hidden],.insight-divider[hidden]{display:none}
     @media(max-width:620px){.chart-tooltip{font-size:8px;gap:7px;padding:6px 7px}}
-      .data-empty{position:absolute;inset:0 0 0 35px;display:grid;place-items:center;padding:20px;text-align:center;border:1px dashed #e3e9e2;border-radius:8px;background:rgba(250,252,249,.9);color:#7f8c81;font-size:11px;line-height:1.6}`n    .waiting-card{grid-column:1/-1;background:#f9fbf8;border:1px dashed #dfe7df}`n  </style>
+  </style>
 </head>
 <body>
   <div class="app-shell">
@@ -130,7 +131,7 @@
 
         <div class="bottom-grid">
           <section class="panel distribution-panel">
-            <div class="panel-heading"><div><h3>Humidity distribution</h3><p>Share of today's recorded time</p></div><span class="small-period">TODAY</span></div>
+            <div class="panel-heading"><div><h3>Humidity distribution</h3><p>Share of recent sensor readings</p></div><span class="small-period">RECENT</span></div>
             <div class="distribution-content"><div class="donut" id="humidityDonut"><div><b>58%</b><small>AVERAGE RH</small></div></div>
               <div class="distribution-legend"><div><i class="legend-square low"></i><span>Dry <small>Below 40%</small></span><b id="dryPct">—</b></div><div><i class="legend-square ideal"></i><span>Comfortable <small>40–60%</small></span><b id="idealPct">—</b></div><div><i class="legend-square high"></i><span>Humid <small>Above 60%</small></span><b id="highPct">—</b></div></div></div>
           </section>
@@ -237,7 +238,7 @@
     ctx.clearRect(0,0,w,h);
     const list=weekly
       ?state.hourly.map(x=>({temperature:Number(x.temperature_mean),humidity:Number(x.humidity_mean),time:new Date(2000,0,1,Number(x.hour))}))
-      :state.samples.slice(-144).filter((_,i)=>i%3===0);
+      :state.samples.filter(x=>x.time.getTime()>=Date.now()-24*60*60*1000).slice(-144).filter((_,i)=>i%3===0);
     if(list.length<2)return;
     const defs=[];
     if(key==="temperature"||compare)defs.push({k:"temperature",color:"#b48e63",min:21,max:31,band:[22,27],bandColor:"rgba(181,155,112,.10)",ticks:[31,28,26,23,21],unit:"°C"});
@@ -479,4 +480,5 @@
   </script>
 </body>
 </html>
+
 
