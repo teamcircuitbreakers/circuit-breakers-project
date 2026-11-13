@@ -23,8 +23,11 @@
     .chart-tooltip span{display:flex;align-items:center;gap:4px}
     .chart-tooltip i{width:6px;height:6px;border-radius:50%;display:inline-block}
     .chart-legend{margin-top:18px}
+    .data-empty{position:absolute;inset:0 0 0 35px;display:grid;place-items:center;padding:20px;text-align:center;border:1px dashed #e3e9e2;border-radius:8px;background:rgba(250,252,249,.9);color:#7f8c81;font-size:11px;line-height:1.6}
+    .data-empty[hidden]{display:none}
+    .waiting-card{grid-column:1/-1;background:#f9fbf8;border:1px dashed #dfe7df}
     @media(max-width:620px){.chart-tooltip{font-size:8px;gap:7px;padding:6px 7px}}
-  </style>
+      .data-empty{position:absolute;inset:0 0 0 35px;display:grid;place-items:center;padding:20px;text-align:center;border:1px dashed #e3e9e2;border-radius:8px;background:rgba(250,252,249,.9);color:#7f8c81;font-size:11px;line-height:1.6}`n    .waiting-card{grid-column:1/-1;background:#f9fbf8;border:1px dashed #dfe7df}`n  </style>
 </head>
 <body>
   <div class="app-shell">
@@ -47,7 +50,7 @@
         <span class="chevron">›</span>
       </button>
       <div class="sidebar-bottom">
-        <div class="simulation-note"><span class="pulse"></span><div><b id="sourceTitle">Showroom simulation</b><small id="sourceDetail">Generated sample data</small></div></div>
+        <div class="simulation-note"><span class="pulse"></span><div><b id="sourceTitle">Waiting for Atmos node</b><small id="sourceDetail">No sensor readings have arrived yet</small></div></div>
         <div class="sidebar-foot"><span>ATMOS PLATFORM</span><span>v0.1.0 · PREVIEW</span></div>
       </div>
     </aside>
@@ -57,8 +60,8 @@
         <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
         <div class="breadcrumb">Workspace <span>/</span> <b id="breadcrumbPage">Overview</b></div>
         <div class="top-actions">
-          <div class="sim-pill"><span class="pulse"></span><span id="sourceLabel">LIVE SIMULATION</span></div>
-          <button class="icon-button" id="pauseBtn" title="Pause simulation" aria-label="Pause simulation">Ⅱ</button>
+          <div class="sim-pill"><span class="pulse"></span><span id="sourceLabel">WAITING FOR SENSOR</span></div>
+          <button class="icon-button" id="pauseBtn" title="Simulation disabled" aria-label="Simulation disabled">Ⅱ</button>
           <button class="avatar" title="Demo workspace">A</button>
         </div>
       </header>
@@ -72,22 +75,22 @@
         </div>
 
         <div class="status-strip">
-          <div class="status-left"><span class="status-check">✓</span><div><b>All systems operational</b><small>Last simulated sync <span id="lastSync">2 minutes ago</span></small></div></div>
-          <div class="status-right"><span class="status-item"><i class="green-dot"></i> Sensor online</span><span class="status-item"><i class="green-dot"></i> Data pipeline healthy</span><span class="status-item mono">NODE · ATM-001</span></div>
+          <div class="status-left"><span class="status-check">✓</span><div><b id="statusText">Waiting for first sensor reading</b><small>Last device upload <span id="lastSync">No upload received</span></small></div></div>
+          <div class="status-right"><span class="status-item"><i class="green-dot"></i> Sensor status follows latest upload</span><span class="status-item"><i class="green-dot"></i> Cloud sync enabled</span><span class="status-item mono">NODE · ATM-001</span></div>
         </div>
 
-        <div class="section-head"><div><h2>At a glance</h2><p>Current readings from your room</p></div><span class="updated-label" id="liveStatus">DEMO DATA <span class="live-dot"></span></span></div>
+        <div class="section-head"><div><h2>At a glance</h2><p>Current readings from your room</p></div><span class="updated-label" id="liveStatus">AWAITING SENSOR DATA <span class="live-dot"></span></span></div>
         <div class="metric-grid">
           <article class="metric-card">
             <div class="metric-top"><span class="metric-label">TEMPERATURE</span><span class="metric-symbol warm">°</span></div>
             <div class="metric-value"><span id="temperature">26.4</span><small>°C</small></div>
-            <div class="metric-foot"><span class="trend up" id="tempTrend">↗ 0.3°</span><span>vs. previous hour</span></div>
+            <div class="metric-foot"><span class="trend up" id="tempTrend">Need 2 readings</span><span>for a change</span></div>
             <div class="sparkline" id="tempSpark"></div>
           </article>
           <article class="metric-card">
             <div class="metric-top"><span class="metric-label">RELATIVE HUMIDITY</span><span class="metric-symbol cool">◌</span></div>
             <div class="metric-value"><span id="humidity">58</span><small>%</small></div>
-            <div class="metric-foot"><span class="trend down" id="humidityTrend">↘ 2%</span><span>vs. previous hour</span></div>
+            <div class="metric-foot"><span class="trend down" id="humidityTrend">Need 2 readings</span><span>for a change</span></div>
             <div class="sparkline" id="humiditySpark"></div>
           </article>
           <article class="metric-card">
@@ -98,10 +101,10 @@
           </article>
           <article class="metric-card">
             <div class="metric-top"><span class="metric-label">DATA CAPTURE</span><span class="metric-symbol capture">⌗</span></div>
-            <div class="metric-value"><span id="sampleCount">1,438</span><small>pts</small></div>
-            <div class="metric-foot"><span class="trend positive">↑ 60 / hr</span><span>sampled locally</span></div>
+            <div class="metric-value"><span id="sampleCount">0</span><small>pts</small></div>
+            <div class="metric-foot"><span class="trend positive">Device uploads</span><span>about hourly</span></div>
             <div class="capture-bar"><span></span></div>
-            <div class="metric-footline"><span>Today's collection</span><b id="capturePercent">83% complete</b></div>
+            <div class="metric-footline"><span>Sensor readings received</span><b id="capturePercent">Collecting</b></div>
           </article>
         </div>
 
@@ -113,11 +116,11 @@
             <div class="chart-legend"><span><i class="legend-line temp-line"></i> Temperature <b id="legendTemp">26.4°C</b></span><span><i class="legend-line humidity-line"></i> Humidity <b id="legendHumidity">58%</b></span></div>
             <div class="chart-wrap"><canvas id="trendChart" aria-label="Environmental trend chart"></canvas><div class="chart-ylabels" id="yLabels"></div><div class="chart-tooltip" id="chartTooltip" aria-live="polite"></div></div>
             <div class="chart-xlabels"><span>00:00</span><span>04:00</span><span>08:00</span><span>12:00</span><span>16:00</span><span>20:00</span><span>NOW</span></div>
-            <div class="chart-footer"><span><span class="tiny-dot"></span> 24-hour observation window</span><span>Illustrative data · updates every few seconds</span></div>
+            <div class="chart-footer"><span><span class="tiny-dot"></span> 24-hour observation window</span><span>Refreshes automatically · hourly device uploads</span></div>
           </section>
           <section class="panel insight-panel">
             <div class="panel-heading"><div><h3>Room intelligence</h3><p>Small signals worth noticing</p></div><span class="spark-icon">✳</span></div>
-            <div class="insight-feature"><div class="insight-icon">↗</div><div><span class="insight-type">TREND OBSERVATION</span><h4>Temperature is gradually rising</h4><p>The room has warmed by <b id="riseAmount">1.2°C</b> since early morning. The change is steady rather than abrupt.</p></div></div>
+            <div class="insight-feature" id="overviewInsight"><div class="insight-icon">↗</div><div><span class="insight-type">BUILDING A BASELINE</span><h4>Waiting for more readings</h4><p>Atmos needs at least 6 sensor readings before it can describe trends with context.</p></div></div>
             <div class="insight-divider"></div>
             <div class="insight-row"><span class="insight-mini-icon blue">◌</span><div><b>Humidity is in a comfortable band</b><small>Current reading is within the illustrative 40–60% range.</small></div><span class="insight-state">NORMAL</span></div>
             <div class="insight-row"><span class="insight-mini-icon sand">⌁</span><div><b>No unusual fluctuations detected</b><small>Recent readings are close to the rolling average.</small></div><span class="insight-state">STABLE</span></div>
@@ -129,7 +132,7 @@
           <section class="panel distribution-panel">
             <div class="panel-heading"><div><h3>Humidity distribution</h3><p>Share of today's recorded time</p></div><span class="small-period">TODAY</span></div>
             <div class="distribution-content"><div class="donut" id="humidityDonut"><div><b>58%</b><small>AVERAGE RH</small></div></div>
-              <div class="distribution-legend"><div><i class="legend-square low"></i><span>Dry <small>Below 40%</small></span><b id="dryPct">8%</b></div><div><i class="legend-square ideal"></i><span>Comfortable <small>40–60%</small></span><b id="idealPct">72%</b></div><div><i class="legend-square high"></i><span>Humid <small>Above 60%</small></span><b id="highPct">20%</b></div></div></div>
+              <div class="distribution-legend"><div><i class="legend-square low"></i><span>Dry <small>Below 40%</small></span><b id="dryPct">—</b></div><div><i class="legend-square ideal"></i><span>Comfortable <small>40–60%</small></span><b id="idealPct">—</b></div><div><i class="legend-square high"></i><span>Humid <small>Above 60%</small></span><b id="highPct">—</b></div></div></div>
           </section>
           <section class="panel activity-panel">
             <div class="panel-heading"><div><h3>Recent activity</h3><p>Latest events from your Atmos node</p></div><button class="plain-arrow" data-page="history">View history →</button></div>
@@ -140,36 +143,36 @@
             </div>
           </section>
         </div>
-        <div class="disclaimer" id="dataDisclaimer"><span>ⓘ</span> Showroom mode: readings are simulated until a physical sensor sends data.</div>
+        <div class="disclaimer" id="dataDisclaimer"><span>ⓘ</span> No sensor readings have arrived yet. This dashboard updates automatically after upload.</div>
       </section>
 
       <section class="page" id="page-analytics">
         <div class="page-heading"><div><div class="eyebrow">UNDERSTAND THE PATTERNS</div><h1>Analytics & <em>patterns.</em></h1><p class="subheading">Explore the behaviour behind the numbers.</p></div><div class="heading-actions"><button class="button button-quiet" id="analyticsRange">Last 7 days ⌄</button></div></div>
         <div class="metric-grid compact-metrics">
-          <article class="metric-card"><div class="metric-top"><span class="metric-label">7-DAY AVG. TEMPERATURE</span><span class="metric-symbol warm">°</span></div><div class="metric-value"><span id="avgTemp">25.8</span><small>°C</small></div><div class="metric-foot"><span class="trend up">↗ 0.4°</span><span>vs. prior 7 days</span></div></article>
-          <article class="metric-card"><div class="metric-top"><span class="metric-label">7-DAY AVG. HUMIDITY</span><span class="metric-symbol cool">◌</span></div><div class="metric-value"><span id="avgHumidity">56</span><small>%</small></div><div class="metric-foot"><span class="trend down">↘ 1.8%</span><span>vs. prior 7 days</span></div></article>
-          <article class="metric-card"><div class="metric-top"><span class="metric-label">TEMPERATURE RANGE</span><span class="metric-symbol warm">↕</span></div><div class="metric-value"><span>5.6</span><small>°C</small></div><div class="metric-foot"><span class="neutral-tag">Daily variation</span><span>min to max</span></div></article>
-          <article class="metric-card"><div class="metric-top"><span class="metric-label">DATA COMPLETENESS</span><span class="metric-symbol capture">⌗</span></div><div class="metric-value"><span>98.6</span><small>%</small></div><div class="metric-foot"><span class="trend positive">Excellent</span><span>expected samples</span></div></article>
+          <article class="metric-card"><div class="metric-top"><span class="metric-label">7-DAY AVG. TEMPERATURE</span><span class="metric-symbol warm">°</span></div><div class="metric-value"><span id="avgTemp">—</span><small>°C</small></div><div class="metric-foot"><span class="neutral-tag">Need 3 readings</span><span>for an average</span></div></article>
+          <article class="metric-card"><div class="metric-top"><span class="metric-label">7-DAY AVG. HUMIDITY</span><span class="metric-symbol cool">◌</span></div><div class="metric-value"><span id="avgHumidity">—</span><small>%</small></div><div class="metric-foot"><span class="neutral-tag">Need 3 readings</span><span>for an average</span></div></article>
+          <article class="metric-card"><div class="metric-top"><span class="metric-label">TEMPERATURE RANGE</span><span class="metric-symbol warm">↕</span></div><div class="metric-value"><span>—</span><small>°C</small></div><div class="metric-foot"><span class="neutral-tag">Daily variation</span><span>min to max</span></div></article>
+          <article class="metric-card"><div class="metric-top"><span class="metric-label">READINGS COLLECTED</span><span class="metric-symbol capture">⌗</span></div><div class="metric-value"><span>0</span><small>pts</small></div><div class="metric-foot"><span class="neutral-tag">Sensor readings</span><span>last 7 days</span></div></article>
         </div>
         <div class="content-grid analytics-grid">
           <section class="panel chart-panel wide-chart"><div class="panel-heading"><div><h3>Daily temperature profile</h3><p>Average temperature by hour across the selected period</p></div><span class="small-period">7 DAYS</span></div><div class="chart-wrap tall"><canvas id="weeklyChart"></canvas></div><div class="chart-xlabels"><span>00:00</span><span>04:00</span><span>08:00</span><span>12:00</span><span>16:00</span><span>20:00</span><span>24:00</span></div></section>
-          <section class="panel"><div class="panel-heading"><div><h3>Daily rhythm</h3><p>Typical room behaviour</p></div></div><div class="rhythm-list"><div><span>Coolest period</span><b>05:00 – 07:00</b></div><div><span>Warmest period</span><b>14:00 – 16:00</b></div><div><span>Most stable</span><b>02:00 – 05:00</b></div><div><span>Humidity peak</span><b>06:00 – 08:00</b></div></div><div class="soft-callout"><b>What this suggests</b><p>Your simulated room follows a familiar daytime warming cycle, with humidity tending to move in the opposite direction.</p></div></section>
+          <section class="panel"><div class="panel-heading"><div><h3>Daily rhythm</h3><p>Not enough data yet</p></div></div><div class="rhythm-list"><div><span>Coolest period</span><b>05:00 – 07:00</b></div><div><span>Warmest period</span><b>14:00 – 16:00</b></div><div><span>Most stable</span><b>02:00 – 05:00</b></div><div><span>Humidity peak</span><b>06:00 – 08:00</b></div></div><div class="soft-callout"><b>What this suggests</b><p>Daily rhythm summaries will appear after at least 24 readings have arrived.</p></div></section>
         </div>
-        <div class="panel correlation-panel"><div class="panel-heading"><div><h3>Temperature vs. humidity</h3><p>Illustrative relationship between the two parameters</p></div><span class="correlation-value">r = −0.68</span></div><div class="correlation-body"><div class="scatter" id="scatterPlot"></div><div class="correlation-copy"><span class="eyebrow">MODERATE NEGATIVE RELATIONSHIP</span><h3>Warmer periods tend to be less humid.</h3><p>This is a simulated correlation, not a causal conclusion. With real data, Atmos can estimate how strongly the two measurements move together over time.</p></div></div></div>
+        <div class="panel correlation-panel"><div class="panel-heading"><div><h3>Temperature vs. humidity</h3><p>Based on recent sensor readings</p></div><span class="correlation-value">Need 6 readings</span></div><div class="correlation-body"><div class="scatter" id="scatterPlot"></div><div class="correlation-copy"><span class="eyebrow">WAITING FOR MORE DATA</span><h3>A comparison needs at least 6 readings.</h3><p>This comparison will use actual sensor measurements and will not imply that one causes the other.</p></div></div></div>
       </section>
 
       <section class="page" id="page-history">
         <div class="page-heading"><div><div class="eyebrow">YOUR ENVIRONMENTAL RECORD</div><h1>History & <em>observations.</em></h1><p class="subheading">A transparent record of the measurements collected.</p></div><div class="heading-actions"><button class="button button-dark" id="historyExport">↓ <span>Export CSV</span></button></div></div>
         <div class="history-toolbar"><div class="filter-tabs"><button class="filter active" data-filter="all">All readings</button><button class="filter" data-filter="temperature">Temperature</button><button class="filter" data-filter="humidity">Humidity</button></div><div class="search-wrap"><span>⌕</span><input id="historySearch" placeholder="Search records..." type="search"></div></div>
-        <section class="panel table-panel"><div class="table-top"><div><h3>Recent measurements</h3><p id="historySourceLabel">Generated sample observations · newest first</p></div><span class="record-count" id="recordCount">24 RECORDS</span></div><div class="table-scroll"><table><thead><tr><th>TIME</th><th>TEMPERATURE</th><th>HUMIDITY</th><th>DEW POINT</th><th>STATUS</th></tr></thead><tbody id="historyRows"></tbody></table></div><div class="table-footer"><span>Showing <b id="showingCount">24</b> of 1,438 simulated records</span><div class="pagination"><button id="prevPage" disabled>←</button><span id="pageNumber">1 / 60</span><button id="nextPage">→</button></div></div></section>
-        <div class="disclaimer"><span>ⓘ</span> This is generated demo data. It is not a permanent record and resets when the page is refreshed.</div>
+        <section class="panel table-panel"><div class="table-top"><div><h3>Recent measurements</h3><p id="historySourceLabel">Atmos sensor measurements · newest first</p></div><span class="record-count" id="recordCount">0 RECORDS</span></div><div class="table-scroll"><table><thead><tr><th>TIME</th><th>TEMPERATURE</th><th>HUMIDITY</th><th>DEW POINT</th><th>STATUS</th></tr></thead><tbody id="historyRows"></tbody></table></div><div class="table-footer"><span id="historyFooterText">Showing <b id="showingCount">0</b> of 0 sensor readings</span><div class="pagination"><button id="prevPage" disabled>←</button><span id="pageNumber">1 / 1</span><button id="nextPage">→</button></div></div></section>
+        <div class="disclaimer"><span>ⓘ</span> History contains readings received from the Atmos node. It will grow as the device uploads.</div>
       </section>
 
       <section class="page" id="page-intelligence">
-        <div class="page-heading"><div><div class="eyebrow">FROM MEASUREMENTS TO MEANING</div><h1>Room <em>intelligence.</em></h1><p class="subheading">Useful observations, without pretending to know more than the data.</p></div><span class="small-period">DEMO INSIGHTS</span></div>
-        <div class="intelligence-intro"><div class="intro-symbol">✳</div><div><h2>Signals, not noise.</h2><p>Atmos looks for gradual changes, unusual readings and recurring environmental patterns. These demo observations are generated from the live simulation.</p></div></div>
+        <div class="page-heading"><div><div class="eyebrow">FROM MEASUREMENTS TO MEANING</div><h1>Room <em>intelligence.</em></h1><p class="subheading">Useful observations, without pretending to know more than the data.</p></div><span class="small-period">BUILDING HISTORY</span></div>
+        <div class="intelligence-intro"><div class="intro-symbol">✳</div><div><h2>Signals, not noise.</h2><p id="intelligenceIntroText">Atmos will surface observations as enough real sensor history accumulates.</p></div></div>
         <div class="insight-cards" id="insightCards">
-          <article class="insight-card"><div class="insight-card-top"><span class="insight-type">TREND OBSERVATION</span><span class="insight-card-icon">↗</span></div><h3>Temperature is following a daytime rise</h3><p>Recent simulated readings show a gradual increase rather than a sudden spike.</p><div class="insight-meta"><span>Confidence · illustrative</span><span>Just now</span></div></article>
+          <article class="insight-card"><div class="insight-card-top"><span class="insight-type">TREND OBSERVATION</span><span class="insight-card-icon">↗</span></div><h3>Building a useful baseline</h3><p>Atmos needs at least 6 readings before it can describe patterns or changes.</p><div class="insight-meta"><span>Confidence · illustrative</span><span>Just now</span></div></article>
           <article class="insight-card"><div class="insight-card-top"><span class="insight-type">COMFORT CONTEXT</span><span class="insight-card-icon blue">◌</span></div><h3>Humidity is within a moderate range</h3><p>The current relative humidity sits inside the example comfort band used by this demo.</p><div class="insight-meta"><span>Rule-based observation</span><span>2 min ago</span></div></article>
           <article class="insight-card"><div class="insight-card-top"><span class="insight-type">DATA QUALITY</span><span class="insight-card-icon green">✓</span></div><h3>Recent readings look consistent</h3><p>No abrupt jump has been introduced into the recent sample stream.</p><div class="insight-meta"><span>Rolling window</span><span>5 min ago</span></div></article>
         </div>
@@ -177,12 +180,12 @@
       </section>
 
       <section class="page" id="page-device">
-        <div class="page-heading"><div><div class="eyebrow">HARDWARE & CONNECTIVITY</div><h1>Your Atmos <em>node.</em></h1><p class="subheading">A small device, quietly collecting environmental context.</p></div><span class="connected-badge"><i></i> SIMULATED ONLINE</span></div>
+        <div class="page-heading"><div><div class="eyebrow">HARDWARE & CONNECTIVITY</div><h1>Your Atmos <em>node.</em></h1><p class="subheading">A small device, quietly collecting environmental context.</p></div><span class="connected-badge"><i></i> WAITING FOR DEVICE</span></div>
         <div class="device-layout">
           <section class="panel device-hero"><div class="device-illustration"><div class="device-board"><div class="board-hole h1"></div><div class="board-hole h2"></div><div class="board-hole h3"></div><div class="board-hole h4"></div><div class="board-chip">ESP32-C6</div><div class="board-label">XIAO</div><div class="board-led"></div><div class="board-pins"></div><div class="sensor-module"><span></span><span></span><span></span><span></span><small>DHT11</small></div></div><div class="device-shadow"></div></div><div class="device-hero-copy"><span class="eyebrow">DEVICE ID · ATM-001</span><h2>Atmos Node 01</h2><p>Room environment monitor</p><div class="device-tags"><span>XIAO ESP32-C6</span><span>DHT11</span><span>Wi-Fi</span></div></div></section>
-          <section class="panel device-details"><div class="panel-heading"><div><h3>Device details</h3><p>Configured hardware profile</p></div><span class="small-period">DEMO</span></div><dl><div><dt>Device status</dt><dd><i class="green-dot"></i> Online</dd></div><div><dt>Temperature sensor</dt><dd>DHT11</dd></div><div><dt>Controller</dt><dd>Seeed XIAO ESP32-C6</dd></div><div><dt>Sampling interval</dt><dd>60 seconds</dd></div><div><dt>Cloud sync interval</dt><dd>60 minutes</dd></div><div><dt>Wi-Fi radio</dt><dd>Off between syncs <span class="mini-good">POWER SAVING</span></dd></div><div><dt>Last successful sync</dt><dd id="deviceSync">10:01:24</dd></div><div><dt>Firmware</dt><dd>Atmos prototype · 0.1.0</dd></div></dl></section>
+          <section class="panel device-details"><div class="panel-heading"><div><h3>Device details</h3><p>Configured hardware profile</p></div><span class="small-period">XIAO ESP32-C6</span></div><dl><div><dt>Device status</dt><dd id="deviceStatusText">Waiting for first upload</dd></div><div><dt>Temperature sensor</dt><dd>DHT11</dd></div><div><dt>Controller</dt><dd>Seeed XIAO ESP32-C6</dd></div><div><dt>Sampling interval</dt><dd>60 seconds</dd></div><div><dt>Cloud sync interval</dt><dd>About 60 minutes</dd></div><div><dt>Wi-Fi radio</dt><dd>As configured in firmware</dd></div><div><dt>Last successful sync</dt><dd id="deviceSync">No upload received</dd></div><div><dt>Firmware</dt><dd>Atmos prototype · 0.1.0</dd></div></dl></section>
         </div>
-        <section class="panel connectivity"><div class="panel-heading"><div><h3>Connectivity cycle</h3><p>Designed to keep the radio asleep between uploads</p></div><span class="power-label">LOW-POWER STRATEGY</span></div><div class="cycle"><div class="cycle-step active"><span>01</span><b>Measure</b><small>Wi-Fi off</small></div><div class="cycle-arrow">→</div><div class="cycle-step"><span>02</span><b>Connect</b><small>Up to 30 sec</small></div><div class="cycle-arrow">→</div><div class="cycle-step"><span>03</span><b>Upload</b><small>Send batch</small></div><div class="cycle-arrow">→</div><div class="cycle-step"><span>04</span><b>Sleep radio</b><small>Next hour</small></div></div><p class="cycle-note">This panel describes the intended device behaviour. The showroom simulation does not communicate with a physical ESP32.</p></section>
+        <section class="panel connectivity"><div class="panel-heading"><div><h3>Connectivity cycle</h3><p>Device upload and connectivity</p></div><span class="power-label">UPLOAD WORKFLOW</span></div><div class="cycle"><div class="cycle-step active"><span>01</span><b>Measure</b><small>Every minute</small></div><div class="cycle-arrow">→</div><div class="cycle-step"><span>02</span><b>Connect</b><small>Wi-Fi or setup AP</small></div><div class="cycle-arrow">→</div><div class="cycle-step"><span>03</span><b>Upload</b><small>Send batch</small></div><div class="cycle-arrow">→</div><div class="cycle-step"><span>04</span><b>Sleep radio</b><small>About hourly</small></div></div><p class="cycle-note">The dashboard checks for new device uploads automatically. Device status follows its last successful cloud upload.</p></section>
       </section>
 
       <footer class="footer"><span>© 2026 ATMOS · ENVIRONMENTAL INTELLIGENCE</span><span>BUILT TO OBSERVE. DESIGNED TO UNDERSTAND.</span></footer>
@@ -193,43 +196,35 @@
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const $$ = (s, root=document) => [...root.querySelectorAll(s)];
-  const state = {paused:false, chart:"temperature", historyFilter:"all", historyPage:1, historySearch:"", samples:[], tick:0, activePage:"overview", source:"demo", hourly:[]};
+  const state = {chart:"temperature", historyFilter:"all", historyPage:1, historySearch:"", samples:[], activePage:"overview", source:"waiting", hourly:[], insights:[], lastObservedAt:null, lastSyncAt:null, analytics:null};
   const API_BASE="https://atmos-api.devteam-circuitbreakers.workers.dev";
   const DEVICE_ID="atmos-xiao-c6-01";
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
-  const rand=(a,b)=>a+Math.random()*(b-a);
   const round=(v,n=1)=>Number(v.toFixed(n));
-  let temperature=26.4, humidity=58, lastTemp=26.1, lastHumidity=60;
-  const start=new Date(); start.setHours(0,0,0,0);
+  let temperature=null, humidity=null;
+  const MIN_TREND=3, MIN_DISTRIBUTION=6, MIN_INSIGHTS=6;
   const timeLabel=d=>d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",hour12:false});
   const dewPoint=(t,rh)=>{const a=17.27,b=237.7,alpha=(a*t)/(b+t)+Math.log(rh/100);return b*alpha/(a-alpha)};
-  function seed(){
-    const now=Date.now();
-    for(let i=1439;i>=0;i--){
-      const hour=(new Date(now-i*60000)).getHours();
-      const wave=Math.sin((hour-8)/24*Math.PI*2);
-      const t=round(25.1+wave*1.8+rand(-.35,.35));
-      const h=round(clamp(57-wave*5+rand(-3,3),38,75),1);
-      state.samples.push({time:new Date(now-i*60000),temperature:t,humidity:h});
-    }
-  }
   function currentSample(){return state.samples[state.samples.length-1]}
   function sparkline(id,key,color){
-    const vals=state.samples.slice(-24).map(x=>x[key]); const min=Math.min(...vals),max=Math.max(...vals);
+    const vals=state.samples.slice(-24).map(x=>x[key]);
+    if(vals.length<MIN_TREND){$(id).replaceChildren();return;}
+    const min=Math.min(...vals),max=Math.max(...vals);
     const pts=vals.map((v,i)=>`${(i/(vals.length-1))*100},${18-(v-min)/(max-min||1)*15}`).join(" ");
     $(id).innerHTML=`<svg viewBox="0 0 100 20" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   }
   function updateMetrics(){
-    $("#temperature").textContent=temperature.toFixed(1);
-    $("#humidity").textContent=Math.round(humidity);
-    const dp=dewPoint(temperature,humidity);
-    $("#dewpoint").textContent=dp.toFixed(1);
-    $("#dewContext").textContent=dp<16?"Low":dp<19?"Moderate":"Elevated";
-    $("#legendTemp").textContent=temperature.toFixed(1)+"°C";
-    $("#legendHumidity").textContent=Math.round(humidity)+"%";
-    $("#tempTrend").textContent=(temperature>=lastTemp?"↗ ":"↘ ")+Math.abs(temperature-lastTemp).toFixed(1)+"°";
-    $("#humidityTrend").textContent=(humidity<=lastHumidity?"↘ ":"↗ ")+Math.abs(humidity-lastHumidity).toFixed(0)+"%";
-    $("#sampleCount").textContent=(state.source==="device"?state.samples.length:1438+state.tick).toLocaleString();
+    const latest=currentSample(),previous=state.samples.at(-2);
+    $("#temperature").textContent=latest?latest.temperature.toFixed(1):"—";
+    $("#humidity").textContent=latest?Math.round(latest.humidity):"—";
+    const dp=latest?dewPoint(latest.temperature,latest.humidity):null;
+    $("#dewpoint").textContent=dp===null?"—":dp.toFixed(1);
+    $("#dewContext").textContent=dp===null?"Awaiting data":dp<16?"Low":dp<19?"Moderate":"Elevated";
+    $("#legendTemp").textContent=latest?latest.temperature.toFixed(1)+"°C":"—";
+    $("#legendHumidity").textContent=latest?Math.round(latest.humidity)+"%":"—";
+    $("#tempTrend").textContent=previous?((latest.temperature>=previous.temperature?"↗ ":"↘ ")+Math.abs(latest.temperature-previous.temperature).toFixed(1)+"°"):"Need 2 readings";
+    $("#humidityTrend").textContent=previous?((latest.humidity<=previous.humidity?"↘ ":"↗ ")+Math.abs(latest.humidity-previous.humidity).toFixed(0)+"%"):"Need 2 readings";
+    $("#sampleCount").textContent=state.samples.length.toLocaleString();
     sparkline("#tempSpark","temperature","#b48e63");
     sparkline("#humiditySpark","humidity","#7e9eaa");
   }
@@ -241,7 +236,7 @@
     const w=rect.width,h=rect.height,p={l:8,r:10,t:12,b:10}, iw=w-p.l-p.r, ih=h-p.t-p.b;
     ctx.clearRect(0,0,w,h);
     const list=weekly
-      ?(state.source==="device"?(state.hourly.length?state.hourly.map(x=>({temperature:Number(x.temperature_mean),humidity:Number(x.humidity_mean),time:new Date(2000,0,1,Number(x.hour))})):state.samples.slice(-144).filter((_,i)=>i%3===0)):Array.from({length:48},(_,i)=>({temperature:24.3+Math.sin(i/48*Math.PI*2)*2+rand(-.45,.45),humidity:59-Math.sin(i/48*Math.PI*2)*5+rand(-2,2),time:new Date(Date.now()-(47-i)*3.5*3600000)})))
+      ?state.hourly.map(x=>({temperature:Number(x.temperature_mean),humidity:Number(x.humidity_mean),time:new Date(2000,0,1,Number(x.hour))}))
       :state.samples.slice(-144).filter((_,i)=>i%3===0);
     if(list.length<2)return;
     const defs=[];
@@ -304,69 +299,87 @@
     // Keep the exact dataset used for this render available to the pointer tooltip.
     canvas._chartData={list,defs,p,xAt,yAt,weekly};
   }
-  function renderCharts(){drawChart($("#trendChart"),state.chart,state.chart==="both");drawChart($("#weeklyChart"),"temperature",false,true)}
+  function chartState(canvas,count,minimum,message){
+    if(!canvas)return;const wrap=canvas.parentElement;
+    let note=wrap.querySelector(".data-empty");if(!note){note=document.createElement("div");note.className="data-empty";wrap.append(note);}
+    const ready=count>=minimum;canvas.style.display=ready?"block":"none";note.hidden=ready;
+    note.textContent=count?`${message} (${count} of ${minimum} readings collected)`:`Waiting for the first sensor reading. ${message}`;
+  }
+  function renderCharts(){
+    const trend=$("#trendChart"),weekly=$("#weeklyChart");
+    chartState(trend,state.samples.length,MIN_TREND,"Trend lines appear after 3 readings.");
+    chartState(weekly,Number(state.analytics?.count||0),24,"Daily patterns need at least 24 readings.");
+    if(state.samples.length>=MIN_TREND)drawChart(trend,state.chart,state.chart==="both");
+    if(weekly&&weekly.parentElement.querySelector(".data-empty")?.hidden)drawChart(weekly,"temperature",false,true);
+  }
   function addActivity(title,sub,mark="green",time=new Date()){
     const row=document.createElement("div");row.className="activity-item";
     row.innerHTML=`<span class="activity-mark ${mark}">${mark==="green"?"✓":mark==="blue"?"↗":"◌"}</span><div><b>${title}</b><small>${sub}</small></div><time>${timeLabel(time)}</time>`;
     $("#activityList").prepend(row);while($("#activityList").children.length>4)$("#activityList").lastElementChild.remove();
   }
   function updateDistribution(){
-    let dry,high,ideal;
-    if(state.source==="device"&&state.samples.length){const total=state.samples.length;dry=Math.round(state.samples.filter(x=>x.humidity<=30).length/total*100);high=Math.round(state.samples.filter(x=>x.humidity>=70).length/total*100);ideal=100-dry-high;}else{dry=clamp(Math.round(8+rand(-2,2)),3,14);high=clamp(Math.round(20+(humidity-58)*.7+rand(-2,2)),10,30);ideal=100-dry-high;}
+    let dry=0,high=0,ideal=0;
+    if(state.samples.length>=MIN_DISTRIBUTION){const total=state.samples.length;dry=Math.round(state.samples.filter(x=>x.humidity<40).length/total*100);high=Math.round(state.samples.filter(x=>x.humidity>60).length/total*100);ideal=100-dry-high;}
+    if(state.samples.length<MIN_DISTRIBUTION){["#dryPct","#highPct","#idealPct"].forEach(id=>$(id).textContent="—");$("#humidityDonut").style.background="conic-gradient(#e7ece7 0 100%)";$("#humidityDonut").querySelector("b").textContent="—";return;}
     $("#dryPct").textContent=dry+"%";$("#highPct").textContent=high+"%";$("#idealPct").textContent=ideal+"%";
     $("#humidityDonut").style.background=`conic-gradient(#7e9a80 0 ${ideal}%,#b7a17c ${ideal}% ${ideal+high}%,#d6e0e2 ${ideal+high}% 100%)`;
   }
   function setDataSource(mode, detail){
     state.source=mode;
-    const labels={device:"LIVE SENSOR",waiting:"WAITING FOR SENSOR · DEMO",offline:"DEVICE CONNECTION LOST",demo:"LIVE SIMULATION"};
-    const titles={device:"Connected to Atmos node",waiting:"Waiting for Atmos node",offline:"Showing last received data",demo:"Showroom simulation"};
-    $("#sourceLabel").textContent=labels[mode]||labels.demo;
-    $("#sourceTitle").textContent=titles[mode]||titles.demo;
+    const labels={device:"LIVE SENSOR",waiting:"WAITING FOR SENSOR",offline:"DEVICE CONNECTION LOST"};
+    const titles={device:"Connected to Atmos node",waiting:"Waiting for Atmos node",offline:"Showing last received data"};
+    $("#sourceLabel").textContent=labels[mode]||labels.waiting;
+    $("#sourceTitle").textContent=titles[mode]||titles.waiting;
     $("#sourceDetail").textContent=detail;
-    $("#liveStatus").textContent=mode==="device"?"SENSOR DATA · LIVE":mode==="offline"?"SENSOR DATA · LAST SYNC":"DEMO DATA";
-    $("#dataDisclaimer").innerHTML="<span>ⓘ</span> "+(mode==="device"?"Live sensor readings from Atmos node · cloud sync is approximately hourly.":mode==="offline"?"Showing the last readings received from the sensor; the API could not be reached.":"Showroom readings are simulated until the registered ESP32 sends data.");
-    $("#historySourceLabel").textContent=mode==="device"?"Atmos sensor measurements · newest first":"Generated sample observations · newest first";
-    $("#pauseBtn").hidden=mode==="device";
+    $("#liveStatus").textContent=mode==="device"?"SENSOR DATA · LIVE":mode==="offline"?"SENSOR DATA · LAST SYNC":"AWAITING SENSOR DATA";
+    if($("#statusText"))$("#statusText").textContent=mode==="device"?"Device upload received":mode==="offline"?"Device connection unavailable":"Waiting for first sensor reading";
+    if($("#deviceStatusText"))$("#deviceStatusText").textContent=mode==="device"?"Online · last upload received":mode==="offline"?"Last upload saved · currently unreachable":"Waiting for first upload";
+    const badge=$("#page-device .connected-badge");if(badge)badge.innerHTML=`<i></i> ${mode==="device"?"SENSOR ONLINE":mode==="offline"?"LAST READING SAVED":"WAITING FOR DEVICE"}`;
+    $("#dataDisclaimer").innerHTML="<span>ⓘ</span> "+(mode==="device"?"Measurements reported by your Atmos node · it uploads about once per hour.":mode==="offline"?"Showing the last sensor readings saved here; the device API is currently unreachable.":"No sensor readings have arrived yet. This dashboard will update automatically when the device uploads.");
+    $("#historySourceLabel").textContent="Atmos sensor measurements · newest first";
+    $("#pauseBtn").hidden=true;
   }
   function renderInsights(items){
     const box=$("#insightCards");if(!box)return;box.replaceChildren();
-    for(const item of items||[]){const card=document.createElement("article");card.className="insight-card";const heading=document.createElement("h3");heading.textContent=item.metric?item.metric[0].toUpperCase()+item.metric.slice(1)+" observation":"Atmos observation";const body=document.createElement("p");body.textContent=item.message;const meta=document.createElement("div");meta.className="insight-meta";meta.textContent="Rule-based · latest 7 days";card.append(heading,body,meta);box.append(card);}
+    if(state.samples.length<MIN_INSIGHTS){const card=document.createElement("article");card.className="insight-card waiting-card";card.innerHTML=`<h3>Building a useful baseline</h3><p>Atmos needs at least ${MIN_INSIGHTS} readings before it can describe patterns or changes. ${state.samples.length} of ${MIN_INSIGHTS} readings collected; new readings arrive about once per hour.</p><div class="insight-meta">Based only on your sensor data</div>`;box.append(card);return;}
+    state.insights=items||[];
+    for(const item of state.insights){const card=document.createElement("article");card.className="insight-card";const heading=document.createElement("h3");heading.textContent=item.metric?item.metric[0].toUpperCase()+item.metric.slice(1)+" observation":"Atmos observation";const body=document.createElement("p");body.textContent=item.message;const meta=document.createElement("div");meta.className="insight-meta";meta.textContent="Rule-based · latest 7 days";card.append(heading,body,meta);box.append(card);}
+    if(!box.children.length){const card=document.createElement("article");card.className="insight-card waiting-card";card.innerHTML="<h3>No notable patterns yet</h3><p>Atmos will show an observation here when recent measurements support one.</p>";box.append(card);}
   }
+  function updateOverviewInsights(){
+    const box=$("#overviewInsight");if(!box)return;box.replaceChildren();
+    const text=document.createElement("div"),icon=document.createElement("div");icon.className="insight-icon";icon.textContent="✳";
+    const tag=document.createElement("span");tag.className="insight-type";const title=document.createElement("h4"),body=document.createElement("p");
+    if(state.samples.length<MIN_INSIGHTS){tag.textContent="BUILDING A BASELINE";title.textContent="Waiting for more readings";body.textContent=`Atmos needs at least ${MIN_INSIGHTS} sensor readings before it can describe trends. ${state.samples.length} of ${MIN_INSIGHTS} collected.`;}
+    else if(state.insights.length){tag.textContent="SENSOR OBSERVATION";title.textContent=state.insights[0].metric?state.insights[0].metric[0].toUpperCase()+state.insights[0].metric.slice(1)+" observation":"Atmos observation";body.textContent=state.insights[0].message;}
+    else{tag.textContent="NO PATTERN YET";title.textContent="No notable change detected";body.textContent="Atmos will show a signal here when recent sensor measurements support one.";}
+    text.append(tag,title,body);box.append(icon,text);
+    $(".insight-divider").hidden=state.samples.length<MIN_INSIGHTS;
+    $$(".insight-row").forEach(row=>row.hidden=state.samples.length<MIN_INSIGHTS);
+  }
+  async function getJson(url){const response=await fetch(url,{cache:"no-store"});if(!response.ok)throw new Error("api_unavailable");return response.json()}
   async function pollCloud(){
     try{
       const base=API_BASE+"/api/devices/"+encodeURIComponent(DEVICE_ID);
-      const latestResponse=await fetch(base+"/latest");
-      if(latestResponse.status===404){setDataSource("waiting","Device not registered yet · demo values remain active");return;}
-      if(!latestResponse.ok)throw new Error("api_unavailable");
-      const latest=await latestResponse.json();
-      if(!latest.data){if(state.source!=="device")setDataSource("waiting","No device readings received yet · demo values remain active");return;}
-      const responses=await Promise.all([fetch(base+"/history?days=90&limit=1000"),fetch(base+"/analytics?days=7"),fetch(base+"/insights?days=7"),fetch(base+"/status")]);
-      if(responses.some(r=>!r.ok))throw new Error("api_unavailable");
-      const [history,analytics,insights,status]=await Promise.all(responses.map(r=>r.json()));
-      const rows=(history.data||[]).map(x=>({time:new Date(x.observed_at),temperature:Number(x.temperature_c),humidity:Number(x.humidity_pct)})).filter(x=>Number.isFinite(x.time.getTime())&&Number.isFinite(x.temperature)&&Number.isFinite(x.humidity));
+      const latest=await getJson(base+"/latest");
+      if(!latest.data){setDataSource("waiting","Device registered · waiting for its first sensor upload");return;}
       const newest={time:new Date(latest.data.observed_at),temperature:Number(latest.data.temperature_c),humidity:Number(latest.data.humidity_pct)};
-      if(!rows.length||rows[rows.length-1].time<newest.time)rows.push(newest);
-      state.samples=rows.slice(-1438);state.hourly=analytics.hourly||[];
-      lastTemp=state.samples.length>1?state.samples[state.samples.length-2].temperature:newest.temperature;lastHumidity=state.samples.length>1?state.samples[state.samples.length-2].humidity:newest.humidity;
-      temperature=newest.temperature;humidity=newest.humidity;setDataSource("device",(status.status||"online").replace("_"," ")+" · last sync "+newest.time.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}));
-      if(analytics.count){$("#avgTemp").textContent=Number(analytics.temperature_mean).toFixed(1);$("#avgHumidity").textContent=Number(analytics.humidity_mean).toFixed(0);}
-      updateMetrics();renderCharts();updateDistribution();renderHistory();renderInsights(insights.insights);
-    }catch{if(state.source==="device"||state.source==="offline")setDataSource("offline","Connection unavailable · showing last sensor readings");else setDataSource("demo","API unavailable · generated sample data");}
-  }
-  function tick(){
-    if(state.paused||state.source==="device")return;
-    state.tick++;
-    lastTemp=temperature;lastHumidity=humidity;
-    const hour=new Date().getHours(), dayCycle=Math.sin((hour-8)/24*Math.PI*2);
-    temperature=round(clamp(temperature+rand(-.16,.17)+(25.5+dayCycle*1.8-temperature)*.035,22.2,31.4));
-    humidity=round(clamp(humidity+rand(-1.0,1.0)+(57-dayCycle*4-humidity)*.045,35,76),1);
-    const now=new Date();
-    state.samples.push({time:now,temperature,humidity});
-    if(state.samples.length>2500)state.samples.shift();
-    updateMetrics();renderCharts();updateDistribution();
-    if(state.tick%5===0)addActivity("New environmental sample recorded",`${temperature.toFixed(1)}°C temperature · ${Math.round(humidity)}% relative humidity`,"sand",now);
-    if(state.tick%12===0)addActivity("Hourly batch staged for sync","60 local observations grouped in the demo stream","blue",now);
-    if(state.activePage==="history")renderHistory();
+      if(!Number.isFinite(newest.time.getTime())||!Number.isFinite(newest.temperature)||!Number.isFinite(newest.humidity))throw new Error("invalid_reading");
+      const changed=state.lastObservedAt!==latest.data.observed_at;
+      if(changed){
+        const [history,analytics,insights]=await Promise.all([getJson(base+"/history?days=90&limit=1000"),getJson(base+"/analytics?days=7"),getJson(base+"/insights?days=7")]);
+        const rows=(history.data||[]).map(x=>({time:new Date(x.observed_at),temperature:Number(x.temperature_c),humidity:Number(x.humidity_pct)})).filter(x=>Number.isFinite(x.time.getTime())&&Number.isFinite(x.temperature)&&Number.isFinite(x.humidity));
+        if(!rows.some(x=>x.time.getTime()===newest.time.getTime()))rows.push(newest);
+        state.samples=rows.sort((a,b)=>a.time-b.time).slice(-2000);state.hourly=analytics.hourly||[];state.analytics=analytics;state.lastObservedAt=latest.data.observed_at;
+        state.lastSyncAt=newest.time;$("#avgTemp").textContent=Number(analytics.temperature_mean).toFixed(1);$("#avgHumidity").textContent=Number(analytics.humidity_mean).toFixed(0);
+        updateAnalytics();
+        renderInsights(insights.insights);updateOverviewInsights();renderHistory();
+        const activity=$("#activityList");activity.replaceChildren();addActivity("Sensor reading received",`${newest.temperature.toFixed(1)}°C · ${Math.round(newest.humidity)}% RH`,"green",newest.time);
+      }
+      temperature=newest.temperature;humidity=newest.humidity;setDataSource("device","Last reading · "+newest.time.toLocaleString([], {dateStyle:"medium",timeStyle:"short"}));
+      $("#lastSync").textContent=newest.time.toLocaleString([], {dateStyle:"medium",timeStyle:"short"});$("#deviceSync").textContent=newest.time.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",second:"2-digit"});
+      updateMetrics();renderCharts();updateDistribution();renderInsights(state.insights);updateOverviewInsights();makeScatter();
+    }catch{setDataSource(state.samples.length?"offline":"waiting",state.samples.length?"Connection unavailable · showing saved sensor readings":"Cannot reach the sensor service yet · retrying automatically");}
   }
   function showToast(message){const el=$("#toast");el.textContent=message;el.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>el.classList.remove("show"),2600)}
   function navigate(page){
@@ -380,7 +393,7 @@
     window.scrollTo({top:0,behavior:"smooth"});
   }
   function renderHistory(){
-    const all=state.samples.slice(-1438).reverse();
+    const all=state.samples.slice(-2000).reverse();
     let filtered=all.filter(s=>{
       const ok=state.historyFilter==="all"||state.historyFilter==="temperature"||state.historyFilter==="humidity";
       const q=state.historySearch.toLowerCase();
@@ -388,19 +401,40 @@
     });
     const pages=Math.max(1,Math.ceil(filtered.length/24));state.historyPage=clamp(state.historyPage,1,pages);
     const shown=filtered.slice((state.historyPage-1)*24,state.historyPage*24);
-    $("#historyRows").innerHTML=shown.map(s=>`<tr><td>${s.time.toLocaleDateString([], {day:"2-digit",month:"short"})} · ${timeLabel(s.time)}</td><td><strong>${s.temperature.toFixed(1)}°C</strong></td><td><strong>${Math.round(s.humidity)}%</strong></td><td>${dewPoint(s.temperature,s.humidity).toFixed(1)}°C</td><td><span class="row-status">NORMAL</span></td></tr>`).join("")||'<tr><td colspan="5">No matching records.</td></tr>';
-    $("#recordCount").textContent=filtered.length+" RECORDS";$("#showingCount").textContent=shown.length;$("#pageNumber").textContent=`${state.historyPage} / ${pages}`;
+    $("#historyRows").innerHTML=shown.map(s=>`<tr><td>${s.time.toLocaleDateString([], {day:"2-digit",month:"short"})} · ${timeLabel(s.time)}</td><td><strong>${s.temperature.toFixed(1)}°C</strong></td><td><strong>${Math.round(s.humidity)}%</strong></td><td>${dewPoint(s.temperature,s.humidity).toFixed(1)}°C</td><td><span class="row-status">RECEIVED</span></td></tr>`).join("")||(state.samples.length?'<tr><td colspan="5">No matching records.</td></tr>':'<tr><td colspan="5">Waiting for the first reading from your Atmos device.</td></tr>');
+    $("#recordCount").textContent=filtered.length+" RECORDS";$("#showingCount").textContent=shown.length;$("#pageNumber").textContent=`${state.historyPage} / ${pages}`;$("#historyFooterText").textContent=`Showing ${shown.length} of ${filtered.length} sensor readings`;
     $("#prevPage").disabled=state.historyPage===1;$("#nextPage").disabled=state.historyPage===pages;
   }
+  function updateAnalytics(){
+    const count=Number(state.analytics?.count||0),enough=count>=MIN_TREND;
+    $("#avgTemp").textContent=enough?Number(state.analytics.temperature_mean).toFixed(1):"—";
+    $("#avgHumidity").textContent=enough?Number(state.analytics.humidity_mean).toFixed(0):"—";
+    const cards=$("#page-analytics .compact-metrics").children;
+    if(cards.length>=4){
+      cards[0].querySelector(".metric-foot").innerHTML=enough?'<span class="neutral-tag">Sensor average</span><span>last 7 days</span>':'<span class="neutral-tag">Need 3 readings</span><span>for an average</span>';
+      cards[1].querySelector(".metric-foot").innerHTML=enough?'<span class="neutral-tag">Sensor average</span><span>last 7 days</span>':'<span class="neutral-tag">Need 3 readings</span><span>for an average</span>';
+      cards[2].querySelector(".metric-value").innerHTML=`<span>${enough?Number(state.analytics.temperature_min).toFixed(1)+"–"+Number(state.analytics.temperature_max).toFixed(1):"—"}</span><small>°C</small>`;
+      cards[2].querySelector(".metric-foot").innerHTML=enough?'<span class="neutral-tag">Observed range</span><span>last 7 days</span>':'<span class="neutral-tag">Need 3 readings</span><span>for a range</span>';
+      cards[3].querySelector(".metric-value").innerHTML=`<span>${count}</span><small>pts</small>`;
+      cards[3].querySelector(".metric-foot").innerHTML='<span class="neutral-tag">Sensor readings</span><span>last 7 days</span>';
+    }
+    const rhythm=$("#page-analytics .rhythm-list");if(rhythm){const label=count>=24?"Hourly baseline building":"Available after 24 readings";rhythm.querySelectorAll("b").forEach(el=>el.textContent=label);}
+    const callout=$("#page-analytics .soft-callout p");if(callout)callout.textContent="Room rhythms and daily comparisons will appear after enough readings have accumulated.";
+    const correlation=$("#page-analytics .correlation-value");if(correlation)correlation.textContent=state.samples.length>=MIN_INSIGHTS?"Sensor data":"Need 6 readings";
+    const copy=$("#page-analytics .correlation-copy");if(copy){copy.querySelector(".eyebrow").textContent=state.samples.length>=MIN_INSIGHTS?"FROM SENSOR READINGS":"WAITING FOR MORE DATA";copy.querySelector("h3").textContent=state.samples.length>=MIN_INSIGHTS?"Temperature and humidity comparison":"A comparison needs at least 6 readings.";copy.querySelector("p").textContent="This view describes measurements collected by your Atmos node. It does not imply that one measurement causes the other.";}
+  }
   function exportCSV(){
-    const rows=[["timestamp","temperature_c","humidity_pct","dew_point_c"],...state.samples.slice(-1438).map(s=>[s.time.toISOString(),s.temperature,s.humidity,round(dewPoint(s.temperature,s.humidity))])];
+    if(!state.samples.length){showToast("No sensor readings are available to export yet");return;}
+    const rows=[["timestamp","temperature_c","humidity_pct","dew_point_c"],...state.samples.slice(-2000).map(s=>[s.time.toISOString(),s.temperature,s.humidity,round(dewPoint(s.temperature,s.humidity))])];
     const csv=rows.map(r=>r.join(",")).join("\n"),url=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-    const a=document.createElement("a");a.href=url;a.download=state.source==="device"?"atmos-sensor-data.csv":"atmos-showroom-simulated-data.csv";a.click();URL.revokeObjectURL(url);showToast(state.source==="device"?"Sensor data exported as CSV":"Demo data exported as CSV");
+    const a=document.createElement("a");a.href=url;a.download="atmos-sensor-data.csv";a.click();URL.revokeObjectURL(url);showToast("Sensor data exported as CSV");
   }
   function makeScatter(){
     const box=$("#scatterPlot");if(!box)return;
-    box.innerHTML="";
-    for(let i=0;i<48;i++){const dot=document.createElement("i");const x=rand(5,94),y=clamp(88-x*.68+rand(-18,18),5,95);dot.style.left=x+"%";dot.style.top=y+"%";box.append(dot)}
+    box.replaceChildren();
+    if(state.samples.length<MIN_INSIGHTS){box.textContent=`Temperature and humidity comparison appears after ${MIN_INSIGHTS} readings. ${state.samples.length} of ${MIN_INSIGHTS} collected.`;return;}
+    const recent=state.samples.slice(-48),t=recent.map(x=>x.temperature),h=recent.map(x=>x.humidity),tMin=Math.min(...t),tMax=Math.max(...t),hMin=Math.min(...h),hMax=Math.max(...h);
+    recent.forEach(s=>{const dot=document.createElement("i");dot.style.left=(5+90*(s.temperature-tMin)/(tMax-tMin||1))+"%";dot.style.top=(95-90*(s.humidity-hMin)/(hMax-hMin||1))+"%";box.append(dot)});
   }
   const trendCanvas=$("#trendChart"), chartTooltip=$("#chartTooltip");
   trendCanvas.addEventListener("pointermove",e=>{
@@ -415,7 +449,7 @@
 
   $$(".nav-link,.device-mini,[data-page]").forEach(el=>el.addEventListener("click",()=>navigate(el.dataset.page)));
   $("#mobileMenu").addEventListener("click",()=>$("#sidebar").classList.toggle("open"));
-  $("#pauseBtn").addEventListener("click",()=>{state.paused=!state.paused;$("#pauseBtn").textContent=state.paused?"▶":"Ⅱ";$("#pauseBtn").title=state.paused?"Resume simulation":"Pause simulation";showToast(state.paused?"Simulation paused":"Simulation resumed")});
+  $("#pauseBtn").hidden=true;
   $$(".tab").forEach(btn=>btn.addEventListener("click",()=>{$$(".tab").forEach(x=>x.classList.toggle("active",x===btn));state.chart=btn.dataset.chart;renderCharts()}));
   $$(".filter").forEach(btn=>btn.addEventListener("click",()=>{$$(".filter").forEach(x=>x.classList.toggle("active",x===btn));state.historyFilter=btn.dataset.filter;state.historyPage=1;renderHistory()}));
   $("#historySearch").addEventListener("input",e=>{state.historySearch=e.target.value;state.historyPage=1;renderHistory()});
@@ -423,11 +457,26 @@
   $("#nextPage").addEventListener("click",()=>{state.historyPage++;renderHistory()});
   ["#exportBtn","#historyExport"].forEach(id=>$(id).addEventListener("click",exportCSV));
   $("#rangeButton").addEventListener("click",()=>showToast("24-hour view selected"));
-  $("#analyticsRange").addEventListener("click",()=>showToast("7-day illustrative view selected"));
-  seed();updateMetrics();renderCharts();updateDistribution();makeScatter();renderHistory();setDataSource("demo","Checking for Atmos node · generated sample data remains visible");
-  pollCloud();setInterval(pollCloud,60000);setInterval(tick,3500);
-  window.addEventListener("resize",()=>{renderCharts();makeScatter()});
+  $("#analyticsRange").addEventListener("click",()=>showToast("7-day sensor view selected"));
+  $("#temperature").textContent=$("#humidity").textContent=$("#dewpoint").textContent="—";
+  $("#sampleCount").textContent="0";$("#activityList").replaceChildren();
+  $("#historyFooterText").textContent="Showing 0 of 0 sensor readings";
+  $("#capturePercent").textContent="Collecting";$(".capture-bar span").style.width="0%";
+  $("#avgTemp").textContent=$("#avgHumidity").textContent="—";
+  $("#sourceLabel").textContent="WAITING FOR SENSOR";
+  $("#sourceTitle").textContent="Waiting for Atmos node";
+  $("#sourceDetail").textContent="No sensor readings have arrived yet";
+  $("#statusText").textContent="Waiting for first sensor reading";
+  $("#deviceStatusText").textContent="Waiting for first upload";
+  $("#lastSync").textContent=$("#deviceSync").textContent="No upload received";
+  $("#intelligenceIntroText").textContent="Atmos will surface observations as enough real sensor history accumulates.";
+  $("#historyRows").innerHTML='<tr><td colspan="5">Waiting for the first reading from your Atmos device.</td></tr>';
+  setDataSource("waiting","Waiting for the first sensor upload");renderCharts();updateMetrics();updateDistribution();updateAnalytics();renderHistory();renderInsights([]);updateOverviewInsights();makeScatter();
+  const poll=()=>{if(document.visibilityState==="visible")pollCloud()};poll();setInterval(poll,30000);
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pollCloud()});
+  window.addEventListener("resize",renderCharts);
 })();
   </script>
 </body>
 </html>
+
