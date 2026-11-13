@@ -26,7 +26,7 @@ The write payload matches the firmware in the referenced conversation:
 }
 ```
 
-The API caps a batch at 240 readings, validates sensor ranges, rejects oversized bodies, and derives timestamps from the sample epoch or relative device uptime when epoch is zero. The public data endpoints are read-only. CORS should name the dashboard's exact origin.
+The analytics response includes period-wide min/max/mean values and hourly mean values for charting. The API caps a batch at 240 readings, validates sensor ranges, rejects oversized bodies, and derives timestamps from the sample epoch or relative device uptime when epoch is zero. The public data endpoints are read-only. CORS should name the dashboard's exact origin.
 
 ## Local checks
 
@@ -44,7 +44,7 @@ The connected account already has unrelated Workers and `rfid-wallet-db`. The is
 - D1 database: `atmos-db` (`e523f59e-2e3b-4065-b855-fe5b00758367`, APAC)
 - D1 migration: `0001_initial.sql` applied
 
-The dashboard origins were set to the custom site and GitHub Pages origins. `ADMIN_API_KEY` is **not yet configured**, so device registration remains closed until the owner sets it with Wrangler's secret command. Do not commit the key. The endpoint is published and the API read endpoints are available.
+The dashboard origins were set to the custom site and GitHub Pages origins. `ADMIN_API_KEY` is **not yet configured**, so device registration remains closed until the owner sets it with Wrangler's secret command. Do not commit the key. The endpoint is published and the API read endpoints are available. The live-data dashboard changes are on the `codex/atmos-backend` branch and have not been merged into the site's published branch.
 
 To configure the admin key from a trusted local terminal, run `npx wrangler secret put ADMIN_API_KEY` from this directory, then paste a newly generated high-entropy value into Wrangler's hidden prompt. Configure the ESP32 URL and one-time device key out of band. Register the device with `POST /api/devices`, store the returned key securely on the ESP32, and discard the one-time response.
 
