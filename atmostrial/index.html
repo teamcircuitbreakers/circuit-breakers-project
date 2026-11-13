@@ -47,7 +47,7 @@
         <span class="chevron">›</span>
       </button>
       <div class="sidebar-bottom">
-        <div class="simulation-note"><span class="pulse"></span><div><b>Showroom simulation</b><small>Generated sample data</small></div></div>
+        <div class="simulation-note"><span class="pulse"></span><div><b id="sourceTitle">Showroom simulation</b><small id="sourceDetail">Generated sample data</small></div></div>
         <div class="sidebar-foot"><span>ATMOS PLATFORM</span><span>v0.1.0 · PREVIEW</span></div>
       </div>
     </aside>
@@ -57,7 +57,7 @@
         <button class="mobile-menu" id="mobileMenu" aria-label="Open navigation">☰</button>
         <div class="breadcrumb">Workspace <span>/</span> <b id="breadcrumbPage">Overview</b></div>
         <div class="top-actions">
-          <div class="sim-pill"><span class="pulse"></span> LIVE SIMULATION</div>
+          <div class="sim-pill"><span class="pulse"></span><span id="sourceLabel">LIVE SIMULATION</span></div>
           <button class="icon-button" id="pauseBtn" title="Pause simulation" aria-label="Pause simulation">Ⅱ</button>
           <button class="avatar" title="Demo workspace">A</button>
         </div>
@@ -76,7 +76,7 @@
           <div class="status-right"><span class="status-item"><i class="green-dot"></i> Sensor online</span><span class="status-item"><i class="green-dot"></i> Data pipeline healthy</span><span class="status-item mono">NODE · ATM-001</span></div>
         </div>
 
-        <div class="section-head"><div><h2>At a glance</h2><p>Current readings from your room</p></div><span class="updated-label">UPDATING LIVE <span class="live-dot"></span></span></div>
+        <div class="section-head"><div><h2>At a glance</h2><p>Current readings from your room</p></div><span class="updated-label" id="liveStatus">DEMO DATA <span class="live-dot"></span></span></div>
         <div class="metric-grid">
           <article class="metric-card">
             <div class="metric-top"><span class="metric-label">TEMPERATURE</span><span class="metric-symbol warm">°</span></div>
@@ -140,7 +140,7 @@
             </div>
           </section>
         </div>
-        <div class="disclaimer"><span>ⓘ</span> Showroom mode: all readings, trends and insights on this page are simulated and are not coming from a physical sensor.</div>
+        <div class="disclaimer" id="dataDisclaimer"><span>ⓘ</span> Showroom mode: readings are simulated until a physical sensor sends data.</div>
       </section>
 
       <section class="page" id="page-analytics">
@@ -161,7 +161,7 @@
       <section class="page" id="page-history">
         <div class="page-heading"><div><div class="eyebrow">YOUR ENVIRONMENTAL RECORD</div><h1>History & <em>observations.</em></h1><p class="subheading">A transparent record of the measurements collected.</p></div><div class="heading-actions"><button class="button button-dark" id="historyExport">↓ <span>Export CSV</span></button></div></div>
         <div class="history-toolbar"><div class="filter-tabs"><button class="filter active" data-filter="all">All readings</button><button class="filter" data-filter="temperature">Temperature</button><button class="filter" data-filter="humidity">Humidity</button></div><div class="search-wrap"><span>⌕</span><input id="historySearch" placeholder="Search records..." type="search"></div></div>
-        <section class="panel table-panel"><div class="table-top"><div><h3>Recent measurements</h3><p>Generated sample observations · newest first</p></div><span class="record-count" id="recordCount">24 RECORDS</span></div><div class="table-scroll"><table><thead><tr><th>TIME</th><th>TEMPERATURE</th><th>HUMIDITY</th><th>DEW POINT</th><th>STATUS</th></tr></thead><tbody id="historyRows"></tbody></table></div><div class="table-footer"><span>Showing <b id="showingCount">24</b> of 1,438 simulated records</span><div class="pagination"><button id="prevPage" disabled>←</button><span id="pageNumber">1 / 60</span><button id="nextPage">→</button></div></div></section>
+        <section class="panel table-panel"><div class="table-top"><div><h3>Recent measurements</h3><p id="historySourceLabel">Generated sample observations · newest first</p></div><span class="record-count" id="recordCount">24 RECORDS</span></div><div class="table-scroll"><table><thead><tr><th>TIME</th><th>TEMPERATURE</th><th>HUMIDITY</th><th>DEW POINT</th><th>STATUS</th></tr></thead><tbody id="historyRows"></tbody></table></div><div class="table-footer"><span>Showing <b id="showingCount">24</b> of 1,438 simulated records</span><div class="pagination"><button id="prevPage" disabled>←</button><span id="pageNumber">1 / 60</span><button id="nextPage">→</button></div></div></section>
         <div class="disclaimer"><span>ⓘ</span> This is generated demo data. It is not a permanent record and resets when the page is refreshed.</div>
       </section>
 
@@ -193,7 +193,9 @@
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const $$ = (s, root=document) => [...root.querySelectorAll(s)];
-  const state = {paused:false, chart:"temperature", historyFilter:"all", historyPage:1, historySearch:"", samples:[], tick:0, activePage:"overview"};
+  const state = {paused:false, chart:"temperature", historyFilter:"all", historyPage:1, historySearch:"", samples:[], tick:0, activePage:"overview", source:"demo", hourly:[]};
+  const API_BASE="https://atmos-api.devteam-circuitbreakers.workers.dev";
+  const DEVICE_ID="atmos-xiao-c6-01";
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
   const rand=(a,b)=>a+Math.random()*(b-a);
   const round=(v,n=1)=>Number(v.toFixed(n));
@@ -227,7 +229,7 @@
     $("#legendHumidity").textContent=Math.round(humidity)+"%";
     $("#tempTrend").textContent=(temperature>=lastTemp?"↗ ":"↘ ")+Math.abs(temperature-lastTemp).toFixed(1)+"°";
     $("#humidityTrend").textContent=(humidity<=lastHumidity?"↘ ":"↗ ")+Math.abs(humidity-lastHumidity).toFixed(0)+"%";
-    $("#sampleCount").textContent=(1438+state.tick).toLocaleString();
+    $("#sampleCount").textContent=(state.source==="device"?state.samples.length:1438+state.tick).toLocaleString();
     sparkline("#tempSpark","temperature","#b48e63");
     sparkline("#humiditySpark","humidity","#7e9eaa");
   }
@@ -239,8 +241,9 @@
     const w=rect.width,h=rect.height,p={l:8,r:10,t:12,b:10}, iw=w-p.l-p.r, ih=h-p.t-p.b;
     ctx.clearRect(0,0,w,h);
     const list=weekly
-      ?Array.from({length:48},(_,i)=>({temperature:24.3+Math.sin(i/48*Math.PI*2)*2+rand(-.45,.45),humidity:59-Math.sin(i/48*Math.PI*2)*5+rand(-2,2),time:new Date(Date.now()-(47-i)*3.5*3600000)}))
+      ?(state.source==="device"?(state.hourly.length?state.hourly.map(x=>({temperature:Number(x.temperature_mean),humidity:Number(x.humidity_mean),time:new Date(2000,0,1,Number(x.hour))})):state.samples.slice(-144).filter((_,i)=>i%3===0)):Array.from({length:48},(_,i)=>({temperature:24.3+Math.sin(i/48*Math.PI*2)*2+rand(-.45,.45),humidity:59-Math.sin(i/48*Math.PI*2)*5+rand(-2,2),time:new Date(Date.now()-(47-i)*3.5*3600000)})))
       :state.samples.slice(-144).filter((_,i)=>i%3===0);
+    if(list.length<2)return;
     const defs=[];
     if(key==="temperature"||compare)defs.push({k:"temperature",color:"#b48e63",min:21,max:31,band:[22,27],bandColor:"rgba(181,155,112,.10)",ticks:[31,28,26,23,21],unit:"°C"});
     if(key==="humidity"||compare)defs.push({k:"humidity",color:"#7e9eaa",min:35,max:75,band:[40,60],bandColor:"rgba(126,158,170,.13)",ticks:[75,65,55,45,35],unit:"%"});
@@ -308,12 +311,46 @@
     $("#activityList").prepend(row);while($("#activityList").children.length>4)$("#activityList").lastElementChild.remove();
   }
   function updateDistribution(){
-    const dry=clamp(Math.round(8+rand(-2,2)),3,14),high=clamp(Math.round(20+(humidity-58)*.7+rand(-2,2)),10,30),ideal=100-dry-high;
+    let dry,high,ideal;
+    if(state.source==="device"&&state.samples.length){const total=state.samples.length;dry=Math.round(state.samples.filter(x=>x.humidity<=30).length/total*100);high=Math.round(state.samples.filter(x=>x.humidity>=70).length/total*100);ideal=100-dry-high;}else{dry=clamp(Math.round(8+rand(-2,2)),3,14);high=clamp(Math.round(20+(humidity-58)*.7+rand(-2,2)),10,30);ideal=100-dry-high;}
     $("#dryPct").textContent=dry+"%";$("#highPct").textContent=high+"%";$("#idealPct").textContent=ideal+"%";
     $("#humidityDonut").style.background=`conic-gradient(#7e9a80 0 ${ideal}%,#b7a17c ${ideal}% ${ideal+high}%,#d6e0e2 ${ideal+high}% 100%)`;
   }
+  function setDataSource(mode, detail){
+    state.source=mode;
+    const labels={device:"LIVE SENSOR",waiting:"WAITING FOR SENSOR · DEMO",offline:"DEVICE CONNECTION LOST",demo:"LIVE SIMULATION"};
+    const titles={device:"Connected to Atmos node",waiting:"Waiting for Atmos node",offline:"Showing last received data",demo:"Showroom simulation"};
+    $("#sourceLabel").textContent=labels[mode]||labels.demo;
+    $("#sourceTitle").textContent=titles[mode]||titles.demo;
+    $("#sourceDetail").textContent=detail;
+    $("#liveStatus").textContent=mode==="device"?"SENSOR DATA · LIVE":mode==="offline"?"SENSOR DATA · LAST SYNC":"DEMO DATA";
+    $("#dataDisclaimer").innerHTML="<span>ⓘ</span> "+(mode==="device"?"Live sensor readings from Atmos node · cloud sync is approximately hourly.":mode==="offline"?"Showing the last readings received from the sensor; the API could not be reached.":"Showroom readings are simulated until the registered ESP32 sends data.");
+    $("#historySourceLabel").textContent=mode==="device"?"Atmos sensor measurements · newest first":"Generated sample observations · newest first";
+    $("#pauseBtn").hidden=mode==="device";
+  }
+  function renderInsights(items){
+    const box=$("#insightCards");if(!box)return;box.replaceChildren();
+    for(const item of items||[]){const card=document.createElement("article");card.className="insight-card";const heading=document.createElement("h3");heading.textContent=item.metric?item.metric[0].toUpperCase()+item.metric.slice(1)+" observation":"Atmos observation";const body=document.createElement("p");body.textContent=item.message;const meta=document.createElement("div");meta.className="insight-meta";meta.textContent="Rule-based · latest 7 days";card.append(heading,body,meta);box.append(card);}
+  }
+  async function pollCloud(){
+    try{
+      const base=API_BASE+"/api/devices/"+encodeURIComponent(DEVICE_ID);
+      const responses=await Promise.all([fetch(base+"/latest"),fetch(base+"/history?days=90&limit=1000"),fetch(base+"/analytics?days=7"),fetch(base+"/insights?days=7"),fetch(base+"/status")]);
+      if(responses.some(r=>!r.ok))throw new Error("api_unavailable");
+      const [latest,history,analytics,insights,status]=await Promise.all(responses.map(r=>r.json()));
+      if(!latest.data){if(state.source!=="device")setDataSource("waiting","No device readings received yet · demo values remain active");return;}
+      const rows=(history.data||[]).map(x=>({time:new Date(x.observed_at),temperature:Number(x.temperature_c),humidity:Number(x.humidity_pct)})).filter(x=>Number.isFinite(x.time.getTime())&&Number.isFinite(x.temperature)&&Number.isFinite(x.humidity));
+      const newest={time:new Date(latest.data.observed_at),temperature:Number(latest.data.temperature_c),humidity:Number(latest.data.humidity_pct)};
+      if(!rows.length||rows[rows.length-1].time<newest.time)rows.push(newest);
+      state.samples=rows.slice(-1438);state.hourly=analytics.hourly||[];
+      lastTemp=state.samples.length>1?state.samples[state.samples.length-2].temperature:newest.temperature;lastHumidity=state.samples.length>1?state.samples[state.samples.length-2].humidity:newest.humidity;
+      temperature=newest.temperature;humidity=newest.humidity;setDataSource("device",(status.status||"online").replace("_"," ")+" · last sync "+newest.time.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}));
+      if(analytics.count){$("#avgTemp").textContent=Number(analytics.temperature_mean).toFixed(1);$("#avgHumidity").textContent=Number(analytics.humidity_mean).toFixed(0);}
+      updateMetrics();renderCharts();updateDistribution();renderHistory();renderInsights(insights.insights);
+    }catch{if(state.source==="device")setDataSource("offline","Connection unavailable · showing last sensor readings");else setDataSource("demo","API unavailable · generated sample data");}
+  }
   function tick(){
-    if(state.paused)return;
+    if(state.paused||state.source==="device")return;
     state.tick++;
     lastTemp=temperature;lastHumidity=humidity;
     const hour=new Date().getHours(), dayCycle=Math.sin((hour-8)/24*Math.PI*2);
@@ -354,7 +391,7 @@
   function exportCSV(){
     const rows=[["timestamp","temperature_c","humidity_pct","dew_point_c"],...state.samples.slice(-1438).map(s=>[s.time.toISOString(),s.temperature,s.humidity,round(dewPoint(s.temperature,s.humidity))])];
     const csv=rows.map(r=>r.join(",")).join("\n"),url=URL.createObjectURL(new Blob([csv],{type:"text/csv"}));
-    const a=document.createElement("a");a.href=url;a.download="atmos-showroom-simulated-data.csv";a.click();URL.revokeObjectURL(url);showToast("Demo data exported as CSV");
+    const a=document.createElement("a");a.href=url;a.download=state.source==="device"?"atmos-sensor-data.csv":"atmos-showroom-simulated-data.csv";a.click();URL.revokeObjectURL(url);showToast(state.source==="device"?"Sensor data exported as CSV":"Demo data exported as CSV");
   }
   function makeScatter(){
     const box=$("#scatterPlot");if(!box)return;
@@ -383,8 +420,8 @@
   ["#exportBtn","#historyExport"].forEach(id=>$(id).addEventListener("click",exportCSV));
   $("#rangeButton").addEventListener("click",()=>showToast("24-hour view selected"));
   $("#analyticsRange").addEventListener("click",()=>showToast("7-day illustrative view selected"));
-  seed();updateMetrics();renderCharts();updateDistribution();makeScatter();renderHistory();
-  setInterval(tick,3500);
+  seed();updateMetrics();renderCharts();updateDistribution();makeScatter();renderHistory();setDataSource("demo","Checking for Atmos node · generated sample data remains visible");
+  pollCloud();setInterval(pollCloud,60000);setInterval(tick,3500);
   window.addEventListener("resize",()=>{renderCharts();makeScatter()});
 })();
   </script>
