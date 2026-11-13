@@ -403,7 +403,7 @@
     const pages=Math.max(1,Math.ceil(filtered.length/24));state.historyPage=clamp(state.historyPage,1,pages);
     const shown=filtered.slice((state.historyPage-1)*24,state.historyPage*24);
     $("#historyRows").innerHTML=shown.map(s=>`<tr><td>${s.time.toLocaleDateString([], {day:"2-digit",month:"short"})} · ${timeLabel(s.time)}</td><td><strong>${s.temperature.toFixed(1)}°C</strong></td><td><strong>${Math.round(s.humidity)}%</strong></td><td>${dewPoint(s.temperature,s.humidity).toFixed(1)}°C</td><td><span class="row-status">RECEIVED</span></td></tr>`).join("")||(state.samples.length?'<tr><td colspan="5">No matching records.</td></tr>':'<tr><td colspan="5">Waiting for the first reading from your Atmos device.</td></tr>');
-    $("#recordCount").textContent=filtered.length+" RECORDS";$("#showingCount").textContent=shown.length;$("#pageNumber").textContent=`${state.historyPage} / ${pages}`;$("#historyFooterText").textContent=`Showing ${shown.length} of ${filtered.length} sensor readings`;
+    $("#recordCount").textContent=filtered.length+" RECORDS";if($("#showingCount"))$("#showingCount").textContent=shown.length;$("#pageNumber").textContent=`${state.historyPage} / ${pages}`;$("#historyFooterText").textContent=`Showing ${shown.length} of ${filtered.length} sensor readings`;
     $("#prevPage").disabled=state.historyPage===1;$("#nextPage").disabled=state.historyPage===pages;
   }
   function updateAnalytics(){
@@ -480,5 +480,3 @@
   </script>
 </body>
 </html>
-
-
