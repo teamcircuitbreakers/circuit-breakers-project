@@ -335,10 +335,14 @@
   async function pollCloud(){
     try{
       const base=API_BASE+"/api/devices/"+encodeURIComponent(DEVICE_ID);
-      const responses=await Promise.all([fetch(base+"/latest"),fetch(base+"/history?days=90&limit=1000"),fetch(base+"/analytics?days=7"),fetch(base+"/insights?days=7"),fetch(base+"/status")]);
-      if(responses.some(r=>!r.ok))throw new Error("api_unavailable");
-      const [latest,history,analytics,insights,status]=await Promise.all(responses.map(r=>r.json()));
+      const latestResponse=await fetch(base+"/latest");
+      if(latestResponse.status===404){setDataSource("waiting","Device not registered yet · demo values remain active");return;}
+      if(!latestResponse.ok)throw new Error("api_unavailable");
+      const latest=await latestResponse.json();
       if(!latest.data){if(state.source!=="device")setDataSource("waiting","No device readings received yet · demo values remain active");return;}
+      const responses=await Promise.all([fetch(base+"/history?days=90&limit=1000"),fetch(base+"/analytics?days=7"),fetch(base+"/insights?days=7"),fetch(base+"/status")]);
+      if(responses.some(r=>!r.ok))throw new Error("api_unavailable");
+      const [history,analytics,insights,status]=await Promise.all(responses.map(r=>r.json()));
       const rows=(history.data||[]).map(x=>({time:new Date(x.observed_at),temperature:Number(x.temperature_c),humidity:Number(x.humidity_pct)})).filter(x=>Number.isFinite(x.time.getTime())&&Number.isFinite(x.temperature)&&Number.isFinite(x.humidity));
       const newest={time:new Date(latest.data.observed_at),temperature:Number(latest.data.temperature_c),humidity:Number(latest.data.humidity_pct)};
       if(!rows.length||rows[rows.length-1].time<newest.time)rows.push(newest);
@@ -347,7 +351,7 @@
       temperature=newest.temperature;humidity=newest.humidity;setDataSource("device",(status.status||"online").replace("_"," ")+" · last sync "+newest.time.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit"}));
       if(analytics.count){$("#avgTemp").textContent=Number(analytics.temperature_mean).toFixed(1);$("#avgHumidity").textContent=Number(analytics.humidity_mean).toFixed(0);}
       updateMetrics();renderCharts();updateDistribution();renderHistory();renderInsights(insights.insights);
-    }catch{if(state.source==="device")setDataSource("offline","Connection unavailable · showing last sensor readings");else setDataSource("demo","API unavailable · generated sample data");}
+    }catch{if(state.source==="device"||state.source==="offline")setDataSource("offline","Connection unavailable · showing last sensor readings");else setDataSource("demo","API unavailable · generated sample data");}
   }
   function tick(){
     if(state.paused||state.source==="device")return;
