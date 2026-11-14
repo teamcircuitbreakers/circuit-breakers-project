@@ -633,7 +633,8 @@
     const minRh=Number.isFinite(Number(state.analytics?.humidity_min))?Number(state.analytics.humidity_min):Math.min(...sevenDay.map(x=>x.humidity));
     const maxRh=Number.isFinite(Number(state.analytics?.humidity_max))?Number(state.analytics.humidity_max):Math.max(...sevenDay.map(x=>x.humidity));
     const observations=derivedObservations().slice(0,4);
-    const batchesForLabel=(currentBatch&&previousBatch)?("Batch "+currentBatch.samples.length+" readings vs previous batch "+previousBatch.samples.length+" readings"):"A second identified upload batch is needed for comparison";
+    const batchesForLabel=(currentBatch&&previousBatch)?("Current batch: "+currentBatch.samples.length+" readings | previous batch: "+previousBatch.samples.length+" readings"):"A second identified upload batch is needed for comparison";
+    const wrapText=(value,max=110)=>{const words=String(value).split(/\\s+/),lines=[];let line="";for(const word of words){const next=line?line+" "+word:word;if(next.length>max&&line){lines.push(line);line=word;}else line=next;}if(line)lines.push(line);return lines;};
     const ascii=value=>String(value??"").replace(/°/g," deg").replace(/–|—/g,"-").replace(/·/g," | ").replace(/↗/g,"up").replace(/↘/g,"down").replace(/’|‘/g,"'").replace(/“|”/g,'"').replace(/[^\x20-\x7E]/g,"").replace(/\\/g,"\\\\").replace(/\(/g,"\\(").replace(/\)/g,"\\)");
     const ops=[];
     const rect=(x,y,w,h,color)=>ops.push(color+" rg "+x+" "+y+" "+w+" "+h+" re f");
@@ -657,7 +658,7 @@
     txt(42,454,11,"Calculated observations","0.13 0.20 0.16","F2");
     let oy=435;
     if(!observations.length){txt(42,oy,9,"No observations are available from the current sensor history.",muted);oy-=17;}
-    for(const item of observations){txt(42,oy,9,item.title,"0.28 0.40 0.31","F2");oy-=13;txt(52,oy,8,item.message,muted);oy-=20;}
+    for(const item of observations){txt(42,oy,9,item.title,"0.28 0.40 0.31","F2");oy-=13;for(const messageLine of wrapText(item.message).slice(0,2)){txt(52,oy,8,messageLine,muted);oy-=11;}oy-=8;}
     line(42,oy+5,553,oy+5,rule);txt(42,oy-14,11,"Recent sensor readings","0.13 0.20 0.16","F2");
     let ry=oy-32;txt(42,ry,7,"TIMESTAMP","0.43 0.50 0.45","F2");txt(270,ry,7,"TEMP (C)","0.43 0.50 0.45","F2");txt(360,ry,7,"HUMIDITY (%)","0.43 0.50 0.45","F2");txt(470,ry,7,"DEW POINT (C)","0.43 0.50 0.45","F2");ry-=10;line(42,ry,553,ry,rule);
     for(const sample of samples.slice(-8).reverse()){ry-=15;txt(42,ry,7,sample.time.toLocaleString([],{dateStyle:"short",timeStyle:"short"}),muted);txt(270,ry,8,safe(sample.temperature),muted);txt(360,ry,8,safe(sample.humidity),muted);txt(470,ry,8,safe(dewPoint(sample.temperature,sample.humidity)),muted);}
