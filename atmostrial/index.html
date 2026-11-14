@@ -200,6 +200,7 @@
   const state = {chart:"temperature", historyFilter:"all", historyPage:1, historySearch:"", samples:[], activePage:"overview", source:"waiting", hourly:[], insights:[], lastObservedAt:null, lastCadenceObservedAt:null, lastSyncAt:null, analytics:null, uploadIntervals:[], uploadIntervalMs:null, pollInProgress:false};
   const API_BASE="https://atmos-api.devteam-circuitbreakers.workers.dev";
   const DEVICE_ID="atmos-xiao-c6-01";
+  const cadenceStorageKey=`atmos-upload-rhythm:${DEVICE_ID}`;
   const clamp=(v,min,max)=>Math.max(min,Math.min(max,v));
   const round=(v,n=1)=>Number(v.toFixed(n));
   let temperature=null, humidity=null;
@@ -212,6 +213,13 @@
     const hours=minutes/60;return `About every ${Number.isInteger(hours)?hours:round(hours)} hour${hours===1?"":"s"}`;
   }
   function cadenceHint(){return state.uploadIntervalMs?`Readings arrive ${formatCadence().toLowerCase()}.`:"The dashboard is learning how often your device uploads.";}
+  try{
+    const saved=JSON.parse(localStorage.getItem(cadenceStorageKey)||"null");
+    const interval=Number(saved?.intervalMs),savedAt=Number(saved?.savedAt),observed=Date.parse(saved?.lastObservedAt||"");
+    if(Number.isFinite(interval)&&interval>=30000&&interval<=7*24*60*60*1000&&Number.isFinite(savedAt)&&Date.now()-savedAt<30*24*60*60*1000&&Number.isFinite(observed)){
+      state.uploadIntervalMs=interval;state.lastCadenceObservedAt=saved.lastObservedAt;
+    }
+  }catch{}
   function noteUploadInterval(observedAt){
     const next=Date.parse(observedAt),previous=state.lastCadenceObservedAt?Date.parse(state.lastCadenceObservedAt):NaN;
     if(Number.isFinite(next)&&Number.isFinite(previous)&&next>previous){
@@ -219,6 +227,7 @@
       if(interval>=30000&&interval<=7*24*60*60*1000){state.uploadIntervals.push(interval);state.uploadIntervals=state.uploadIntervals.slice(-6);if(state.uploadIntervals.length>=2)state.uploadIntervalMs=median(state.uploadIntervals);}
     }
     state.lastCadenceObservedAt=observedAt;
+    try{localStorage.setItem(cadenceStorageKey,JSON.stringify({intervalMs:state.uploadIntervalMs,lastObservedAt:observedAt,savedAt:Date.now()}));}catch{}
     updateCadenceUI();
   }
   function updateCadenceUI(){
@@ -534,7 +543,7 @@
   $("#lastSync").textContent=$("#deviceSync").textContent="No upload received";
   $("#intelligenceIntroText").textContent="Atmos will surface observations as enough real sensor history accumulates.";
   $("#historyRows").innerHTML='<tr><td colspan="5">Waiting for the first reading from your Atmos device.</td></tr>';
-  setDataSource("waiting","Waiting for the first sensor upload");renderCharts();updateMetrics();updateDistribution();updateAnalytics();renderHistory();renderInsights([]);updateOverviewInsights();makeScatter();
+  updateCadenceUI();setDataSource("waiting","Waiting for the first sensor upload");renderCharts();updateMetrics();updateDistribution();updateAnalytics();renderHistory();renderInsights([]);updateOverviewInsights();makeScatter();
   pollCloud().finally(schedulePoll);
   document.addEventListener("visibilitychange",()=>{clearTimeout(pollTimer);if(document.visibilityState==="visible")pollCloud().finally(schedulePoll)});
   window.addEventListener("resize",renderCharts);
