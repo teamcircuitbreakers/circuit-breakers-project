@@ -233,6 +233,7 @@
     return {spanMs,coveredHours,ready:spanMs>=6*60*60*1000&&coveredHours>=4};
   }
   function staleAfterMs(){return Math.max(5*60*1000,(state.uploadIntervalMs||10*60*1000)*2.5);}
+  function pollDelayMs(){return state.uploadIntervalMs?clamp(state.uploadIntervalMs/12,15000,60000):30000;}
   const timeLabel=d=>d.toLocaleTimeString([], {hour:"2-digit",minute:"2-digit",hour12:false});
   const dewPoint=(t,rh)=>{const a=17.27,b=237.7,alpha=(a*t)/(b+t)+Math.log(rh/100);return b*alpha/(a-alpha)};
   function currentSample(){return state.samples[state.samples.length-1]}
@@ -429,6 +430,12 @@
     }catch{setDataSource(state.samples.length?"offline":"waiting",state.samples.length?"Connection unavailable · showing saved sensor readings":"Cannot reach the sensor service yet · retrying automatically");}
     finally{state.pollInProgress=false;}
   }
+  let pollTimer=null;
+  function schedulePoll(){
+    clearTimeout(pollTimer);
+    if(document.visibilityState!=="visible")return;
+    pollTimer=setTimeout(async()=>{await pollCloud();schedulePoll();},pollDelayMs());
+  }
   function showToast(message){const el=$("#toast");el.textContent=message;el.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>el.classList.remove("show"),2600)}
   function navigate(page){
     state.activePage=page;
@@ -528,8 +535,8 @@
   $("#intelligenceIntroText").textContent="Atmos will surface observations as enough real sensor history accumulates.";
   $("#historyRows").innerHTML='<tr><td colspan="5">Waiting for the first reading from your Atmos device.</td></tr>';
   setDataSource("waiting","Waiting for the first sensor upload");renderCharts();updateMetrics();updateDistribution();updateAnalytics();renderHistory();renderInsights([]);updateOverviewInsights();makeScatter();
-  const poll=()=>{if(document.visibilityState==="visible")pollCloud()};poll();setInterval(poll,30000);
-  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")pollCloud()});
+  pollCloud().finally(schedulePoll);
+  document.addEventListener("visibilitychange",()=>{clearTimeout(pollTimer);if(document.visibilityState==="visible")pollCloud().finally(schedulePoll)});
   window.addEventListener("resize",renderCharts);
 })();
   </script>
