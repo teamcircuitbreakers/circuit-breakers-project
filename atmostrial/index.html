@@ -187,7 +187,7 @@
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const $$ = (s, root=document) => [...root.querySelectorAll(s)];
-  const state = {chart:"temperature", historyPage:1, historySearch:"", samples:[], hourly:[], insights:[], lastObservedAt:null, analytics:null, uploadIntervals:[], uploadIntervalMs:null, pollInProgress:false, historyLoaded:false};
+  const state = {chart:"temperature", historyPage:1, historySearch:"", samples:[], hourly:[], insights:[], lastObservedAt:null, analytics:null, uploadIntervals:[], uploadIntervalMs:null, pollInProgress:false, historyLoaded:false, lastPollStartedAt:0};
   const API_BASE="https://atmos-api.devteam-circuitbreakers.workers.dev";
   const DEVICE_ID="atmos-xiao-c6-01";
   const cadenceStorageKey=`atmos-upload-rhythm:${DEVICE_ID}`;
@@ -466,6 +466,7 @@
   async function pollCloud(){
     if(state.pollInProgress)return;
     state.pollInProgress=true;
+    state.lastPollStartedAt=Date.now();
     try{
       const base=API_BASE+"/api/devices/"+encodeURIComponent(DEVICE_ID);
       const latest=await getJson(base+"/latest");
@@ -536,7 +537,13 @@
   function schedulePoll(){
     clearTimeout(pollTimer);
     if(document.visibilityState!=="visible")return;
-    pollTimer=setTimeout(async()=>{await pollCloud();schedulePoll();},pollDelayMs());
+    pollTimer=setTimeout(()=>{pollCloud().finally(schedulePoll);},pollDelayMs());
+  }
+  function refreshOnResume(){
+    clearTimeout(pollTimer);
+    if(document.visibilityState!=="visible")return;
+    const sinceLastPoll=Date.now()-(state.lastPollStartedAt||0);
+    pollTimer=setTimeout(()=>{pollCloud().finally(schedulePoll);},Math.max(0,5000-sinceLastPoll));
   }
   function showToast(message){const el=$("#toast");el.textContent=message;el.classList.add("show");clearTimeout(showToast.timer);showToast.timer=setTimeout(()=>el.classList.remove("show"),2600)}
   function navigate(page){
@@ -638,7 +645,9 @@
   $("#historyRows").innerHTML='<tr><td colspan="5">Waiting for the first reading from your Atmos device.</td></tr>';
   updateCadenceUI();setDataSource("waiting","Waiting for the first sensor upload");renderCharts();updateMetrics();updateDistribution();updateAnalytics();renderHistory();renderInsights();updateOverviewInsights();makeScatter();
   pollCloud().finally(schedulePoll);
-  document.addEventListener("visibilitychange",()=>{clearTimeout(pollTimer);if(document.visibilityState==="visible")pollCloud().finally(schedulePoll)});
+  document.addEventListener("visibilitychange",()=>{if(document.visibilityState==="visible")refreshOnResume();else clearTimeout(pollTimer)});
+  window.addEventListener("pageshow",refreshOnResume);
+  window.addEventListener("focus",refreshOnResume);
   window.addEventListener("resize",renderCharts);
 })();
   </script>
