@@ -305,7 +305,7 @@
     $(id).innerHTML=`<svg viewBox="0 0 100 20" preserveAspectRatio="none"><polyline points="${pts}" fill="none" stroke="${color}" stroke-width="1.5" vector-effect="non-scaling-stroke" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
   }
   function updateMetrics(){
-    const latest=currentSample(),batches=batchAverages(state.samples),currentBatch=batches.at(-1),previousBatch=batches.at(-2);
+    const latest=currentSample(),batchGroups=batchAverages(state.samples),currentBatch=batchGroups.at(-1),previousBatch=batchGroups.at(-2);
     $("#temperature").textContent=latest?latest.temperature.toFixed(1):"—";
     $("#humidity").textContent=latest?Math.round(latest.humidity):"—";
     const dp=latest?dewPoint(latest.temperature,latest.humidity):null;
