@@ -187,7 +187,7 @@
 (() => {
   const $ = (s, root=document) => root.querySelector(s);
   const $$ = (s, root=document) => [...root.querySelectorAll(s)];
-  const state = {chart:"temperature", historyPage:1, historySearch:"", samples:[], hourly:[], insights:[], lastObservedAt:null, analytics:null, uploadIntervals:[], uploadIntervalMs:null, pollInProgress:false};
+  const state = {chart:"temperature", historyPage:1, historySearch:"", samples:[], hourly:[], insights:[], lastObservedAt:null, analytics:null, uploadIntervals:[], uploadIntervalMs:null, pollInProgress:false, historyLoaded:false};
   const API_BASE="https://atmos-api.devteam-circuitbreakers.workers.dev";
   const DEVICE_ID="atmos-xiao-c6-01";
   const cadenceStorageKey=`atmos-upload-rhythm:${DEVICE_ID}`;
@@ -462,38 +462,75 @@
     const intro=$("#intelligenceIntroText");if(intro){const count=Number(state.analytics?.count||0);intro.textContent=count?"Showing calculated summaries for "+count.toLocaleString()+" readings in the last seven days, plus recent readings for 24-hour calculations.":"No sensor measurements are available in the current analytics period.";}
   }
   async function getJson(url){const response=await fetch(url,{cache:"no-store"});if(!response.ok)throw new Error("api_unavailable");return response.json()}
+
   async function pollCloud(){
     if(state.pollInProgress)return;
     state.pollInProgress=true;
     try{
       const base=API_BASE+"/api/devices/"+encodeURIComponent(DEVICE_ID);
-      const [latest,status]=await Promise.all([getJson(base+"/latest"),getJson(base+"/status")]);
+      const latest=await getJson(base+"/latest");
       if(!latest.data){setDataSource("waiting","Device registered · waiting for its first sensor upload");return;}
-      const newest={time:new Date(latest.data.observed_at),temperature:Number(latest.data.temperature_c),humidity:Number(latest.data.humidity_pct)};
+      const newest={time:new Date(latest.data.observed_at),temperature:Number(latest.data.temperature_c),humidity:Number(latest.data.humidity_pct),batchId:latest.data.batch_id};
       if(!Number.isFinite(newest.time.getTime())||!Number.isFinite(newest.temperature)||!Number.isFinite(newest.humidity))throw new Error("invalid_reading");
-      const receivedAt=new Date(status.last_seen_at||latest.data.observed_at);
-      if(!Number.isFinite(receivedAt.getTime()))throw new Error("invalid_upload_time");
+
       const changed=state.lastObservedAt!==latest.data.observed_at;
-      if(changed){
-        const [history,analytics]=await Promise.all([getJson(base+"/history?days=90&limit=1000"),getJson(base+"/analytics?days=7")]);
-         const rows=(history.data||[]).map(x=>({time:new Date(x.observed_at),temperature:Number(x.temperature_c),humidity:Number(x.humidity_pct),batchId:x.batch_id})).filter(x=>Number.isFinite(x.time.getTime())&&Number.isFinite(x.temperature)&&Number.isFinite(x.humidity));
-        if(!rows.some(x=>x.time.getTime()===newest.time.getTime()))rows.push(newest);
-          state.samples=rows.sort((a,b)=>a.time-b.time).slice(-2000);state.hourly=analytics.hourly||[];state.analytics=analytics;state.lastObservedAt=latest.data.observed_at;
-         learnCadenceFromHistory(state.samples);
-         state.lastSyncAt=receivedAt;$("#avgTemp").textContent=Number(analytics.temperature_mean).toFixed(1);$("#avgHumidity").textContent=Number(analytics.humidity_mean).toFixed(1);
-        updateAnalytics();
-        renderInsights();updateOverviewInsights();renderHistory();
-         const activity=$("#activityList");activity.replaceChildren();
-         const batchReadings=state.samples.filter(x=>x.batchId&&x.batchId===latest.data.batch_id).length;
-         addActivity("Cloud upload received",`${batchReadings||1} sensor readings · ${formatCadence().toLowerCase()}`,"green",receivedAt);
-         addActivity("Latest measurement",`${newest.temperature.toFixed(1)}°C · ${newest.humidity.toFixed(1)}% RH`,"blue",newest.time);
+      const retained=state.samples.filter(x=>x.time.getTime()!==newest.time.getTime());
+      retained.push(newest);
+      state.samples=retained.sort((a,b)=>a.time-b.time).slice(-2000);
+      state.lastObservedAt=latest.data.observed_at;
+
+      // Paint the confirmed latest measurement before loading optional detail endpoints.
+      updateMetrics();
+      setDataSource("device","Latest sensor reading received · "+newest.time.toLocaleString([], {dateStyle:"medium",timeStyle:"short"}));
+      let receivedAt=newest.time;
+      const shouldLoadHistory=changed||!state.historyLoaded;
+      const shouldLoadAnalytics=changed||!state.analytics;
+      const [statusResult,historyResult,analyticsResult]=await Promise.allSettled([
+        getJson(base+"/status"),
+        shouldLoadHistory?getJson(base+"/history?days=90&limit=1000"):Promise.resolve(null),
+        shouldLoadAnalytics?getJson(base+"/analytics?days=7"):Promise.resolve(null)
+      ]);
+
+      if(statusResult.status==="fulfilled"&&statusResult.value){
+        const observedUpload=new Date(statusResult.value.last_seen_at||latest.data.observed_at);
+        if(Number.isFinite(observedUpload.getTime()))receivedAt=observedUpload;
       }
-               const ageMs=Date.now()-receivedAt.getTime(),fresh=ageMs<=staleAfterMs();
-        setDataSource(fresh?"device":"stale",(fresh?"Last cloud upload · ":"Last cloud upload was ")+receivedAt.toLocaleString([], {dateStyle:"medium",timeStyle:"short"}));
-       $("#lastSync").textContent=receivedAt.toLocaleString([], {dateStyle:"medium",timeStyle:"short"});$("#deviceSync").textContent=receivedAt.toLocaleString([], {dateStyle:"medium",timeStyle:"short"});
-      updateMetrics();renderCharts();updateDistribution();renderInsights();updateOverviewInsights();makeScatter();
-    }catch{setDataSource(state.samples.length?"offline":"waiting",state.samples.length?"Connection unavailable · showing saved sensor readings":"Cannot reach the sensor service yet · retrying automatically");}
-    finally{state.pollInProgress=false;}
+      if(historyResult.status==="fulfilled"&&historyResult.value&&Array.isArray(historyResult.value.data)){
+        const rows=historyResult.value.data.map(x=>({time:new Date(x.observed_at),temperature:Number(x.temperature_c),humidity:Number(x.humidity_pct),batchId:x.batch_id})).filter(x=>Number.isFinite(x.time.getTime())&&Number.isFinite(x.temperature)&&Number.isFinite(x.humidity));
+        if(!rows.some(x=>x.time.getTime()===newest.time.getTime()))rows.push(newest);
+        state.samples=rows.sort((a,b)=>a.time-b.time).slice(-2000);
+        state.historyLoaded=true;
+      }
+      if(analyticsResult.status==="fulfilled"&&analyticsResult.value){
+        state.hourly=Array.isArray(analyticsResult.value.hourly)?analyticsResult.value.hourly:[];
+        state.analytics=analyticsResult.value;
+      }
+      try{learnCadenceFromHistory(state.samples);}catch(error){console.error("Atmos upload rhythm update failed",error);}
+
+      const ageMs=Date.now()-receivedAt.getTime(),fresh=ageMs<=staleAfterMs();
+      setDataSource(fresh?"device":"stale",(fresh?"Last cloud upload · ":"Last cloud upload was ")+receivedAt.toLocaleString([], {dateStyle:"medium",timeStyle:"short"}));
+      $("#lastSync").textContent=receivedAt.toLocaleString([], {dateStyle:"medium",timeStyle:"short"});
+      $("#deviceSync").textContent=receivedAt.toLocaleString([], {dateStyle:"medium",timeStyle:"short"});
+
+      const safeRender=(label,render)=>{try{render();}catch(error){console.error("Atmos "+label+" update failed",error);}};
+      safeRender("metrics",updateMetrics);
+      safeRender("analytics",updateAnalytics);
+      safeRender("history",renderHistory);
+      if(changed){
+        const activity=$("#activityList");activity.replaceChildren();
+        const batchReadings=state.samples.filter(x=>x.batchId&&x.batchId===latest.data.batch_id).length;
+        addActivity("Cloud upload received",(batchReadings||1)+" sensor readings · "+formatCadence().toLowerCase(),"green",receivedAt);
+        addActivity("Latest measurement",newest.temperature.toFixed(1)+"°C · "+newest.humidity.toFixed(1)+"% RH","blue",newest.time);
+      }
+      safeRender("charts",renderCharts);
+      safeRender("humidity distribution",updateDistribution);
+      safeRender("insights",renderInsights);
+      safeRender("overview insights",updateOverviewInsights);
+      safeRender("scatter plot",makeScatter);
+    }catch(error){
+      console.error("Atmos dashboard refresh failed",error);
+      setDataSource(state.samples.length?"offline":"waiting",state.samples.length?"Connection unavailable · showing saved sensor readings":"Cannot reach the sensor service yet · retrying automatically");
+    }finally{state.pollInProgress=false;}
   }
   let pollTimer=null;
   function schedulePoll(){
